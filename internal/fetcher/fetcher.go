@@ -3,21 +3,21 @@ package fetcher
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
+	"log"
 	"regexp"
 	"strings"
 
-	"github.com/pkg/errors"
+	"github.com/wedojava/gears"
 )
 
 // Posts is the fetcher can return many results.
 type Posts map[string]*ThePost
 
 type ThePost struct {
-	url   string
-	title string
-	body  string
+	Site  string
+	URL   string
+	Title string
+	Body  string
 }
 
 type Paragraph struct {
@@ -26,41 +26,39 @@ type Paragraph struct {
 }
 
 func Fetch(url string) (*ThePost, error) {
-	// Request the HTML page
-	raw, err := http.Get(url)
+	rawBody, err := gears.HttpGetBody(url)
 	if err != nil {
-		return nil, errors.Wrapf(err, "[-] Fetch()>Get() Error!")
+		log.Fatal(err)
 	}
-	rawBody, err := ioutil.ReadAll(raw.Body)
-	defer raw.Body.Close()
+	site := gears.HttpGetSiteViaTwitterJS(rawBody)
+	title := gears.HttpGetTitleViaTwitterJS(rawBody)
+	// get contents
+	body, err := FmtBodyDwnews(rawBody)
 	if err != nil {
-		return nil, errors.Wrap(err, "[-] Fetch()>ReadAll() Error!")
-	}
-	if raw.StatusCode != 200 {
-		return nil, errors.Wrap(err, "[-] Fetch()>Get() Error! Message: Cannot open the url.")
+		log.Fatal(err)
 	}
 
-	// var reTitle = regexp.MustCompile(`(?m)<title(.*?){0,1}>(?P<title>.*?)</title>`)
-	var reTitle = regexp.MustCompile(`(?m)<meta name="twitter:title" content="(?P<title>.*?)"`)
-	title := reTitle.FindStringSubmatch(string(rawBody))[1]
-	// get contents
-	// fetch and make it to json fmt
+	post := ThePost{site, url, title, body}
+
+	return &post, nil
+}
+
+// FmtBodyDwnews focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
+func FmtBodyDwnews(rawBody string) (string, error) {
+	// extract and make it to json fmt
 	var tmp = "["
 	var reContent = regexp.MustCompile(`"htmlTokens":\[\[(?P<contents>.*?)\]\]`)
-	for _, v := range reContent.FindAllStringSubmatch(string(rawBody), -1) {
-		//fmt.Printf("index: %d => %v\n", i, v[1])
+	for _, v := range reContent.FindAllStringSubmatch(rawBody, -1) {
 		tmp += v[1] + ","
 	}
 	tmp = strings.ReplaceAll(tmp, "],[", ",")
 	tmp = tmp[:len(tmp)-1] + "]" // now body json data prepared done.
 	// Unmarshal the json data
-	b := []byte(tmp)
 	var paragraph []Paragraph
-	err = json.Unmarshal(b, &paragraph)
+	err := json.Unmarshal([]byte(tmp), &paragraph)
 	if err != nil {
-		return nil, fmt.Errorf("[-] Fetch()>Unmarshal() Error: %q", err)
+		return "", fmt.Errorf("[-] GetBodyDwnews()>Unmarshal() Error: %q", err)
 	}
-	//fmt.Printf("%+v", paragraph)
 	// splice contents
 	var body string
 	for _, p := range paragraph {
@@ -71,8 +69,5 @@ func Fetch(url string) (*ThePost, error) {
 		}
 
 	}
-
-	post := ThePost{url, title, body}
-
-	return &post, nil
+	return body, nil
 }
