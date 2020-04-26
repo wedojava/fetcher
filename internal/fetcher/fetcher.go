@@ -43,6 +43,21 @@ func Fetch(url string) (*ThePost, error) {
 	return &post, nil
 }
 
+func FetchUrls(url string) []string {
+	rawBody, err := gears.HttpGetBody(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var ret_lst []string
+	var reLink = regexp.MustCompile(`(?m)<a\shref\s?=\s?"(?P<href>/.{2}/\d{8}/.+?)".*?>`)
+	for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
+		ret_lst = append(ret_lst, v[1])
+	}
+	ret_lst = gears.StrSliceDeDupl(ret_lst)
+
+	return ret_lst
+}
+
 // FmtBodyDwnews focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
 func FmtBodyDwnews(rawBody string) (string, error) {
 	// extract and make it to json fmt
