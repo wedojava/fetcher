@@ -18,6 +18,7 @@ type ThePost struct {
 	URL   string
 	Title string
 	Body  string
+	Date  string
 }
 
 type Paragraph struct {
@@ -37,8 +38,9 @@ func Fetch(url string) (*ThePost, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	date := gears.HttpGetDateViaMeta(rawBody)
 
-	post := ThePost{site, url, title, body}
+	post := ThePost{site, url, title, body, date}
 
 	return &post, nil
 }
@@ -72,7 +74,7 @@ func FmtBodyDwnews(rawBody string) (string, error) {
 	var paragraph []Paragraph
 	err := json.Unmarshal([]byte(tmp), &paragraph)
 	if err != nil {
-		return "", fmt.Errorf("[-] GetBodyDwnews()>Unmarshal() Error: %q", err)
+		return "", fmt.Errorf("[-] fetcher.FmtBodyDwnews()>Unmarshal() Error: %q", err)
 	}
 	// splice contents
 	var body string
