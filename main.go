@@ -17,7 +17,6 @@ func main() {
 	// ExampleDelRoutine()
 	// DelRoutine("test", 3)
 	// Output:
-	// DelRoutine will delete:
 	// DelRoutine will delete: [04.23][1234H]test.txt
 	// DelRoutine will delete: [04.24][1234H]test.txt
 	// DelRoutine will delete: [04.25][1234H]test.txt

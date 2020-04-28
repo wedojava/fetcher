@@ -63,28 +63,35 @@ func FetchUrls(url string) []string {
 // FmtBodyDwnews focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
 func FmtBodyDwnews(rawBody string) (string, error) {
 	// extract and make it to json fmt
-	var tmp = "["
+	var jsTxtBody = "["
+	var body string // splice contents
 	var reContent = regexp.MustCompile(`"htmlTokens":\[\[(?P<contents>.*?)\]\]`)
 	for _, v := range reContent.FindAllStringSubmatch(rawBody, -1) {
-		tmp += v[1] + ","
+		jsTxtBody += v[1] + ","
 	}
-	tmp = strings.ReplaceAll(tmp, "],[", ",")
-	tmp = tmp[:len(tmp)-1] + "]" // now body json data prepared done.
-	// Unmarshal the json data
-	var paragraph []Paragraph
-	err := json.Unmarshal([]byte(tmp), &paragraph)
-	if err != nil {
-		return "", fmt.Errorf("[-] fetcher.FmtBodyDwnews()>Unmarshal() Error: %q", err)
-	}
-	// splice contents
-	var body string
-	for _, p := range paragraph {
-		if p.Type == "boldText" {
-			body += "**" + p.Content + "**  \n"
-		} else {
-			body += p.Content + "  \n"
+	if jsTxtBody == "[" { // this means jsTxtBody got northing, so it may be pic news.
+		reContent = regexp.MustCompile(`"\d{7}":{"caption":"(?P<title>.*?)"`)
+		for _, v := range reContent.FindAllStringSubmatch(rawBody, -1) {
+			body += v[1] + "  \n"
 		}
+	} else {
+		jsTxtBody = strings.ReplaceAll(jsTxtBody, "],[", ",")
+		jsTxtBody = jsTxtBody[:len(jsTxtBody)-1] + "]" // now body json data prepared done.
+		// Unmarshal the json data
+		var paragraph []Paragraph
+		err := json.Unmarshal([]byte(jsTxtBody), &paragraph)
+		if err != nil {
+			return "", fmt.Errorf("[-] fetcher.FmtBodyDwnews()>Unmarshal() Error: %q", err)
+		}
+		for _, p := range paragraph {
+			if p.Type == "boldText" {
+				body += "**" + p.Content + "**  \n"
+			} else {
+				body += p.Content + "  \n"
+			}
 
+		}
 	}
+
 	return body, nil
 }
