@@ -28,7 +28,7 @@ func main() {
 	fmt.Println("#            呵~ 愚蠢的人类~ 你想要做些什么?!            #")
 	fmt.Println("#========================================================#")
 	fmt.Println("#                                                        #")
-	fmt.Println("# [?] 不停的按回车可以退出此程序                         #")
+	fmt.Println("# [?] Ctrl+c 或 不停的按回车可以退出此程序               #")
 	fmt.Println("#                                                        #")
 	fmt.Println("# [1] 输入网页地址, 从网页直接提取                       #")
 	fmt.Println("#                                                        #")
