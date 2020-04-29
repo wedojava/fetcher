@@ -66,7 +66,7 @@ func FetchFromInput() {
 func ServiceDwNews() {
 	var urlsNow, urlsBefore []string
 	for {
-		// 1. get url list
+		// 1. get url list from domain
 		urlsNow = fetcher.FetchUrls("https://www.dwnews.com")
 		// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
 		diff := gears.StrSliceDiff(urlsNow, urlsBefore)
@@ -78,7 +78,7 @@ func ServiceDwNews() {
 		}
 		// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
 		// Remove files 3 days ago
-		DelRoutine("@dwnewsofficial", 3)
+		DelRoutine("www.dwnews.com", 3)
 		// all action above loop every 5 min.
 		time.Sleep(5 * time.Minute)
 		// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
@@ -96,8 +96,8 @@ func SaveOne(url string) {
 	}
 	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".md")
 	// Save Body to file named title in folder twitter site content
-	gears.MakeDirAll(f.Site)
-	savePath := filepath.Join(f.Site, filename)
+	gears.MakeDirAll(f.Domain)
+	savePath := filepath.Join(f.Domain, filename)
 	if !gears.Exists(savePath) {
 		err = ioutil.WriteFile(filepath.Join(f.Site, filename), []byte(f.Body), 0644)
 		if err != nil {

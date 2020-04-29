@@ -14,11 +14,12 @@ import (
 type Posts map[string]*ThePost
 
 type ThePost struct {
-	Site  string
-	URL   string
-	Title string
-	Body  string
-	Date  string
+	Site   string
+	Domain string
+	URL    string
+	Title  string
+	Body   string
+	Date   string
 }
 
 type Paragraph struct {
@@ -31,6 +32,7 @@ func Fetch(url string) (*ThePost, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	domain := gears.HttpGetDomain(url)
 	site := gears.HttpGetSiteViaTwitterJS(rawBody)
 	title := gears.HttpGetTitleViaTwitterJS(rawBody)
 	// get contents
@@ -40,7 +42,7 @@ func Fetch(url string) (*ThePost, error) {
 	}
 	date := gears.HttpGetDateViaMeta(rawBody)
 
-	post := ThePost{site, url, title, body, date}
+	post := ThePost{site, domain, url, title, body, date}
 
 	return &post, nil
 }
