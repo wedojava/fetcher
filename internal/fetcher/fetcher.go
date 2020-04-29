@@ -27,7 +27,7 @@ type Paragraph struct {
 }
 
 func Fetch(url string) (*ThePost, error) {
-	rawBody, err := gears.HttpGetBody(url)
+	rawBody, err := gears.HttpGetBody(url, 10)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,7 +46,7 @@ func Fetch(url string) (*ThePost, error) {
 }
 
 func FetchUrls(url string) []string {
-	rawBody, err := gears.HttpGetBody(url)
+	rawBody, err := gears.HttpGetBody(url, 10)
 	if err != nil {
 		log.Fatal(err)
 	}
