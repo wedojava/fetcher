@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -91,8 +90,7 @@ func SaveOne(url string) {
 	f, _ := fetcher.Fetch(url)
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
-		fmt.Print("\n[-] SaveOne()>time.Parse() error.\n")
-		log.Fatal(err)
+		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)
 	}
 	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".md")
 	// Save Body to file named title in folder twitter site content
@@ -101,8 +99,7 @@ func SaveOne(url string) {
 	if !gears.Exists(savePath) {
 		err = ioutil.WriteFile(filepath.Join(f.Site, filename), []byte(f.Body), 0644)
 		if err != nil {
-			fmt.Print("\n[-] SaveOne()>WriteFile() error.\n")
-			log.Fatal(err)
+			fmt.Printf("\n[-] SaveOne()>WriteFile() error.\n%v\n", err)
 		}
 	}
 }
