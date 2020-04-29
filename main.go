@@ -97,7 +97,7 @@ func SaveOne(url string) {
 	gears.MakeDirAll(f.Domain)
 	savePath := filepath.Join(f.Domain, filename)
 	if !gears.Exists(savePath) {
-		err = ioutil.WriteFile(filepath.Join(f.Site, filename), []byte(f.Body), 0644)
+		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte(f.Body), 0644)
 		if err != nil {
 			fmt.Printf("\n[-] SaveOne()>WriteFile() error.\n%v\n", err)
 		}
