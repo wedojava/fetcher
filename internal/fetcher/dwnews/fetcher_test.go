@@ -29,8 +29,9 @@ func TestFetch(t *testing.T) {
 func TestFetchUrls(t *testing.T) {
 	t.Run("get urls count.", func(t *testing.T) {
 		got := FetchDwnewsUrls("https://www.dwnews.com")
-		want := 43
+		want := 42
 		if len(got) == want {
+			fmt.Println(got[0])
 			fmt.Print("Test pass.")
 		} else {
 			t.Errorf("\nGot %v\n Want %v", len(got), want)

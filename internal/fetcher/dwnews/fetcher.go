@@ -39,7 +39,7 @@ func FetchDwnewsUrls(url string) []string {
 	var ret_lst []string
 	var reLink = regexp.MustCompile(`(?m)<a\shref\s?=\s?"(?P<href>/.{2}/\d{8}/.+?)".*?>`)
 	for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
-		ret_lst = append(ret_lst, v[1])
+		ret_lst = append(ret_lst, "https://www.dwnews.com"+v[1])
 	}
 	ret_lst = gears.StrSliceDeDupl(ret_lst)
 

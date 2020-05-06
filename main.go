@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/wedojava/fetcher/internal/fetcher"
+	fetcher "github.com/wedojava/fetcher/internal/fetcher/dwnews"
 	"github.com/wedojava/gears"
 )
 
@@ -54,7 +54,7 @@ func FetchFromInput() {
 		fmt.Printf("\n-> [!] 输入网页地址并回车(连续回车退出程序)：\n")
 		url := gears.GetInput()
 		if strings.Contains(url, "http") {
-			SaveOne(url)
+			SaveOneDwnew(url)
 		} else {
 			fmt.Printf("\nBye!\n\n")
 			return
@@ -66,13 +66,13 @@ func ServiceDwNews() {
 	var urlsNow, urlsBefore []string
 	for {
 		// 1. get url list from domain
-		urlsNow = fetcher.FetchUrls("https://www.dwnews.com")
+		urlsNow = fetcher.FetchDwnewsUrls("https://www.dwnews.com")
 		// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
 		diff := gears.StrSliceDiff(urlsNow, urlsBefore)
 		urlsBefore = urlsNow
 		if len(diff) > 0 {
 			for _, v := range diff {
-				SaveOne("https://www.dwnews.com" + v)
+				SaveOneDwnew(v)
 			}
 		}
 		// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
@@ -86,8 +86,8 @@ func ServiceDwNews() {
 }
 
 // SaveOne fetch content from url and save it if it not exist.
-func SaveOne(url string) {
-	f, _ := fetcher.Fetch(url)
+func SaveOneDwnew(url string) {
+	f, _ := fetcher.FetchDwnews(url)
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
 		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)
