@@ -2,6 +2,7 @@ package fetcher
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"regexp"
 
@@ -35,16 +36,22 @@ func FetchRfaUrls(url string) []string {
 		log.Fatal(err)
 	}
 	var ret_lst []string
-	var reLink = regexp.MustCompile(`(?m)<a\shref\s?=\s?"(?P<href>/.{2}/\d{8}/.+?)".*?>`)
-	for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
-		ret_lst = append(ret_lst, v[1])
+	var reLink = regexp.MustCompile(`(?m)<a href\s*=\s*"\s*(https://www.rfa.org/\w*/\w*/\w*/\w+-\d*.html)\s*"\s*>`)
+	lst := reLink.FindAllStringSubmatch(rawBody, -1)
+	if lst == nil {
+		fmt.Println("[-] fetcher.FetchRfaUrls() regex matched nothing.")
+		return nil
+	} else {
+		for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
+			ret_lst = append(ret_lst, v[1])
+		}
+		ret_lst = gears.StrSliceDeDupl(ret_lst)
 	}
-	ret_lst = gears.StrSliceDeDupl(ret_lst)
 
 	return ret_lst
 }
 
-// FmtBodyRfa focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
+// FmtBodyRfa focus on dwnews, it can extract raw body string via regexp and then, format the news body to markdowned string.
 func FmtBodyRfa(rawBody string) (string, error) {
 	var ps []string
 	var body string

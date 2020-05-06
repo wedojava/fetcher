@@ -42,8 +42,8 @@ func TestFmtBodyRfa(t *testing.T) {
 
 func TestFetchUrls(t *testing.T) {
 	t.Run("get urls count.", func(t *testing.T) {
-		got := FetchRfaUrls("https://www.dwnews.com")
-		want := 43
+		got := FetchRfaUrls("https://www.rfa.org/mandarin/")
+		want := 34
 		if len(got) == want {
 			fmt.Print("Test pass.")
 		} else {
