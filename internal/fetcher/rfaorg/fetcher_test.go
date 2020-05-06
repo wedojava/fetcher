@@ -14,7 +14,7 @@ func checkFetch(t *testing.T, _got, _want string) {
 
 func TestFetch(t *testing.T) {
 	t.Run("test get title and body: ", func(t *testing.T) {
-		got, _ := FetchXFA("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/wy-05052020131409.html")
+		got, _ := FetchRfa("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/wy-05052020131409.html")
 		wantTitle := "《病毒往事》爆红网络 中国宣传、智囊机构加入舆论战"
 		wantDomain := "www.rfa.org"
 		wantSite := "@RadioFreeAsia"
@@ -28,7 +28,7 @@ func TestFetch(t *testing.T) {
 
 func TestFetchUrls(t *testing.T) {
 	t.Run("get urls count.", func(t *testing.T) {
-		got := FetchXFAUrls("https://www.dwnews.com")
+		got := FetchRfaUrls("https://www.dwnews.com")
 		want := 43
 		if len(got) == want {
 			fmt.Print("Test pass.")

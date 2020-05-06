@@ -11,7 +11,7 @@ import (
 	"github.com/wedojava/gears"
 )
 
-func FetchXFA(url string) (*fetcher.ThePost, error) {
+func FetchRfa(url string) (*fetcher.ThePost, error) {
 	rawBody, err := gears.HttpGetBody(url, 10)
 	if err != nil {
 		log.Fatal(err)
@@ -20,7 +20,7 @@ func FetchXFA(url string) (*fetcher.ThePost, error) {
 	site := gears.HttpGetSiteViaTwitterJS(rawBody)
 	title := gears.HttpGetTitleViaTwitterJS(rawBody)
 	// get contents
-	body, err := FmtBodyXFA(rawBody)
+	body, err := FmtBodyRfa(rawBody)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,7 +32,7 @@ func FetchXFA(url string) (*fetcher.ThePost, error) {
 	return &post, nil
 }
 
-func FetchXFAUrls(url string) []string {
+func FetchRfaUrls(url string) []string {
 	rawBody, err := gears.HttpGetBody(url, 10)
 	if err != nil {
 		log.Fatal(err)
@@ -48,7 +48,7 @@ func FetchXFAUrls(url string) []string {
 }
 
 // FmtBodyDwnews focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
-func FmtBodyXFA(rawBody string) (string, error) {
+func FmtBodyRfa(rawBody string) (string, error) {
 	// extract and make it to json fmt
 	var jsTxtBody = "["
 	var body string // splice contents
