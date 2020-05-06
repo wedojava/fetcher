@@ -1,11 +1,9 @@
 package fetcher
 
 import (
-	"encoding/json"
-	"fmt"
+	"errors"
 	"log"
 	"regexp"
-	"strings"
 
 	"github.com/wedojava/fetcher/internal/fetcher"
 	"github.com/wedojava/gears"
@@ -24,8 +22,7 @@ func FetchRfa(url string) (*fetcher.ThePost, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// date := gears.HttpGetDateViaMeta(rawBody)
-	date := ""
+	date := gears.HttpGetDateByHeader(rawBody)
 
 	post := fetcher.ThePost{Site: site, Domain: domain, URL: url, Title: title, Body: body, Date: date}
 
@@ -47,36 +44,19 @@ func FetchRfaUrls(url string) []string {
 	return ret_lst
 }
 
-// FmtBodyDwnews focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
+// FmtBodyRfa focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
 func FmtBodyRfa(rawBody string) (string, error) {
-	// extract and make it to json fmt
-	var jsTxtBody = "["
-	var body string // splice contents
-	var reContent = regexp.MustCompile(`"htmlTokens":\[\[(?P<contents>.*?)\]\]`)
+	var ps []string
+	var body string
+	var reContent = regexp.MustCompile(`(?m)<p>(?P<content>.*?)</p>`)
 	for _, v := range reContent.FindAllStringSubmatch(rawBody, -1) {
-		jsTxtBody += v[1] + ","
+		ps = append(ps, v[1])
 	}
-	if jsTxtBody == "[" { // this means jsTxtBody got northing, so it may be pic news.
-		reContent = regexp.MustCompile(`"\d{7}":{"caption":"(?P<title>.*?)"`)
-		for _, v := range reContent.FindAllStringSubmatch(rawBody, -1) {
-			body += v[1] + "  \n"
-		}
+	if len(ps) == 0 {
+		return "", errors.New("[-] fetcher.FmtBodyRfa() Error: regex matched nothing.")
 	} else {
-		jsTxtBody = strings.ReplaceAll(jsTxtBody, "],[", ",")
-		jsTxtBody = jsTxtBody[:len(jsTxtBody)-1] + "]" // now body json data prepared done.
-		// Unmarshal the json data
-		var paragraph []fetcher.Paragraph
-		err := json.Unmarshal([]byte(jsTxtBody), &paragraph)
-		if err != nil {
-			return "", fmt.Errorf("[-] fetcher.FmtBodyDwnews()>Unmarshal() Error: %q", err)
-		}
-		for _, p := range paragraph {
-			if p.Type == "boldText" {
-				body += "**" + p.Content + "**  \n"
-			} else {
-				body += p.Content + "  \n"
-			}
-
+		for _, p := range ps {
+			body += p + "  \n"
 		}
 	}
 
