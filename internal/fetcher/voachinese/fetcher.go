@@ -25,6 +25,7 @@ func FetchVoa(url string) (*fetcher.ThePost, error) {
 		// log.Fatal(err)
 	}
 	date := gears.HttpGetDateByHeader(rawBody)
+	date = date[:10] + "T" + date[11:]
 
 	post := fetcher.ThePost{Site: site, Domain: domain, URL: url, Title: title, Body: body, Date: date}
 
