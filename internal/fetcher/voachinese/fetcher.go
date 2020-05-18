@@ -66,7 +66,7 @@ func FetchVoaUrls(url string) []string {
 	return ret_lst
 }
 
-// FmtBodyRfa focus on dwnews, it can extract raw body string via regexp and then, format the news body to markdowned string.
+// FmtBodyVoa focus on dwnews, it can extract raw body string via regexp and then, format the news body to markdowned string.
 func FmtBodyVoa(rawBody string) (string, error) {
 	var ps []string
 	var body string
