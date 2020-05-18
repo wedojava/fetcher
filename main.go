@@ -80,7 +80,7 @@ func ServiceVoa() {
 	urlsBefore = urlsNow
 	if len(diff) > 0 {
 		for _, v := range diff {
-			SaveOneRfa(v)
+			SaveOneVoa(v)
 		}
 	}
 	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
@@ -94,7 +94,7 @@ func ServiceVoa() {
 }
 
 func SaveOneVoa(url string) {
-	f, _ := fetcherRfa.FetchRfa(url)
+	f, _ := fetcherVoa.FetchVoa(url)
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
 		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)

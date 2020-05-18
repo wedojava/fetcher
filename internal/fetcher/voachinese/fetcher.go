@@ -57,7 +57,7 @@ func FetchVoaUrls(url string) []string {
 		return nil
 	} else {
 		for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
-			ret_lst = append(ret_lst, v[1])
+			ret_lst = append(ret_lst, "https://www.voachinese.com"+v[1])
 		}
 		ret_lst = gears.StrSliceDeDupl(ret_lst)
 	}
