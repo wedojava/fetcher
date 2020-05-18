@@ -43,8 +43,8 @@ func main() {
 		FetchFromInput()
 	} else if strings.Compare("2", op) == 0 {
 		for {
-			//ServiceDwNews()
-			//ServiceRfa()
+			ServiceDwNews()
+			ServiceRfa()
 			ServiceVoa()
 			time.Sleep(5 * time.Minute)
 		}
@@ -94,7 +94,10 @@ func ServiceVoa() {
 }
 
 func SaveOneVoa(url string) {
-	f, _ := fetcherVoa.FetchVoa(url)
+	f, err := fetcherVoa.FetchVoa(url)
+	if err != nil {
+		fmt.Printf("\n[-] SaveOneVoa()>FetchVoa(%s) error occur:\n[-] %v", url, err)
+	}
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
 		fmt.Printf("\n[-] SaveOneVoa()>time.Parse() error.\n%v\n", err)
