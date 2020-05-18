@@ -9,6 +9,7 @@ import (
 	"time"
 
 	fetcher "github.com/wedojava/fetcher/internal/fetcher/dwnews"
+	fetcherRfa "github.com/wedojava/fetcher/internal/fetcher/rfaorg"
 	"github.com/wedojava/gears"
 )
 
@@ -58,6 +59,47 @@ func FetchFromInput() {
 		} else {
 			fmt.Printf("\nBye!\n\n")
 			return
+		}
+	}
+}
+
+func ServiceRfa() {
+	var urlsNow, urlsBefore []string
+	for {
+		// 1. get url list from domain
+		urlsNow = fetcherRfa.FetchRfaUrls("https://www.rfa.org/mandarin")
+		// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
+		diff := gears.StrSliceDiff(urlsNow, urlsBefore)
+		urlsBefore = urlsNow
+		if len(diff) > 0 {
+			for _, v := range diff {
+				SaveOneRfa(v)
+			}
+		}
+		// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
+		// Remove files 3 days ago
+		DelRoutine("www.rfa.org", 3)
+		// all action above loop every 5 min.
+		time.Sleep(5 * time.Minute)
+		// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
+
+	}
+}
+
+func SaveOneRfa(url string) {
+	f, _ := fetcherRfa.FetchRfa(url)
+	t, err := time.Parse(time.RFC3339, f.Date)
+	if err != nil {
+		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)
+	}
+	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".md")
+	// Save Body to file named title in folder twitter site content
+	gears.MakeDirAll(f.Domain)
+	savePath := filepath.Join(f.Domain, filename)
+	if !gears.Exists(savePath) {
+		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte(f.Body), 0644)
+		if err != nil {
+			fmt.Printf("\n[-] SaveOne()>WriteFile() error.\n%v\n", err)
 		}
 	}
 }
