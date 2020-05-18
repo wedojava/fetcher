@@ -54,7 +54,7 @@ func FetchVoaUrls(url string) []string {
 	var reLink = regexp.MustCompile(`(?m)<a\s+href\s*=\s*"(?P<links>/a/.*-.*.html)"\s*>`)
 	lst := reLink.FindAllStringSubmatch(rawBody, -1)
 	if lst == nil {
-		fmt.Println("[-] fetcher.FetchVoaUrls() regex matched nothing.")
+		fmt.Printf("\n[-] fetcher.FetchVoaUrls(%s) regex matched nothing.\n", url)
 		return nil
 	} else {
 		for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
@@ -68,6 +68,9 @@ func FetchVoaUrls(url string) []string {
 
 // FmtBodyVoa focus on dwnews, it can extract raw body string via regexp and then, format the news body to markdowned string.
 func FmtBodyVoa(rawBody string) (string, error) {
+	if rawBody == "" {
+		return "", errors.New("[-] FmtBodyVoa() parameter is nil!")
+	}
 	var ps []string
 	var body string
 	var reContent = regexp.MustCompile(`(?m)<p>(?P<content>.*?)</p>`)

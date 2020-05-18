@@ -2,6 +2,7 @@ package fetcher
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"regexp"
@@ -38,16 +39,25 @@ func FetchDwnewsUrls(url string) []string {
 	}
 	var ret_lst []string
 	var reLink = regexp.MustCompile(`(?m)<a\shref\s?=\s?"(?P<href>/.{2}/\d{8}/.+?)".*?>`)
-	for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
-		ret_lst = append(ret_lst, "https://www.dwnews.com"+v[1])
+	lst := reLink.FindAllStringSubmatch(rawBody, -1)
+	if lst == nil {
+		fmt.Printf("\n[-] fetcher.FetchDwnewsUrls(%s) regex matched nothing.\n", url)
+		return nil
+	} else {
+		for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
+			ret_lst = append(ret_lst, "https://www.dwnews.com"+v[1])
+		}
+		ret_lst = gears.StrSliceDeDupl(ret_lst)
 	}
-	ret_lst = gears.StrSliceDeDupl(ret_lst)
 
 	return ret_lst
 }
 
 // FmtBodyDwnews focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
 func FmtBodyDwnews(rawBody string) (string, error) {
+	if rawBody == "" {
+		return "", errors.New("[-] FmtBodyVoa() parameter is nil!")
+	}
 	// extract and make it to json fmt
 	var jsTxtBody = "["
 	var body string // splice contents

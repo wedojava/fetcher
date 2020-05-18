@@ -33,13 +33,14 @@ func FetchRfa(url string) (*fetcher.ThePost, error) {
 func FetchRfaUrls(url string) []string {
 	rawBody, err := gears.HttpGetBody(url, 10)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		// log.Fatal(err)
 	}
 	var ret_lst []string
 	var reLink = regexp.MustCompile(`(?m)<a href\s*=\s*"\s*(https://www.rfa.org/\w*/\w*/\w*/\w+-\d*.html)\s*"\s*>`)
 	lst := reLink.FindAllStringSubmatch(rawBody, -1)
 	if lst == nil {
-		fmt.Println("[-] fetcher.FetchRfaUrls() regex matched nothing.")
+		fmt.Printf("\n[-] fetcher.FetchRfaUrls(%s) regex matched nothing.\n", url)
 		return nil
 	} else {
 		for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
@@ -53,6 +54,9 @@ func FetchRfaUrls(url string) []string {
 
 // FmtBodyRfa focus on dwnews, it can extract raw body string via regexp and then, format the news body to markdowned string.
 func FmtBodyRfa(rawBody string) (string, error) {
+	if rawBody == "" {
+		return "", errors.New("[-] FmtBodyVoa() parameter is nil!")
+	}
 	var ps []string
 	var body string
 	var reContent = regexp.MustCompile(`(?m)<p>(?P<content>.*?)</p>`)
