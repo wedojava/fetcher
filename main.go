@@ -97,7 +97,7 @@ func SaveOneVoa(url string) {
 	f, _ := fetcherVoa.FetchVoa(url)
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
-		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)
+		fmt.Printf("\n[-] SaveOneVoa()>time.Parse() error.\n%v\n", err)
 	}
 	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".txt")
 	// Save Body to file named title in folder twitter site content
@@ -106,7 +106,7 @@ func SaveOneVoa(url string) {
 	if !gears.Exists(savePath) {
 		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte(f.Body), 0644)
 		if err != nil {
-			fmt.Printf("\n[-] SaveOne()>WriteFile() error.\n%v\n", err)
+			fmt.Printf("\n[-] SaveOneVoa()>WriteFile() error.\n%v\n", err)
 		}
 	}
 }
@@ -138,7 +138,7 @@ func SaveOneRfa(url string) {
 	f, _ := fetcherRfa.FetchRfa(url)
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
-		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)
+		fmt.Printf("\n[-] SaveOneRfa()>time.Parse() error.\n%v\n", err)
 	}
 	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".txt")
 	// Save Body to file named title in folder twitter site content
@@ -147,7 +147,7 @@ func SaveOneRfa(url string) {
 	if !gears.Exists(savePath) {
 		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte(f.Body), 0644)
 		if err != nil {
-			fmt.Printf("\n[-] SaveOne()>WriteFile() error.\n%v\n", err)
+			fmt.Printf("\n[-] SaveOneRfa()>WriteFile() error.\n%v\n", err)
 		}
 	}
 }
@@ -180,7 +180,7 @@ func SaveOneDwnew(url string) {
 	f, _ := fetcher.FetchDwnews(url)
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
-		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)
+		fmt.Printf("\n[-] SaveOneDwnew()>time.Parse() error.\n%v\n", err)
 	}
 	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".txt")
 	// Save Body to file named title in folder twitter site content
@@ -189,7 +189,7 @@ func SaveOneDwnew(url string) {
 	if !gears.Exists(savePath) {
 		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte(f.Body), 0644)
 		if err != nil {
-			fmt.Printf("\n[-] SaveOne()>WriteFile() error.\n%v\n", err)
+			fmt.Printf("\n[-] SaveOneDwnew()>WriteFile() error.\n%v\n", err)
 		}
 	}
 }
