@@ -17,7 +17,7 @@ func FetchVoa(url string) (*fetcher.ThePost, error) {
 	}
 	domain := gears.HttpGetDomain(url)
 	site := gears.HttpGetSiteViaTwitterJS(rawBody)
-	title := gears.HttpGetTitleViaTwitterJS(rawBody)
+	title := ThisGetTitle(rawBody)
 	// get contents
 	body, err := FmtBodyVoa(rawBody)
 	if err != nil {
@@ -29,6 +29,18 @@ func FetchVoa(url string) (*fetcher.ThePost, error) {
 	post := fetcher.ThePost{Site: site, Domain: domain, URL: url, Title: title, Body: body, Date: date}
 
 	return &post, nil
+}
+
+func ThisGetTitle(rawBody string) string {
+	var a = regexp.MustCompile(`(?m)<title>(?P<title>.*?)</title>`)
+	rt := a.FindStringSubmatch(rawBody)
+	if rt != nil {
+		return rt[1]
+
+	} else {
+		return ""
+
+	}
 }
 
 func FetchVoaUrls(url string) []string {

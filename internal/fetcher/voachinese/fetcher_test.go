@@ -17,33 +17,33 @@ func checkFetch(t *testing.T, _got, _want string) {
 
 func TestFetch(t *testing.T) {
 	t.Run("test get title and body: ", func(t *testing.T) {
-		got, _ := FetchVoa("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/wy-05052020131409.html")
-		wantTitle := "《病毒往事》爆红网络 中国宣传、智囊机构加入舆论战"
-		wantDomain := "www.rfa.org"
-		wantSite := "@RadioFreeAsia"
-		wantDate := "2020-05-05T19:44:28Z"
+		got, _ := FetchVoa("https://www.voachinese.com/a/pompeo-warns-china-over-interference-with-us-journalists-in-hk/5423711.html")
+		wantTitle := "蓬佩奥警告中国不要干涉在香港的美国记者的工作"
+		wantDomain := "www.voachinese.com"
+		// wantSite := "@RadioFreeAsia"
+		wantDate := "2020-05-17 22:44:15Z"
 		checkFetch(t, got.Title, wantTitle)
 		checkFetch(t, got.Domain, wantDomain)
-		checkFetch(t, got.Site, wantSite)
+		// checkFetch(t, got.Site, wantSite)
 		checkFetch(t, got.Date, wantDate)
 	})
 }
 
 func TestFmtBodyRfa(t *testing.T) {
-	rawBody, err := gears.HttpGetBody("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/wy-05052020131409.html", 10)
+	rawBody, err := gears.HttpGetBody("https://www.voachinese.com/a/pompeo-warns-china-over-interference-with-us-journalists-in-hk/5423711.html", 10)
 	if err != nil {
 		t.Fatal(err)
 	}
 	got, err := FmtBodyVoa(rawBody)
-	if strings.Contains(got, "视频只有1分45秒长，画面简单，是一个代表美国的“自由女神像”和一个代表中国的带着口罩的兵马俑形象在作英文对话。主要内容是，从去年12月到今年4月，中国及早发现并报告了病毒，而美方防疫不力，造成新冠病毒在美国大流行") {
+	if strings.Contains(got, "蓬佩奥在一份声明中说：“这些记者是自由媒体的成员，而不是宣传干部，他们的有价值的报道可以告知中国公民和世界。”") {
 		fmt.Print("Test pass.")
 	}
 }
 
 func TestFetchUrls(t *testing.T) {
 	t.Run("get urls count.", func(t *testing.T) {
-		got := FetchVoaUrls("https://www.rfa.org/mandarin/")
-		want := 34
+		got := FetchVoaUrls("https://www.voachinese.com")
+		want := 89
 		if len(got) == want {
 			fmt.Print("Test pass.")
 		} else {
