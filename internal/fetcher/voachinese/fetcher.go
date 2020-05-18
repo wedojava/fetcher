@@ -51,7 +51,7 @@ func FetchVoaUrls(url string) []string {
 		fmt.Println(err)
 	}
 	var ret_lst []string
-	var reLink = regexp.MustCompile(`(?m)<a\s+href\s*=\s*"(?P<links>/a/.*?)"\s*>`)
+	var reLink = regexp.MustCompile(`(?m)<a\s+href\s*=\s*"(?P<links>/a/.*-.*.html)"\s*>`)
 	lst := reLink.FindAllStringSubmatch(rawBody, -1)
 	if lst == nil {
 		fmt.Println("[-] fetcher.FetchVoaUrls() regex matched nothing.")
