@@ -10,6 +10,7 @@ import (
 
 	fetcher "github.com/wedojava/fetcher/internal/fetcher/dwnews"
 	fetcherRfa "github.com/wedojava/fetcher/internal/fetcher/rfaorg"
+	fetcherVoa "github.com/wedojava/fetcher/internal/fetcher/voachinese"
 	"github.com/wedojava/gears"
 )
 
@@ -41,7 +42,9 @@ func main() {
 	if strings.Compare("1", op) == 0 {
 		FetchFromInput()
 	} else if strings.Compare("2", op) == 0 {
-		ServiceDwNews()
+		go ServiceDwNews()
+		go ServiceRfa()
+		go ServiceVoa()
 	} else {
 		fmt.Printf("\nBye!\n\n")
 		return
@@ -59,6 +62,47 @@ func FetchFromInput() {
 		} else {
 			fmt.Printf("\nBye!\n\n")
 			return
+		}
+	}
+}
+
+func ServiceVoa() {
+	var urlsNow, urlsBefore []string
+	for {
+		// 1. get url list from domain
+		urlsNow = fetcherVoa.FetchVoaUrls("https://www.voachinese.com")
+		// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
+		diff := gears.StrSliceDiff(urlsNow, urlsBefore)
+		urlsBefore = urlsNow
+		if len(diff) > 0 {
+			for _, v := range diff {
+				SaveOneRfa(v)
+			}
+		}
+		// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
+		// Remove files 3 days ago
+		DelRoutine("www.voachinese.com", 3)
+		// all action above loop every 5 min.
+		time.Sleep(5 * time.Minute)
+		// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
+
+	}
+}
+
+func SaveOneVoa(url string) {
+	f, _ := fetcherRfa.FetchRfa(url)
+	t, err := time.Parse(time.RFC3339, f.Date)
+	if err != nil {
+		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)
+	}
+	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".txt")
+	// Save Body to file named title in folder twitter site content
+	gears.MakeDirAll(f.Domain)
+	savePath := filepath.Join(f.Domain, filename)
+	if !gears.Exists(savePath) {
+		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte(f.Body), 0644)
+		if err != nil {
+			fmt.Printf("\n[-] SaveOne()>WriteFile() error.\n%v\n", err)
 		}
 	}
 }
@@ -92,7 +136,7 @@ func SaveOneRfa(url string) {
 	if err != nil {
 		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)
 	}
-	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".md")
+	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".txt")
 	// Save Body to file named title in folder twitter site content
 	gears.MakeDirAll(f.Domain)
 	savePath := filepath.Join(f.Domain, filename)
@@ -134,7 +178,7 @@ func SaveOneDwnew(url string) {
 	if err != nil {
 		fmt.Printf("\n[-] SaveOne()>time.Parse() error.\n%v\n", err)
 	}
-	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".md")
+	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".txt")
 	// Save Body to file named title in folder twitter site content
 	gears.MakeDirAll(f.Domain)
 	savePath := filepath.Join(f.Domain, filename)
