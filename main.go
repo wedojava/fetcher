@@ -42,9 +42,13 @@ func main() {
 	if strings.Compare("1", op) == 0 {
 		FetchFromInput()
 	} else if strings.Compare("2", op) == 0 {
-		go ServiceDwNews()
-		go ServiceRfa()
-		go ServiceVoa()
+		for {
+			ServiceDwNews()
+			ServiceRfa()
+			ServiceVoa()
+			time.Sleep(5 * time.Minute)
+		}
+
 	} else {
 		fmt.Printf("\nBye!\n\n")
 		return
@@ -68,25 +72,25 @@ func FetchFromInput() {
 
 func ServiceVoa() {
 	var urlsNow, urlsBefore []string
-	for {
-		// 1. get url list from domain
-		urlsNow = fetcherVoa.FetchVoaUrls("https://www.voachinese.com")
-		// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
-		diff := gears.StrSliceDiff(urlsNow, urlsBefore)
-		urlsBefore = urlsNow
-		if len(diff) > 0 {
-			for _, v := range diff {
-				SaveOneRfa(v)
-			}
+	// for {
+	// 1. get url list from domain
+	urlsNow = fetcherVoa.FetchVoaUrls("https://www.voachinese.com")
+	// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
+	diff := gears.StrSliceDiff(urlsNow, urlsBefore)
+	urlsBefore = urlsNow
+	if len(diff) > 0 {
+		for _, v := range diff {
+			SaveOneRfa(v)
 		}
-		// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
-		// Remove files 3 days ago
-		DelRoutine("www.voachinese.com", 3)
-		// all action above loop every 5 min.
-		time.Sleep(5 * time.Minute)
-		// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
-
 	}
+	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
+	// Remove files 3 days ago
+	DelRoutine("www.voachinese.com", 3)
+	// all action above loop every 5 min.
+	// time.Sleep(5 * time.Minute)
+	// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
+
+	// }
 }
 
 func SaveOneVoa(url string) {
@@ -109,25 +113,25 @@ func SaveOneVoa(url string) {
 
 func ServiceRfa() {
 	var urlsNow, urlsBefore []string
-	for {
-		// 1. get url list from domain
-		urlsNow = fetcherRfa.FetchRfaUrls("https://www.rfa.org/mandarin")
-		// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
-		diff := gears.StrSliceDiff(urlsNow, urlsBefore)
-		urlsBefore = urlsNow
-		if len(diff) > 0 {
-			for _, v := range diff {
-				SaveOneRfa(v)
-			}
+	// for {
+	// 1. get url list from domain
+	urlsNow = fetcherRfa.FetchRfaUrls("https://www.rfa.org/mandarin")
+	// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
+	diff := gears.StrSliceDiff(urlsNow, urlsBefore)
+	urlsBefore = urlsNow
+	if len(diff) > 0 {
+		for _, v := range diff {
+			SaveOneRfa(v)
 		}
-		// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
-		// Remove files 3 days ago
-		DelRoutine("www.rfa.org", 3)
-		// all action above loop every 5 min.
-		time.Sleep(5 * time.Minute)
-		// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
-
 	}
+	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
+	// Remove files 3 days ago
+	DelRoutine("www.rfa.org", 3)
+	// all action above loop every 5 min.
+	// time.Sleep(5 * time.Minute)
+	// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
+
+	// }
 }
 
 func SaveOneRfa(url string) {
@@ -150,25 +154,25 @@ func SaveOneRfa(url string) {
 
 func ServiceDwNews() {
 	var urlsNow, urlsBefore []string
-	for {
-		// 1. get url list from domain
-		urlsNow = fetcher.FetchDwnewsUrls("https://www.dwnews.com")
-		// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
-		diff := gears.StrSliceDiff(urlsNow, urlsBefore)
-		urlsBefore = urlsNow
-		if len(diff) > 0 {
-			for _, v := range diff {
-				SaveOneDwnew(v)
-			}
+	// for {
+	// 1. get url list from domain
+	urlsNow = fetcher.FetchDwnewsUrls("https://www.dwnews.com")
+	// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
+	diff := gears.StrSliceDiff(urlsNow, urlsBefore)
+	urlsBefore = urlsNow
+	if len(diff) > 0 {
+		for _, v := range diff {
+			SaveOneDwnew(v)
 		}
-		// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
-		// Remove files 3 days ago
-		DelRoutine("www.dwnews.com", 3)
-		// all action above loop every 5 min.
-		time.Sleep(5 * time.Minute)
-		// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
-
 	}
+	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
+	// Remove files 3 days ago
+	DelRoutine("www.dwnews.com", 3)
+	// all action above loop every 5 min.
+	// time.Sleep(5 * time.Minute)
+	// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
+
+	// }
 }
 
 // SaveOne fetch content from url and save it if it not exist.
