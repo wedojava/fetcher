@@ -26,12 +26,27 @@ func FetchVoa(url string) (*fetcher.ThePost, error) {
 		// log.Fatal(err)
 		return nil, err
 	}
-	date := gears.HttpGetDateByHeader(rawBody)
-	date = date[:10] + "T" + date[11:]
+	date := ThisGetDate(rawBody)
+	// date = date[:10] + "T" + date[11:]
 
 	post := fetcher.ThePost{Site: site, Domain: domain, URL: url, Title: title, Body: body, Date: date}
 
 	return &post, nil
+}
+
+func ThisGetDate(rawBody string) string {
+	if rawBody == "" {
+		return ""
+	}
+	var a = regexp.MustCompile(`(?m)<time\s+datetime="(?P<date>.*?)">\n*.*\n*</time>`)
+	rt := a.FindStringSubmatch(rawBody)
+	if rt != nil {
+		return rt[1]
+
+	} else {
+		return ""
+
+	}
 }
 
 func ThisGetTitle(rawBody string) string {
