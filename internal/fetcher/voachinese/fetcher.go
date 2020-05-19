@@ -12,8 +12,9 @@ import (
 func FetchVoa(url string) (*fetcher.ThePost, error) {
 	rawBody, err := gears.HttpGetBody(url, 10)
 	if err != nil {
-		// log.Fatal(err)
 		fmt.Println(err)
+		// log.Fatal(err)
+		return nil, err
 	}
 	domain := gears.HttpGetDomain(url)
 	site := gears.HttpGetSiteViaTwitterJS(rawBody)
@@ -23,6 +24,7 @@ func FetchVoa(url string) (*fetcher.ThePost, error) {
 	if err != nil {
 		fmt.Println(err)
 		// log.Fatal(err)
+		return nil, err
 	}
 	date := gears.HttpGetDateByHeader(rawBody)
 	date = date[:10] + "T" + date[11:]

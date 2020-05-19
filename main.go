@@ -43,9 +43,9 @@ func main() {
 		FetchFromInput()
 	} else if strings.Compare("2", op) == 0 {
 		for {
-			ServiceDwNews()
+			// ServiceDwNews()
 			ServiceRfa()
-			ServiceVoa()
+			// ServiceVoa()
 			time.Sleep(5 * time.Minute)
 		}
 

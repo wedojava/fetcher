@@ -3,7 +3,6 @@ package fetcher
 import (
 	"errors"
 	"fmt"
-	"log"
 	"regexp"
 
 	"github.com/wedojava/fetcher/internal/fetcher"
@@ -13,7 +12,9 @@ import (
 func FetchRfa(url string) (*fetcher.ThePost, error) {
 	rawBody, err := gears.HttpGetBody(url, 10)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		// log.Fatal(err)
+		return nil, err
 	}
 	domain := gears.HttpGetDomain(url)
 	site := gears.HttpGetSiteViaTwitterJS(rawBody)
@@ -21,7 +22,9 @@ func FetchRfa(url string) (*fetcher.ThePost, error) {
 	// get contents
 	body, err := FmtBodyRfa(rawBody)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		// log.Fatal(err)
+		return nil, err
 	}
 	date := gears.HttpGetDateByHeader(rawBody)
 

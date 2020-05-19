@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 
@@ -15,7 +14,9 @@ import (
 func FetchDwnews(url string) (*fetcher.ThePost, error) {
 	rawBody, err := gears.HttpGetBody(url, 10)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return nil, err
+		// log.Fatal(err)
 	}
 	domain := gears.HttpGetDomain(url)
 	site := gears.HttpGetSiteViaTwitterJS(rawBody)
@@ -23,7 +24,9 @@ func FetchDwnews(url string) (*fetcher.ThePost, error) {
 	// get contents
 	body, err := FmtBodyDwnews(rawBody)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return nil, err
+		// log.Fatal(err)
 	}
 	date := gears.HttpGetDateViaMeta(rawBody)
 
@@ -35,7 +38,8 @@ func FetchDwnews(url string) (*fetcher.ThePost, error) {
 func FetchDwnewsUrls(url string) []string {
 	rawBody, err := gears.HttpGetBody(url, 10)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		// log.Fatal(err)
 	}
 	var ret_lst []string
 	var reLink = regexp.MustCompile(`(?m)<a\shref\s?=\s?"(?P<href>/.{2}/\d{8}/.+?)".*?>`)
