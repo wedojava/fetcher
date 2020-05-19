@@ -1,0 +1,22 @@
+听众朋友，如果您是通过卫星接收器收听自由亚洲电台的普通话节目，请您注意，您现在已经可以通过国际通信卫星17号、19号（Intelsat 17, Intelsat 19）进行收听，与此同时，我们自6月11日起将停止使用亚洲7号卫星。  
+使用国际通信卫星17号，您需要将卫星接收器调整到东经66度，将下行频率调整到3984兆赫。  
+使用国际通信卫星19号，您需要将卫星接收器调整到东经166度，将下行频率调整到3900兆赫。  
+欢迎您通过卫星收听自由亚洲电台的普通话节目。以下是上述卫星转发器的综合技术参数：  
+   
+卫星（Satellite）: 国际通信卫星17号 （Intelsat 17）C波段，东经66度;  
+下行频率（Downlink Frequency）: 3984兆赫  
+转发器 （Transponder）：LM7CV/LM7CH;  
+前向纠错（FEC）: 3 / 4；  
+符码率（Symbol Rate）：14.4 MSym/s；  
+下行链路波束（Downlink Beam）: Landmass；  
+下行极化/调制（Downlink Polarization/Mod）：H，DVB-S2/8-PSK.  
+RFA channel 1: VC/SID (16); Audio Pair (1L/1R); Audio PID (1820)  
+   
+卫星（Satellite）: 国际通信卫星19号 （Intelsat 19）C波段，东经166度;  
+下行频率（Downlink Frequency）: 3900兆赫  
+转发器 （Transponder）：WH10C/WH10C;  
+前向纠错（FEC）: 2 / 3；  
+符码率（Symbol Rate）：30.0 MSym/s；  
+下行链路波束（Downlink Beam）: West Hemi；  
+下行极化/调制（Downlink Polarization/Mod）：H，DVB-S2/8-PSK.  
+RFA channel 1: VC/SID (16); Audio Pair (1L/1R); Audio PID (1820)  

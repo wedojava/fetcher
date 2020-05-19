@@ -97,10 +97,12 @@ func SaveOneVoa(url string) {
 	f, err := fetcherVoa.FetchVoa(url)
 	if err != nil {
 		fmt.Printf("\n[-] SaveOneVoa()>FetchVoa(%s) error occur:\n[-] %v", url, err)
+		return
 	}
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
 		fmt.Printf("\n[-] SaveOneVoa()>time.Parse() error.\n%v\n", err)
+		return
 	}
 	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".txt")
 	// Save Body to file named title in folder twitter site content
@@ -138,10 +140,15 @@ func ServiceRfa() {
 }
 
 func SaveOneRfa(url string) {
-	f, _ := fetcherRfa.FetchRfa(url)
+	f, err := fetcherRfa.FetchRfa(url)
+	if err != nil {
+		fmt.Printf("\n[-] SaveOneRfa()>FetchRfa(%s) error occur:\n[-] %v", url, err)
+		return
+	}
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
 		fmt.Printf("\n[-] SaveOneRfa()>time.Parse() error.\n%v\n", err)
+		return
 	}
 	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".txt")
 	// Save Body to file named title in folder twitter site content
@@ -180,10 +187,15 @@ func ServiceDwNews() {
 
 // SaveOne fetch content from url and save it if it not exist.
 func SaveOneDwnew(url string) {
-	f, _ := fetcher.FetchDwnews(url)
+	f, err := fetcher.FetchDwnews(url)
+	if err != nil {
+		fmt.Printf("\n[-] SaveOneDwnew()>FetchDwnews(%s) error occur:\n[-] %v", url, err)
+		return
+	}
 	t, err := time.Parse(time.RFC3339, f.Date)
 	if err != nil {
 		fmt.Printf("\n[-] SaveOneDwnew()>time.Parse() error.\n%v\n", err)
+		return
 	}
 	filename := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title, ".txt")
 	// Save Body to file named title in folder twitter site content
