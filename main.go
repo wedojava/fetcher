@@ -85,7 +85,7 @@ func ServiceVoa() {
 	}
 	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
 	// Remove files 3 days ago
-	DelRoutine("www.voachinese.com", 3)
+	DelRoutine(filepath.Join("wwwroot", "www.voachinese.com"), 3)
 	// all action above loop every 5 min.
 	// time.Sleep(5 * time.Minute)
 	// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
@@ -108,7 +108,7 @@ func SaveOneVoa(url string) {
 	filename := newsTitle + ".txt"
 	// Save Body to file named title in folder twitter site content
 	gears.MakeDirAll(f.Domain)
-	savePath := filepath.Join(f.Domain, filename)
+	savePath := filepath.Join("wwwroot", f.Domain, filename)
 	if !gears.Exists(savePath) {
 		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
 		if err != nil {
@@ -132,7 +132,7 @@ func ServiceRfa() {
 	}
 	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
 	// Remove files 3 days ago
-	DelRoutine("www.rfa.org", 3)
+	DelRoutine(filepath.Join("wwwroot", "www.rfa.org"), 3)
 	// all action above loop every 5 min.
 	// time.Sleep(5 * time.Minute)
 	// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
@@ -155,7 +155,7 @@ func SaveOneRfa(url string) {
 	filename := newsTitle + ".txt"
 	// Save Body to file named title in folder twitter site content
 	gears.MakeDirAll(f.Domain)
-	savePath := filepath.Join(f.Domain, filename)
+	savePath := filepath.Join("wwwroot", f.Domain, filename)
 	if !gears.Exists(savePath) {
 		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
 		if err != nil {
@@ -179,7 +179,7 @@ func ServiceDwNews() {
 	}
 	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
 	// Remove files 3 days ago
-	DelRoutine("www.dwnews.com", 3)
+	DelRoutine(filepath.Join("wwwroot", "www.dwnews.com"), 3)
 	// all action above loop every 5 min.
 	// time.Sleep(5 * time.Minute)
 	// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
@@ -203,7 +203,7 @@ func SaveOneDwnew(url string) {
 	filename := newsTitle + ".txt"
 	// Save Body to file named title in folder twitter site content
 	gears.MakeDirAll(f.Domain)
-	savePath := filepath.Join(f.Domain, filename)
+	savePath := filepath.Join("wwwroot", f.Domain, filename)
 	if !gears.Exists(savePath) {
 		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
 		if err != nil {
