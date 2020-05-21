@@ -107,10 +107,10 @@ func SaveOneVoa(url string) {
 	newsTitle := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title)
 	filename := newsTitle + ".txt"
 	// Save Body to file named title in folder twitter site content
-	gears.MakeDirAll(f.Domain)
+	gears.MakeDirAll(filepath.Join("wwwroot", f.Domain))
 	savePath := filepath.Join("wwwroot", f.Domain, filename)
 	if !gears.Exists(savePath) {
-		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
+		err = ioutil.WriteFile(savePath, []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
 		if err != nil {
 			fmt.Printf("\n[-] SaveOneVoa()>WriteFile() error.\n%v\n", err)
 		}
@@ -154,10 +154,10 @@ func SaveOneRfa(url string) {
 	newsTitle := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title)
 	filename := newsTitle + ".txt"
 	// Save Body to file named title in folder twitter site content
-	gears.MakeDirAll(f.Domain)
+	gears.MakeDirAll(filepath.Join("wwwroot", f.Domain))
 	savePath := filepath.Join("wwwroot", f.Domain, filename)
 	if !gears.Exists(savePath) {
-		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
+		err = ioutil.WriteFile(savePath, []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
 		if err != nil {
 			fmt.Printf("\n[-] SaveOneRfa()>WriteFile() error.\n%v\n", err)
 		}
@@ -202,10 +202,10 @@ func SaveOneDwnew(url string) {
 	newsTitle := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title)
 	filename := newsTitle + ".txt"
 	// Save Body to file named title in folder twitter site content
-	gears.MakeDirAll(f.Domain)
+	gears.MakeDirAll(filepath.Join("wwwroot", f.Domain))
 	savePath := filepath.Join("wwwroot", f.Domain, filename)
 	if !gears.Exists(savePath) {
-		err = ioutil.WriteFile(filepath.Join(f.Domain, filename), []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
+		err = ioutil.WriteFile(savePath, []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
 		if err != nil {
 			fmt.Printf("\n[-] SaveOneDwnew()>WriteFile() error.\n%v\n", err)
 		}
