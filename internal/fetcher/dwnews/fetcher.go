@@ -65,6 +65,11 @@ func FmtBodyDwnews(rawBody string) (string, error) {
 	// extract and make it to json fmt
 	var jsTxtBody = "["
 	var body string // splice contents
+	var reSummary = regexp.MustCompile(`"blockType":"summary","summary":\["(.*?)"\]}`)
+	rs := reSummary.FindStringSubmatch(rawBody)
+	if rs != nil {
+		jsTxtBody += rs[1]
+	}
 	var reContent = regexp.MustCompile(`"htmlTokens":\[\[(?P<contents>.*?)\]\]`)
 	for _, v := range reContent.FindAllStringSubmatch(rawBody, -1) {
 		jsTxtBody += v[1] + ","
