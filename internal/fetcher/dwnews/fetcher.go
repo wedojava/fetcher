@@ -65,11 +65,6 @@ func FmtBodyDwnews(rawBody string) (string, error) {
 	// extract and make it to json fmt
 	var jsTxtBody = "["
 	var body string // splice contents
-	var reSummary = regexp.MustCompile(`"blockType":"summary","summary":\["(.*?)"\]}`)
-	rs := reSummary.FindStringSubmatch(rawBody)
-	if rs != nil {
-		jsTxtBody += rs[1] + ","
-	}
 	var reContent = regexp.MustCompile(`"htmlTokens":\[\[(?P<contents>.*?)\]\]`)
 	for _, v := range reContent.FindAllStringSubmatch(rawBody, -1) {
 		jsTxtBody += v[1] + ","
@@ -80,6 +75,11 @@ func FmtBodyDwnews(rawBody string) (string, error) {
 			body += v[1] + "  \n"
 		}
 	} else {
+		var reSummary = regexp.MustCompile(`"blockType":"summary","summary":\[(".*?")\]}`)
+		rs := reSummary.FindStringSubmatch(rawBody)
+		if rs != nil {
+			jsTxtBody = fmt.Sprintf("[{\"type\":\"summary\",\"content\":%s}],%s", rs[1], jsTxtBody)
+		}
 		jsTxtBody = strings.ReplaceAll(jsTxtBody, "],[", ",")
 		jsTxtBody = jsTxtBody[:len(jsTxtBody)-1] + "]" // now body json data prepared done.
 		// Unmarshal the json data
@@ -91,6 +91,8 @@ func FmtBodyDwnews(rawBody string) (string, error) {
 		for _, p := range paragraph {
 			if p.Type == "boldText" {
 				body += "**" + p.Content + "**  \n"
+			} else if p.Type == "summary" {
+				body += "\n> " + p.Content + "  \n  \n"
 			} else {
 				body += p.Content + "  \n"
 			}
