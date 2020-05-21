@@ -60,7 +60,7 @@ func FetchDwnewsUrls(url string) []string {
 // FmtBodyDwnews focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
 func FmtBodyDwnews(rawBody string) (string, error) {
 	if rawBody == "" {
-		return "", errors.New("[-] FmtBodyVoa() parameter is nil!")
+		return "", errors.New("[-] FmtBodyDwnews() parameter is nil!")
 	}
 	// extract and make it to json fmt
 	var jsTxtBody = "["
@@ -68,7 +68,7 @@ func FmtBodyDwnews(rawBody string) (string, error) {
 	var reSummary = regexp.MustCompile(`"blockType":"summary","summary":\["(.*?)"\]}`)
 	rs := reSummary.FindStringSubmatch(rawBody)
 	if rs != nil {
-		jsTxtBody += rs[1]
+		jsTxtBody += rs[1] + ","
 	}
 	var reContent = regexp.MustCompile(`"htmlTokens":\[\[(?P<contents>.*?)\]\]`)
 	for _, v := range reContent.FindAllStringSubmatch(rawBody, -1) {

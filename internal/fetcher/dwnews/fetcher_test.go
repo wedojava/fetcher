@@ -2,7 +2,10 @@ package fetcher
 
 import (
 	"fmt"
+	"strings"
 	"testing"
+
+	"github.com/wedojava/gears"
 )
 
 func checkFetch(t *testing.T, _got, _want string) {
@@ -35,6 +38,20 @@ func TestFetchUrls(t *testing.T) {
 			fmt.Print("Test pass.")
 		} else {
 			t.Errorf("\nGot %v\n Want %v", len(got), want)
+		}
+
+	})
+}
+
+func TestFmtBodyDwnews(t *testing.T) {
+	raw, _ := gears.HttpGetBody("https://www.dwnews.com/中国/60179204", 10)
+	body, _ := FmtBodyDwnews(raw)
+	t.Run("test fetch summary then fmt it: ", func(t *testing.T) {
+		summary := "台湾总统蔡英文正式展开第二任期，美国国务院5月20日表示，批准以1.8亿美元向台湾出售18枚重量级鱼雷。此举料进一步加剧华盛顿与北京已经紧张的关系。"
+		if strings.Contains(body, summary) {
+			fmt.Println("Success")
+		} else {
+			fmt.Println("Cannot fetch summary correctly.")
 		}
 
 	})
