@@ -40,7 +40,7 @@ func FetchRfaUrls(url string) []string {
 		// log.Fatal(err)
 	}
 	var ret_lst []string
-	var reLink = regexp.MustCompile(`(?m)<a href\s*=\s*"\s*(https://www.rfa.org/\w*/\w*/\w*/\w+-\d*.html)\s*"\s*>`)
+	var reLink = regexp.MustCompile(`(?m)<a href\s*=\s*"\s*(https://www.rfa.org/.*?.html)\s*"\s*>`)
 	lst := reLink.FindAllStringSubmatch(rawBody, -1)
 	if lst == nil {
 		fmt.Printf("\n[-] fetcher.FetchRfaUrls(%s) regex matched nothing.\n", url)
