@@ -36,7 +36,7 @@ func FetchDwnews(url string) (*fetcher.ThePost, error) {
 }
 
 func ThisGetTitle(rawBody string) string {
-	var a = regexp.MustCompile(`(?m)<h1.*?>(.*?)</h1>`)
+	var a = regexp.MustCompile(`(?m)<h1.*?id="articleTitle".*?>(.*?)</h1>`)
 	rt := a.FindStringSubmatch(rawBody)
 	if rt != nil {
 		return rt[1]
