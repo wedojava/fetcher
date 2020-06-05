@@ -90,6 +90,7 @@ func FmtBodyDwnews(rawBody string) (string, error) {
 		var reSummary = regexp.MustCompile(`"blockType":"summary","summary":\[(".*?")\]}`)
 		rs := reSummary.FindStringSubmatch(rawBody)
 		if rs != nil {
+			rs[1] = strings.ReplaceAll(rs[1], "\",\"", "")
 			jsTxtBody = fmt.Sprintf("[{\"type\":\"summary\",\"content\":%s}],%s", rs[1], jsTxtBody)
 		}
 		jsTxtBody = strings.ReplaceAll(jsTxtBody, "],[", ",")

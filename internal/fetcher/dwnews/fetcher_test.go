@@ -17,6 +17,7 @@ func checkFetch(t *testing.T, _got, _want string) {
 
 func TestFetch(t *testing.T) {
 	t.Run("test get title and body: ", func(t *testing.T) {
+		// got, _ := FetchDwnews("https://www.dwnews.com/全球/60181030/")
 		got, _ := FetchDwnews("https://www.dwnews.com/中国/60179204")
 		wantTitle := "【对台军售】美批准对台售18枚MK48重型鱼雷"
 		wantDomain := "www.dwnews.com"
