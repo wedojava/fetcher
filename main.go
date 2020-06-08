@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	fetcherBoxun "github.com/wedojava/fetcher/internal/fetcher/boxun"
 	fetcher "github.com/wedojava/fetcher/internal/fetcher/dwnews"
 	fetcherRfa "github.com/wedojava/fetcher/internal/fetcher/rfaorg"
 	fetcherVoa "github.com/wedojava/fetcher/internal/fetcher/voachinese"
@@ -70,6 +71,52 @@ func FetchFromInput() {
 	}
 }
 
+func ServiceBoxun() {
+	var urlsNow, urlsBefore []string
+	// for {
+	// 1. get url list from domain
+	urlsNow = fetcherBoxun.FetchBoxunUrls("https://www.voachinese.com")
+	// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
+	diff := gears.StrSliceDiff(urlsNow, urlsBefore)
+	urlsBefore = urlsNow
+	if len(diff) > 0 {
+		for _, v := range diff {
+			SaveOneVoa(v)
+		}
+	}
+	// Remove files 3 days ago
+	DelRoutine(filepath.Join("wwwroot", "www.boxun.com"), 3)
+	// all action above loop every 5 min.
+	// time.Sleep(5 * time.Minute)
+	// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
+
+	// }
+}
+
+func SaveOneBoxun(url string) {
+	f, err := fetcherBoxun.FetchBoxun(url)
+	if err != nil {
+		fmt.Printf("\n[-] SaveOneBoxun()>FetchBoxun(%s) error occur:\n[-] %v", url, err)
+		return
+	}
+	t, err := time.Parse(time.RFC3339, f.Date)
+	if err != nil {
+		fmt.Printf("\n[-] SaveOneBoxun()>time.Parse() error.\n%v\n", err)
+		return
+	}
+	newsTitle := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title)
+	filename := newsTitle + ".txt"
+	// Save Body to file named title in folder twitter site content
+	gears.MakeDirAll(filepath.Join("wwwroot", f.Domain))
+	savePath := filepath.Join("wwwroot", f.Domain, filename)
+	if !gears.Exists(savePath) {
+		err = ioutil.WriteFile(savePath, []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
+		if err != nil {
+			fmt.Printf("\n[-] SaveOneBoxun()>WriteFile() error.\n%v\n", err)
+		}
+	}
+}
+
 func ServiceVoa() {
 	var urlsNow, urlsBefore []string
 	// for {
@@ -83,7 +130,6 @@ func ServiceVoa() {
 			SaveOneVoa(v)
 		}
 	}
-	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
 	// Remove files 3 days ago
 	DelRoutine(filepath.Join("wwwroot", "www.voachinese.com"), 3)
 	// all action above loop every 5 min.
@@ -130,7 +176,6 @@ func ServiceRfa() {
 			SaveOneRfa(v)
 		}
 	}
-	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
 	// Remove files 3 days ago
 	DelRoutine(filepath.Join("wwwroot", "www.rfa.org"), 3)
 	// all action above loop every 5 min.
@@ -177,7 +222,6 @@ func ServiceDwNews() {
 			SaveOneDwnew(v)
 		}
 	}
-	// TODO TO BE DISCUSSED: remove files that not contain in the pointed page.
 	// Remove files 3 days ago
 	DelRoutine(filepath.Join("wwwroot", "www.dwnews.com"), 3)
 	// all action above loop every 5 min.
