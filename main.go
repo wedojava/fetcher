@@ -35,7 +35,7 @@ func main() {
 	fmt.Println("#                                                        #")
 	fmt.Println("# [1] 输入网页地址, 从网页直接提取                       #")
 	fmt.Println("#                                                        #")
-	fmt.Println("# [2] 按程序计划执行任务,目前只针对 多维新闻 展开        #")
+	fmt.Println("# [2] 按程序计划执行任务                                 #")
 	fmt.Println("#                                                        #")
 	fmt.Println("#========================================================#")
 	fmt.Printf("\n-> [?] 请输入选项序号: ")
@@ -47,6 +47,7 @@ func main() {
 			ServiceDwNews()
 			ServiceRfa()
 			ServiceVoa()
+			ServiceBoxun()
 			time.Sleep(5 * time.Minute)
 		}
 
