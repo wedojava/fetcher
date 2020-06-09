@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/wedojava/fetcher/internal/fetcher"
 	"github.com/wedojava/gears"
@@ -40,12 +41,10 @@ func ThisGetTitle(raw string) string {
 	var a = regexp.MustCompile(`(?m)<title>(.*?)</title>`)
 	rt := a.FindStringSubmatch(raw)
 	if rt != nil {
-		s := rt[1]
+		s := strings.TrimSpace(rt[1])
 		return gears.ConvertToUtf8(s, "gbk", "utf-8")
-
 	} else {
 		return ""
-
 	}
 }
 
