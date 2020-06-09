@@ -44,9 +44,9 @@ func main() {
 		FetchFromInput()
 	} else if strings.Compare("2", op) == 0 {
 		for {
-			ServiceDwNews()
-			ServiceRfa()
-			ServiceVoa()
+			// ServiceDwNews()
+			// ServiceRfa()
+			// ServiceVoa()
 			ServiceBoxun()
 			time.Sleep(5 * time.Minute)
 		}
@@ -76,13 +76,13 @@ func ServiceBoxun() {
 	var urlsNow, urlsBefore []string
 	// for {
 	// 1. get url list from domain
-	urlsNow = fetcherBoxun.FetchBoxunUrls("https://www.voachinese.com")
+	urlsNow = fetcherBoxun.FetchBoxunUrls("https://boxun.com/rolling.shtml")
 	// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
 	diff := gears.StrSliceDiff(urlsNow, urlsBefore)
 	urlsBefore = urlsNow
 	if len(diff) > 0 {
 		for _, v := range diff {
-			SaveOneVoa(v)
+			SaveOneBoxun(v)
 		}
 	}
 	// Remove files 3 days ago
