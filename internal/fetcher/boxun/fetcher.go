@@ -100,5 +100,6 @@ func FmtBodyBoxun(rawBody string) (string, error) {
 		v = re.ReplaceAllString(v, "")
 		body += v + "  \n"
 	}
+	body = gears.ConvertToUtf8(body, "gbk", "utf-8")
 	return body, nil
 }
