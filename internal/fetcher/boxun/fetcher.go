@@ -90,6 +90,7 @@ func FmtBodyBoxun(rawBody string) (string, error) {
 	}
 	a := regexp.MustCompile(`<BR>`)
 	bodySlice := a.Split(body, -1)
+	body = ""
 	for _, v := range bodySlice {
 		re = regexp.MustCompile(`&nbsp;`)
 		v = re.ReplaceAllString(v, "")
