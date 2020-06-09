@@ -16,6 +16,8 @@ import (
 )
 
 func main() {
+	ServiceBoxun()
+	time.Sleep(5 * time.Minute)
 	// ExampleDelRoutine()
 	// DelRoutine("test", 3)
 	// Output:
