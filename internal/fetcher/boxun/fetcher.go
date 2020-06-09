@@ -98,6 +98,9 @@ func FmtBodyBoxun(rawBody string) (string, error) {
 		v = re.ReplaceAllString(v, "")
 		re = regexp.MustCompile(`<img(.*?)>`)
 		v = re.ReplaceAllString(v, "")
+		if strings.TrimSpace(v) == "" {
+			continue
+		}
 		body += v + "  \n"
 	}
 	body = gears.ConvertToUtf8(body, "gbk", "utf-8")
