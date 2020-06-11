@@ -39,7 +39,9 @@ func ThisGetTitle(rawBody string) string {
 	var a = regexp.MustCompile(`(?m)<h1.*?id="articleTitle".*?>(.*?)</h1>`)
 	rt := a.FindStringSubmatch(rawBody)
 	if rt != nil {
-		return rt[1]
+		s := strings.TrimSpace(rt[1])
+		fetcher.ReplaceIllegalChar(&s)
+		return s
 
 	} else {
 		return ""
