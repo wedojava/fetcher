@@ -14,6 +14,7 @@ import (
 
 func FetchBoxun(url string) (*fetcher.ThePost, error) {
 	rawBody, err := gears.HttpGetBody(url, 10)
+	rawBody = gears.ConvertToUtf8(rawBody, "gbk", "utf-8")
 	if err != nil {
 		fmt.Println(err)
 		// log.Fatal(err)
@@ -94,7 +95,6 @@ func TitleBoxun(raw string) string {
 	rt := a.FindStringSubmatch(raw)
 	if rt != nil {
 		s := strings.TrimSpace(rt[1])
-		s = gears.ConvertToUtf8(s, "gbk", "utf-8")
 		fetcher.ReplaceIllegalChar(&s)
 		return s
 	} else {
@@ -132,8 +132,8 @@ func FmtBodyBoxun(rawBody string) (string, error) {
 	var ps []string
 	var body string
 	var re = regexp.MustCompile(`(?m)<!--bodystart-->([^\^]*)<!--bodyend-->`)
-	for _, v := range re.FindAllStringSubmatch(rawBody, -1) {
-		ps = append(ps, v[1])
+	for _, v := range re.FindAllString(rawBody, -1) {
+		ps = append(ps, v)
 	}
 	if len(ps) == 0 {
 		return "", errors.New("[-] fetcher.FmtBodyBoxun() Error: regex matched nothing.")
@@ -157,6 +157,5 @@ func FmtBodyBoxun(rawBody string) (string, error) {
 		}
 		body += v + "  \n"
 	}
-	body = gears.ConvertToUtf8(body, "gbk", "utf-8")
 	return body, nil
 }
