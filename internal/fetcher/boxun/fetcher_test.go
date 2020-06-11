@@ -18,7 +18,7 @@ func checkFetch(t *testing.T, _got, _want string) {
 func TestFetch(t *testing.T) {
 	t.Run("test get title and body: ", func(t *testing.T) {
 		got, _ := FetchBoxun("https://boxun.com/news/gb/intl/2020/06/202006081127.shtml")
-		wantTitle := "无公正 不停歇：欧洲各大城市加入反警暴浪潮  "
+		wantTitle := "无公正 不停歇：欧洲各大城市加入反警暴浪潮"
 		wantDomain := "www.boxun.com"
 		wantSite := "www.boxun.com"
 		wantDate := "2020-06-08T11:27:00Z"

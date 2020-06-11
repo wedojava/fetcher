@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/wedojava/fetcher/internal/fetcher"
@@ -20,7 +21,7 @@ func FetchBoxun(url string) (*fetcher.ThePost, error) {
 	}
 	domain := "www.boxun.com"
 	site := "www.boxun.com"
-	title := ThisGetTitle(rawBody)
+	title := TitleBoxun(rawBody)
 	// get contents
 	body, err := FmtBodyBoxun(rawBody)
 	if err != nil {
@@ -28,16 +29,66 @@ func FetchBoxun(url string) (*fetcher.ThePost, error) {
 		// log.Fatal(err)
 		return nil, err
 	}
-	a := filepath.Base(url)
 
-	date := fmt.Sprintf("%s-%s-%sT%s:%s:%sZ", a[:4], a[4:6], a[6:8], a[8:10], a[10:12], "00")
+	date := DateBoxun(url)
 
 	post := fetcher.ThePost{Site: site, Domain: domain, URL: url, Title: title, Body: body, Date: date}
 
 	return &post, nil
 }
 
-func ThisGetTitle(raw string) string {
+func DateBoxun(url string) string {
+	rawdate := filepath.Base(url)
+	var Y, M, D, hh, mm int
+	var err error
+	if Y, err = strconv.Atoi(rawdate[:4]); err != nil {
+		Y = 2000
+		fmt.Println(rawdate[:4], "is not a Year., set it to 2000")
+	}
+	if M, err = strconv.Atoi(rawdate[4:6]); err != nil {
+		M = 0
+		fmt.Println(rawdate[4:6], "is not a Month., set it to 0")
+	}
+	if D, err = strconv.Atoi(rawdate[6:8]); err != nil {
+		D = 0
+		fmt.Println(rawdate[6:8], "is not a Month., set it to 0")
+	}
+	if hh, err = strconv.Atoi(rawdate[8:10]); err != nil {
+		hh = 0
+		fmt.Println(rawdate[8:10], "is not a Month., set it to 0")
+	}
+	if mm, err = strconv.Atoi(rawdate[10:12]); err != nil {
+		mm = 0
+		fmt.Println(rawdate[10:12], "is not a Month., set it to 0")
+	}
+	if err != nil {
+		fmt.Println("err date fetch from url: ", url)
+	}
+	if Y < 1999 || Y > 2499 {
+		Y = 2000
+		fmt.Println(Y, "is not a integer of Year, set it to 2000")
+	}
+	if M < 0 || M >= 12 {
+		M = 12
+		fmt.Println(M, "is not a integer of Month, set it to 12")
+	}
+	if D < 0 || D >= 31 {
+		D = 31
+		fmt.Println(D, "is not a integer of Date, set it to 31")
+	}
+	if hh < 0 || hh > 23 {
+		hh = 23
+		fmt.Println(D, "is not a integer of Date, set it to 23")
+	}
+	if mm < 0 || mm > 59 {
+		mm = 59
+		fmt.Println(D, "is not a integer of Date, set it to 59")
+	}
+	return fmt.Sprintf("%02d-%02d-%02dT%02d:%02d:%02dZ", Y, M, D, hh, mm, 0)
+
+}
+
+func TitleBoxun(raw string) string {
 	var a = regexp.MustCompile(`(?m)<title>(.*?)</title>`)
 	rt := a.FindStringSubmatch(raw)
 	if rt != nil {
