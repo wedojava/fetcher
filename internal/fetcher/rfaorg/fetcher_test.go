@@ -30,14 +30,18 @@ func TestFetch(t *testing.T) {
 }
 
 func TestFmtBodyRfa(t *testing.T) {
-	rawBody, err := gears.HttpGetBody("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/wy-05052020131409.html", 10)
+	rawBody, err := gears.HttpGetBody("https://www.rfa.org/mandarin/Xinwen/1-06142020094439.html", 10)
+	// rawBody, err := gears.HttpGetBody("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/wy-05052020131409.html", 10)
 	if err != nil {
 		t.Fatal(err)
 	}
 	got, err := FmtBodyRfa(rawBody)
-	if strings.Contains(got, "视频只有1分45秒长，画面简单，是一个代表美国的“自由女神像”和一个代表中国的带着口罩的兵马俑形象在作英文对话。主要内容是，从去年12月到今年4月，中国及早发现并报告了病毒，而美方防疫不力，造成新冠病毒在美国大流行") {
-		fmt.Print("Test pass.")
+	if strings.Contains(got, "韩国总统府青瓦台周日凌晨紧急召开国安会议，外交部长官康京和、统一部长官金炼铁、国防部长官郑景斗、国家情报院院长徐薰等人就当前半岛局势及解决方案进行磋商。韩国统一部当天也呼吁双方努力遵守所有协议，对“当前情况十分严重”的半岛局势表达担忧。韩国国防部当天则表示，正保持高度戒备，密切关注朝军动向") {
+		fmt.Println("done.")
+	} else {
+		t.Errorf("got: %v", got)
 	}
+
 }
 
 func TestFetchUrls(t *testing.T) {

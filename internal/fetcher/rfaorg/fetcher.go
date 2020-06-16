@@ -62,7 +62,7 @@ func FmtBodyRfa(rawBody string) (string, error) {
 	}
 	var ps []string
 	var body string
-	var reContent = regexp.MustCompile(`(?m)<p>(?P<content>.*?)</p>`)
+	var reContent = regexp.MustCompile(`(?m)<p.*?>(?P<content>.*?)</p>`)
 	for _, v := range reContent.FindAllStringSubmatch(rawBody, -1) {
 		ps = append(ps, v[1])
 	}
