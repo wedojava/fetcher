@@ -83,7 +83,7 @@ func FetchVoaUrls(url string) []string {
 	return ret_lst
 }
 
-// FmtBodyVoa focus on dwnews, it can extract raw body string via regexp and then, format the news body to markdowned string.
+// FmtBodyVoa focus on voa, it can extract raw body string via regexp and then, format the news body to markdowned string.
 func FmtBodyVoa(rawBody string) (string, error) {
 	if rawBody == "" {
 		return "", errors.New("[-] FmtBodyVoa() parameter is nil!")
@@ -95,6 +95,9 @@ func FmtBodyVoa(rawBody string) (string, error) {
 		ps = append(ps, v[1])
 	}
 	if len(ps) == 0 {
+		if regexp.MustCompile(`(?m)<video.*?>`).FindAllString(rawBody, -1) != nil {
+			return "", errors.New("[-] fetcher.FmtBodyVoa() Error: this is a video page.")
+		}
 		return "", errors.New("[-] fetcher.FmtBodyVoa() Error: regex matched nothing.")
 	} else {
 		for _, p := range ps {

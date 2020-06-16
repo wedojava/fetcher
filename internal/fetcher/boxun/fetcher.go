@@ -136,6 +136,9 @@ func FmtBodyBoxun(rawBody string) (string, error) {
 		ps = append(ps, v[1])
 	}
 	if len(ps) == 0 {
+		if regexp.MustCompile(`(?m)<video.*?>`).FindAllString(rawBody, -1) != nil {
+			return "", errors.New("[-] fetcher.FmtBodyBoxun() Error: this is a video page.")
+		}
 		return "", errors.New("[-] fetcher.FmtBodyBoxun() Error: regex matched nothing.")
 	} else {
 		for _, p := range ps {
