@@ -74,7 +74,7 @@ func FetchDwnewsUrls(url string) []string {
 // FmtBodyDwnews focus on dwnews, it can extract raw body string via regexp and then, unmarshal it and format the news body to markdowned string.
 func FmtBodyDwnews(rawBody string) (string, error) {
 	if rawBody == "" {
-		return "", errors.New("[-] FmtBodyDwnews() parameter is nil!")
+		return "", errors.New("\n[-] FmtBodyDwnews() parameter is nil!\n")
 	}
 	// extract and make it to json fmt
 	var jsTxtBody = "["
@@ -101,7 +101,7 @@ func FmtBodyDwnews(rawBody string) (string, error) {
 		var paragraph []fetcher.Paragraph
 		err := json.Unmarshal([]byte(jsTxtBody), &paragraph)
 		if err != nil {
-			return "", fmt.Errorf("[-] fetcher.FmtBodyDwnews()>Unmarshal() Error: %q", err)
+			return "", fmt.Errorf("\n[-] fetcher.FmtBodyDwnews()>Unmarshal() Error: %q\n", err)
 		}
 		for _, p := range paragraph {
 			if p.Type == "boldText" {

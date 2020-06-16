@@ -127,7 +127,7 @@ func FetchBoxunUrls(url string) []string {
 // FmtBodyBoxun focus on dwnews, it can extract raw body string via regexp and then, format the news body to markdowned string.
 func FmtBodyBoxun(rawBody string) (string, error) {
 	if rawBody == "" {
-		return "", errors.New("[-] FmtBodyBoxun() parameter is nil!")
+		return "", errors.New("\n[-] FmtBodyBoxun() parameter is nil!\n")
 	}
 	var ps []string
 	var body string
@@ -137,9 +137,9 @@ func FmtBodyBoxun(rawBody string) (string, error) {
 	}
 	if len(ps) == 0 {
 		if regexp.MustCompile(`(?m)<video.*?>`).FindAllString(rawBody, -1) != nil {
-			return "", errors.New("[-] fetcher.FmtBodyBoxun() Error: this is a video page.")
+			return "", errors.New("\n[-] fetcher.FmtBodyBoxun() Error: this is a video page.\n")
 		}
-		return "", errors.New("[-] fetcher.FmtBodyBoxun() Error: regex matched nothing.")
+		return "", errors.New("\n[-] fetcher.FmtBodyBoxun() Error: regex matched nothing.\n")
 	} else {
 		for _, p := range ps {
 			body += p + "  \n"

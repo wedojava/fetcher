@@ -58,7 +58,7 @@ func FetchRfaUrls(url string) []string {
 // FmtBodyRfa focus on dwnews, it can extract raw body string via regexp and then, format the news body to markdowned string.
 func FmtBodyRfa(rawBody string) (string, error) {
 	if rawBody == "" {
-		return "", errors.New("[-] FmtBodyRfa() parameter is nil!")
+		return "", errors.New("\n[-] FmtBodyRfa() parameter is nil!\n")
 	}
 	var ps []string
 	var body string
@@ -68,9 +68,9 @@ func FmtBodyRfa(rawBody string) (string, error) {
 	}
 	if len(ps) == 0 {
 		if regexp.MustCompile(`(?m)<video.*?>`).FindAllString(rawBody, -1) != nil {
-			return "", errors.New("[-] fetcher.FmtBodyRfa() Error: this is a video page.")
+			return "", errors.New("\n[-] fetcher.FmtBodyRfa() Error: this is a video page.\n")
 		}
-		return "", errors.New("[-] fetcher.FmtBodyRfa() Error: regex matched nothing.")
+		return "", errors.New("\n[-] fetcher.FmtBodyRfa() Error: regex matched nothing.\n")
 	} else {
 		for _, p := range ps {
 			body += p + "  \n"
