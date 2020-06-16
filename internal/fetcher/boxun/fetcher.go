@@ -132,8 +132,8 @@ func FmtBodyBoxun(rawBody string) (string, error) {
 	var ps []string
 	var body string
 	var re = regexp.MustCompile(`(?m)<!--bodystart-->([^\^]*)<!--bodyend-->`)
-	for _, v := range re.FindAllString(rawBody, -1) {
-		ps = append(ps, v)
+	for _, v := range re.FindAllStringSubmatch(rawBody, -1) {
+		ps = append(ps, v[1])
 	}
 	if len(ps) == 0 {
 		return "", errors.New("[-] fetcher.FmtBodyBoxun() Error: regex matched nothing.")
@@ -146,6 +146,8 @@ func FmtBodyBoxun(rawBody string) (string, error) {
 	bodySlice := a.Split(body, -1)
 	body = ""
 	for _, v := range bodySlice {
+		re = regexp.MustCompile(`<table([^\^]*)</table>`)
+		v = re.ReplaceAllString(v, "")
 		re = regexp.MustCompile(`&nbsp;`)
 		v = re.ReplaceAllString(v, "")
 		re = regexp.MustCompile(`<div(.*?)</div>`)
