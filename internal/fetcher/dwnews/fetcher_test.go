@@ -45,15 +45,12 @@ func TestFetchUrls(t *testing.T) {
 }
 
 func TestFmtBodyDwnews(t *testing.T) {
-	raw, _ := gears.HttpGetBody("https://www.dwnews.com/中国/60179204", 10)
+	raw, _ := gears.HttpGetBody("https://www.dwnews.com/全球/60201177", 10)
 	body, _ := FmtBodyDwnews(raw)
 	t.Run("test fetch summary then fmt it: ", func(t *testing.T) {
-		summary := "> 台湾总统蔡英文正式展开第二任期，美国国务院5月20日表示，批准以1.8亿美元向台湾出售18枚重量级鱼雷。此举料进一步加剧华盛顿与北京已经紧张的关系。"
-		if strings.Contains(body, summary) {
-			fmt.Println("Success")
-		} else {
-			fmt.Println("Cannot fetch summary correctly.")
+		summary := "中国与印度军队6月15日再次在边境爆发严重冲突，造成至少20名印军丧生，印度高层官员19日表示，中方指挥官和副指挥官也在这起冲突中丧生。中国未透露中方的伤亡细节。"
+		if !strings.Contains(body, summary) {
+			t.Errorf("got:\n%v", body)
 		}
-
 	})
 }
