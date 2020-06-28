@@ -69,15 +69,11 @@ func FetchFromInput() {
 	}
 }
 
-func Service(srv func(website string)) {
+func Service(srv func(start string)) {
 	if srv != nil {
 		srv("https://www.boxun.com/rolling.shtml")
 	}
 }
-
-// func FetchLinks(url string) []string {
-//
-// }
 
 func ServiceBoxun() {
 	var urlsNow, urlsBefore []string
