@@ -18,15 +18,18 @@ type PostBoxun struct {
 }
 
 func (p *PostBoxun) FetchBoxun() error {
-	// get contents
-	err := p.SetDOC(1 * time.Minute)
+	// set contents
+	doc, err := fetcher.GetDOC(p.URL, 1*time.Minute)
 	if err != nil {
 		return err
 	}
-	err = p.SetRaw(1 * time.Minute)
+	p.DOC = doc
+	raw, err := fetcher.GetRaw(p.URL, 1*time.Minute)
 	if err != nil {
 		return err
 	}
+	p.Raw = raw
+	// set Date
 	url, err := url.Parse(p.URL)
 	if err != nil {
 		return err
@@ -34,17 +37,18 @@ func (p *PostBoxun) FetchBoxun() error {
 	a := filepath.Base(url.Path)
 
 	p.Date = fmt.Sprintf("%s-%s-%sT%s:%s:%sZ", a[:4], a[4:6], a[6:8], a[8:10], a[10:12], "00")
+	// set Title
 	err = p.GetTitle()
 	if err != nil {
 		return err
 	}
 	p.Title = gears.ConvertToUtf8(p.Title, "gbk", "utf8")
 	p.Title = strings.TrimSpace(p.Title)
+	// fmt body
 	err = p.FmtBodyBoxun()
 	if err != nil {
 		fmt.Println(err)
 		return err
-		// log.Fatal(err)
 	}
 	return nil
 }
@@ -107,7 +111,7 @@ func (p *PostBoxun) FmtDocBoxun() error {
 
 // FmtBodyBoxun can extract html body and fmt this string by raw of body.
 func (p *PostBoxun) FmtBodyBoxun() error {
-	if p.Raw == "" {
+	if p.Raw == nil {
 		return errors.New("[-] FmtBodyBoxun() parameter is nil!")
 	}
 	var ps []string

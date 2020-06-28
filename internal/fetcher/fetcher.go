@@ -19,7 +19,7 @@ type ThePost struct {
 	Domain   string
 	URL      string
 	DOC      *html.Node
-	Raw      string
+	Raw      []byte
 	Title    string
 	Body     string
 	Date     string
@@ -33,71 +33,69 @@ type Paragraph struct {
 var originalHost string
 
 // TODO: Can't use resp.Body twice, so Raw and DOC can't fetch at the sametime.
-func (post *ThePost) SetRaw(retryTimeout time.Duration) error {
-	posturl := post.URL
+// GetRaw can get html raw bytes by rawurl.
+func GetRaw(rawurl string, retryTimeout time.Duration) ([]byte, error) {
 	// To judge if there is a syntex error on url
-	url, err := url.Parse(posturl)
+	url, err := url.Parse(rawurl)
 	if err != nil {
-		return fmt.Errorf("bad url: %s", err)
+		return nil, fmt.Errorf("bad url: %s", err)
 	}
 	if originalHost == "" {
 		originalHost = url.Host
 	}
 	if originalHost != url.Host {
-		return nil
+		return nil, fmt.Errorf("bad host of url: %s, expected: %s", url.Host, originalHost)
 	}
 	// Get response form url
 	deadline := time.Now().Add(retryTimeout)
 	for tries := 0; time.Now().Before(deadline); tries++ {
-		resp, err := http.Get(posturl)
+		resp, err := http.Get(rawurl)
 		if err == nil { // success
 			defer resp.Body.Close()
 			raw, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				return err
+				return nil, err
 			}
-			post.Raw = string(raw)
-			return nil
+			return raw, nil
 		}
 		log.SetPrefix("[wait]")
 		log.SetFlags(0)
 		log.Printf("server not responding (%s); retrying...", err)
 		time.Sleep(time.Second << uint(tries)) // exponential back-off
 	}
-	return nil
+	return nil, nil
 }
 
-func (post *ThePost) SetDOC(retryTimeout time.Duration) error {
-	posturl := post.URL
+func GetDOC(rawurl string, retryTimeout time.Duration) (*html.Node, error) {
 	// To judge if there is a syntex error on url
-	url, err := url.Parse(posturl)
+	url, err := url.Parse(rawurl)
 	if err != nil {
-		return fmt.Errorf("bad url: %s", err)
+		return nil, fmt.Errorf("bad url: %s", err)
 	}
 	if originalHost == "" {
 		originalHost = url.Host
 	}
 	if originalHost != url.Host {
-		return nil
+		return nil, fmt.Errorf("bad host of url: %s, expected: %s", url.Host, originalHost)
 	}
 	// Get response form url
 	deadline := time.Now().Add(retryTimeout)
 	for tries := 0; time.Now().Before(deadline); tries++ {
-		resp, err := http.Get(posturl)
+		resp, err := http.Get(rawurl)
 		if err == nil { // success
 			defer resp.Body.Close()
-			post.DOC, err = html.Parse(resp.Body)
+			doc, err := html.Parse(resp.Body)
 			if err != nil {
-				return err
+				return nil, err
 			}
-			return nil
+			return doc, nil
 		}
 		log.SetPrefix("[wait]")
 		log.SetFlags(0)
 		log.Printf("server not responding (%s); retrying...", err)
 		time.Sleep(time.Second << uint(tries)) // exponential back-off
 	}
-	return nil
+	return nil, nil
 }
 
 // WaitForServer attempts to contact the server of a URL.
