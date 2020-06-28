@@ -33,16 +33,12 @@ func main() {
 	fmt.Println("#                                                        #")
 	fmt.Println("# [?] Ctrl+c 或 不停的按回车可以退出此程序               #")
 	fmt.Println("#                                                        #")
-	fmt.Println("# [1] 输入网页地址, 从网页直接提取                       #")
-	fmt.Println("#                                                        #")
-	fmt.Println("# [2] 按程序计划执行任务                                 #")
+	fmt.Println("# [1] 按程序计划执行任务                                 #")
 	fmt.Println("#                                                        #")
 	fmt.Println("#========================================================#")
 	fmt.Printf("\n-> [?] 请输入选项序号: ")
 	op := gears.GetInput()
 	if strings.Compare("1", op) == 0 {
-		FetchFromInput()
-	} else if strings.Compare("2", op) == 0 {
 		for {
 			ServiceDwNews()
 			ServiceRfa()
@@ -50,7 +46,8 @@ func main() {
 			ServiceBoxun()
 			time.Sleep(5 * time.Minute)
 		}
-
+	} else if strings.Compare("2", op) == 0 {
+		FetchFromInput()
 	} else {
 		fmt.Printf("\nBye!\n\n")
 		return
@@ -72,6 +69,16 @@ func FetchFromInput() {
 	}
 }
 
+func Service(srv func(website string)) {
+	if srv != nil {
+		srv("https://www.boxun.com/rolling.shtml")
+	}
+}
+
+// func FetchLinks(url string) []string {
+//
+// }
+
 func ServiceBoxun() {
 	var urlsNow, urlsBefore []string
 	// for {
@@ -87,10 +94,6 @@ func ServiceBoxun() {
 	}
 	// Remove files 3 days ago
 	DelRoutine(filepath.Join("wwwroot", "www.boxun.com"), 3)
-	// all action above loop every 5 min.
-	// time.Sleep(5 * time.Minute)
-	// *Optional. if the site folder is not exist or empty, means it's new action, so, the loop will action after first init files save.
-
 	// }
 }
 
