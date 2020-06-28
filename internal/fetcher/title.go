@@ -42,6 +42,7 @@ func (p *ThePost) GetTitle() error {
 	if err != nil {
 		return err
 	}
-	p.Title = fmt.Sprintf("%s", title)
+	ReplaceIllegalChar(&title)
+	p.Title = title
 	return nil
 }
