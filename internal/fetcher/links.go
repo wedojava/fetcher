@@ -4,6 +4,7 @@ package fetcher
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -35,7 +36,10 @@ func Extract(url string) ([]string, error) {
 				if err != nil {
 					continue // ignore bad URLs
 				}
-				links = append(links, link.String())
+				// append only the target website
+				if strings.HasPrefix(a.Val, "http") && strings.Contains(a.Val, link.Hostname()) {
+					links = append(links, link.String())
+				}
 			}
 		}
 	}
