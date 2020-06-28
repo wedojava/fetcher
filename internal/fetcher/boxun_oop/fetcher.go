@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"path/filepath"
 	"regexp"
+	"strings"
+	"time"
 
 	"github.com/wedojava/fetcher/internal/fetcher"
 	"github.com/wedojava/gears"
@@ -17,7 +19,11 @@ type PostBoxun struct {
 
 func (p *PostBoxun) FetchBoxun() error {
 	// get contents
-	err := p.GetDOC()
+	err := p.SetDOC(1 * time.Minute)
+	if err != nil {
+		return err
+	}
+	err = p.SetRaw(1 * time.Minute)
 	if err != nil {
 		return err
 	}
@@ -32,7 +38,8 @@ func (p *PostBoxun) FetchBoxun() error {
 	if err != nil {
 		return err
 	}
-
+	p.Title = gears.ConvertToUtf8(p.Title, "gbk", "utf8")
+	p.Title = strings.TrimSpace(p.Title)
 	err = p.FmtBodyBoxun()
 	if err != nil {
 		fmt.Println(err)
@@ -40,19 +47,6 @@ func (p *PostBoxun) FetchBoxun() error {
 		// log.Fatal(err)
 	}
 	return nil
-}
-
-func (p *PostBoxun) ThisGetTitle() string {
-	var a = regexp.MustCompile(`(?m)<title>(.*?)</title>`)
-	rt := a.FindStringSubmatch(p.Raw)
-	if rt != nil {
-		p.Title = rt[1]
-		return rt[1]
-
-	} else {
-		return ""
-
-	}
 }
 
 // TODO: use links to implement this func

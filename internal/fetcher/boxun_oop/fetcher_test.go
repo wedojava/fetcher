@@ -23,7 +23,7 @@ func checkFetch(t *testing.T, _got, _want string) {
 
 func TestFetchTitleAndDate(t *testing.T) {
 	testPost.Domain = "www.boxun.com"
-	testPost.Site = "www.boxun.com"
+	testPost.Entrance = "www.boxun.com"
 	testPost.URL = "https://boxun.com/news/gb/intl/2020/06/202006081127.shtml"
 	testPost.FetchBoxun()
 	t.Run("test get title and body: ", func(t *testing.T) {
