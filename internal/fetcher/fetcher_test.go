@@ -6,9 +6,10 @@ import (
 
 func TestSetLinks(t *testing.T) {
 	var f = &Fetcher{
-		Entrance: "https://www.boxun.com/rolling.shtml",
-		Links:    nil,
-		Posts:    nil,
+		Entrance: "https://www.rfa.org/mandarin/",
+		// Entrance: "https://www.voachinese.com",
+		Links: nil,
+		Posts: nil,
 	}
 	err := f.SetLinks()
 	if err != nil {

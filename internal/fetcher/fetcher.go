@@ -117,17 +117,29 @@ func (f *Fetcher) SetLinks() error {
 	hostname := url.Hostname()
 	switch hostname {
 	case "www.boxun.com":
-		f.Links = boxunLinksFilter(links)
-		// for _, l := range f.Links {
-		//         fmt.Println(l)
-		// }
+		f.Links = LinksFilter(links, `.*?/news/.*/\d*.shtml`)
+	case "www.dwnews.com":
+		f.Links = LinksFilter(links, `.*?/.{2}/\d{8}/.+?`)
+	case "www.voachinese.com":
+		f.Links = LinksFilter(links, `.*?/a/.*-.*.html`)
+	case "www.rfa.org":
+		links = LinksFilter(links, `.*?/.*?-\d*.html`)
+		for _, link := range links {
+			if !strings.Contains(link, "/about/") {
+				f.Links = append(f.Links, link)
+			}
+		}
+
+	}
+	for i, l := range f.Links {
+		fmt.Printf("%2d: %s\n", i+1, l)
 	}
 	return nil
 }
 
-func boxunLinksFilter(links []string) []string {
+func LinksFilter(links []string, regex string) []string {
 	flinks := []string{}
-	re := regexp.MustCompile(`.*?/news/.*/\d*.shtml`)
+	re := regexp.MustCompile(regex)
 	s := strings.Join(links, "\n")
 	flinks = re.FindAllString(s, -1)
 	return flinks
