@@ -17,18 +17,18 @@ import (
 type Fetcher struct {
 	Entrance string
 	Links    []string
-	Posts    []ThePost
+	LinksNew []string
+	LinksOld []string
 }
 
 type ThePost struct {
-	Entrance string
-	Domain   string
-	URL      string
-	DOC      *html.Node
-	Raw      []byte
-	Title    string
-	Body     string
-	Date     string
+	Domain string
+	URL    string
+	DOC    *html.Node
+	Raw    []byte
+	Title  string
+	Body   string
+	Date   string
 }
 
 type Paragraph struct {
@@ -111,6 +111,7 @@ func (f *Fetcher) SetLinks() error {
 	}
 	links, err := ExtractLinks(url.String())
 	if err != nil {
+		log.Printf(`can't extract links from "%s": %s`, url, err)
 		return err
 	}
 	links = gears.StrSliceDeDupl(links)
@@ -129,11 +130,10 @@ func (f *Fetcher) SetLinks() error {
 				f.Links = append(f.Links, link)
 			}
 		}
-
 	}
-	for i, l := range f.Links {
-		fmt.Printf("%2d: %s\n", i+1, l)
-	}
+	// for i, l := range f.Links {
+	//         fmt.Printf("%2d: %s\n", i+1, l)
+	// }
 	return nil
 }
 
@@ -145,30 +145,26 @@ func LinksFilter(links []string, regex string) []string {
 	return flinks
 }
 
-// WaitForServer attempts to contact the server of a URL.
-// It tries for one minute using exponential back-off.
-// It reports an error if all attemps fail.
-func (post *ThePost) WaitForServer() error {
-	const timeout = 1 * time.Minute
-	deadline := time.Now().Add(timeout)
-	for tries := 0; time.Now().Before(deadline); tries++ {
-		_, err := http.Head(post.URL)
-		if err == nil {
-			return err // success
-		}
-		log.SetPrefix("[wait]")
-		log.SetFlags(0)
-		log.Printf("server not responding (%s); retrying...", err)
-		time.Sleep(time.Second << uint(tries)) // exponential back-off
+func FetcherFactory(site string) *Fetcher {
+	return &Fetcher{
+		Entrance: site,
+		Links:    nil,
+		LinksNew: nil,
+		LinksOld: nil,
 	}
-	return fmt.Errorf("server %s failed to respond after %s", post.URL, timeout)
+}
+
+func ThePostFactory(url string) *ThePost {
+	return &ThePost{
+		URL: url,
+	}
 }
 
 // breadthFirst calls f for each item in the worklist.
 // Any items returned by f are added to the worklist.
 // f is called at most once  for each item.
 // breadthFirst(crawl, os.Args[1:])
-func breadthFirst(f func(item string) []string, worklist []string) {
+func breadthFirst(f func(item string) error, worklist []string) {
 	seen := make(map[string]bool)
 	for len(worklist) > 0 {
 		items := worklist
@@ -176,17 +172,26 @@ func breadthFirst(f func(item string) []string, worklist []string) {
 		for _, item := range items {
 			if !seen[item] {
 				seen[item] = true
-				worklist = append(worklist, f(item)...)
+				f(item)
+				worklist = items
+				// worklist = append(worklist, f(item)...)
 			}
 		}
 	}
 }
 
-func crawl(url string) []string {
-	fmt.Println(url)
-	list, err := ExtractLinks(url)
-	if err != nil {
-		log.Printf(`can't extract links from "%s": %s`, url, err)
+func crawl(url string) error {
+	f := FetcherFactory(url)
+	log.Printf("[*] Deal with: [%s]\n", url)
+	log.Println("[*] Fetch links ...")
+	if err := f.SetLinks(); err != nil {
+		log.Println(err)
+		return err
 	}
-	return list
+	// Set LinksNew
+	f.LinksNew = gears.StrSliceDiff(f.Links, f.LinksOld)
+	// GetNews then compare via md5 and Save or Rewrite news exist
+	// Set LinksOld
+	f.LinksOld = f.Links
+	return nil
 }
