@@ -9,9 +9,9 @@ import (
 	"golang.org/x/net/html"
 )
 
-// Extract makes an HTTP GET request to the specified URL, parses
+// ExtractLinks makes an HTTP GET request to the specified URL, parses
 // the response as HTML, and returns the links in the HTML document.
-func Extract(url string) ([]string, error) {
+func ExtractLinks(url string) ([]string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -27,6 +27,7 @@ func Extract(url string) ([]string, error) {
 	}
 	var links []string
 	visitNode := func(n *html.Node) {
+		// TODO: compress layers
 		if n.Type == html.ElementNode && n.Data == "a" {
 			for _, a := range n.Attr {
 				if a.Key != "href" {
@@ -39,7 +40,10 @@ func Extract(url string) ([]string, error) {
 				// append only the target website
 				if strings.HasPrefix(a.Val, "http") && strings.Contains(a.Val, link.Hostname()) {
 					links = append(links, link.String())
+				} else if strings.HasPrefix(a.Val, "/") {
+					links = append(links, link.String())
 				}
+
 			}
 		}
 	}
