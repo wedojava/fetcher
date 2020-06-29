@@ -68,7 +68,7 @@ func FetchBoxunUrls(url string) []string {
 		return nil
 	} else {
 		for _, v := range reLink.FindAllStringSubmatch(rawBody, -1) {
-			ret_lst = append(ret_lst, "https://www.dwnews.com"+v[1])
+			ret_lst = append(ret_lst, "https://boxun.com"+v[1])
 		}
 		ret_lst = gears.StrSliceDeDupl(ret_lst)
 	}
