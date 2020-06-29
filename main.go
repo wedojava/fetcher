@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	fetcherBoxun "github.com/wedojava/fetcher/internal/fetcher/boxun"
-	fetcher "github.com/wedojava/fetcher/internal/fetcher/dwnews"
+	fetcher "github.com/wedojava/fetcher/internal/fetcher"
+	fetcherDwnews "github.com/wedojava/fetcher/internal/fetcher/dwnews"
 	fetcherRfa "github.com/wedojava/fetcher/internal/fetcher/rfaorg"
 	fetcherVoa "github.com/wedojava/fetcher/internal/fetcher/voachinese"
 	"github.com/wedojava/gears"
@@ -43,7 +43,7 @@ func main() {
 			ServiceDwNews()
 			ServiceRfa()
 			ServiceVoa()
-			ServiceBoxun()
+			// ServiceBoxun()
 			time.Sleep(5 * time.Minute)
 		}
 	} else if strings.Compare("2", op) == 0 {
@@ -69,53 +69,56 @@ func FetchFromInput() {
 	}
 }
 
-func Service(srv func(start string)) {
-	if srv != nil {
-		srv("https://www.boxun.com/rolling.shtml")
+func SrvBoxun() {
+	f := &fetcher.Fetcher{
+		Entrance: "https://www.boxun.com/rolling.shtml",
+		Links:    nil,
+		Posts:    nil,
 	}
+	f.SetLinks()
 }
 
-func ServiceBoxun() {
-	var urlsNow, urlsBefore []string
-	// for {
-	// 1. get url list from domain
-	urlsNow = fetcherBoxun.FetchBoxunUrls("https://boxun.com/rolling.shtml")
-	// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
-	diff := gears.StrSliceDiff(urlsNow, urlsBefore)
-	urlsBefore = urlsNow
-	if len(diff) > 0 {
-		for _, v := range diff {
-			SaveOneBoxun(v)
-		}
-	}
-	// Remove files 3 days ago
-	DelRoutine(filepath.Join("wwwroot", "www.boxun.com"), 3)
-	// }
-}
+// func ServiceBoxun() {
+//         var urlsNow, urlsBefore []string
+//         // for {
+//         // 1. get url list from domain
+//         urlsNow = fetcherBoxun.FetchBoxunUrls("https://www.boxun.com/rolling.shtml")
+//         // 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
+//         diff := gears.StrSliceDiff(urlsNow, urlsBefore)
+//         urlsBefore = urlsNow
+//         if len(diff) > 0 {
+//                 for _, v := range diff {
+//                         SaveOneBoxun(v)
+//                 }
+//         }
+//         // Remove files 3 days ago
+//         DelRoutine(filepath.Join("wwwroot", "www.boxun.com"), 3)
+//         // }
+// }
 
-func SaveOneBoxun(url string) {
-	f, err := fetcherBoxun.FetchBoxun(url)
-	if err != nil {
-		fmt.Printf("\n[-] SaveOneBoxun()>FetchBoxun(%s) error occur:\n[-] %v", url, err)
-		return
-	}
-	t, err := time.Parse(time.RFC3339, f.Date)
-	if err != nil {
-		fmt.Printf("\n[-] SaveOneBoxun()>time.Parse() error.\n%v\n", err)
-		return
-	}
-	newsTitle := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title)
-	filename := newsTitle + ".txt"
-	// Save Body to file named title in folder twitter site content
-	gears.MakeDirAll(filepath.Join("wwwroot", f.Domain))
-	savePath := filepath.Join("wwwroot", f.Domain, filename)
-	if !gears.Exists(savePath) {
-		err = ioutil.WriteFile(savePath, []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
-		if err != nil {
-			fmt.Printf("\n[-] SaveOneBoxun()>WriteFile() error.\n%v\n", err)
-		}
-	}
-}
+// func SaveOneBoxun(url string) {
+//         f, err := fetcherBoxun.FetchBoxun(url)
+//         if err != nil {
+//                 fmt.Printf("\n[-] SaveOneBoxun()>FetchBoxun(%s) error occur:\n[-] %v", url, err)
+//                 return
+//         }
+//         t, err := time.Parse(time.RFC3339, f.Date)
+//         if err != nil {
+//                 fmt.Printf("\n[-] SaveOneBoxun()>time.Parse() error.\n%v\n", err)
+//                 return
+//         }
+//         newsTitle := fmt.Sprintf("[%02d.%02d][%02d%02dH]%s", t.Month(), t.Day(), t.Hour(), t.Minute(), f.Title)
+//         filename := newsTitle + ".txt"
+//         // Save Body to file named title in folder twitter site content
+//         gears.MakeDirAll(filepath.Join("wwwroot", f.Domain))
+//         savePath := filepath.Join("wwwroot", f.Domain, filename)
+//         if !gears.Exists(savePath) {
+//                 err = ioutil.WriteFile(savePath, []byte("#"+newsTitle+"\n\n"+f.Body), 0644)
+//                 if err != nil {
+//                         fmt.Printf("\n[-] SaveOneBoxun()>WriteFile() error.\n%v\n", err)
+//                 }
+//         }
+// }
 
 func ServiceVoa() {
 	var urlsNow, urlsBefore []string
@@ -213,7 +216,7 @@ func ServiceDwNews() {
 	var urlsNow, urlsBefore []string
 	// for {
 	// 1. get url list from domain
-	urlsNow = fetcher.FetchDwnewsUrls("https://www.dwnews.com")
+	urlsNow = fetcherDwnews.FetchDwnewsUrls("https://www.dwnews.com")
 	// 2. compare urls, get diff urls between 2 lists then update urlsBefore and save.
 	diff := gears.StrSliceDiff(urlsNow, urlsBefore)
 	urlsBefore = urlsNow
