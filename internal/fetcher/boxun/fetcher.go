@@ -17,6 +17,14 @@ type PostBoxun struct {
 	fetcher.ThePost
 }
 
+func BoxunPostFactory(url string) *PostBoxun {
+	return &PostBoxun{
+		fetcher.ThePost{
+			URL: url,
+		},
+	}
+}
+
 func (p *PostBoxun) FetchBoxun() error {
 	// set contents
 	doc, err := fetcher.GetDOC(p.URL, 1*time.Minute)
