@@ -2,6 +2,8 @@ package fetcher
 
 import (
 	"fmt"
+	"github.com/wedojava/gears"
+	"golang.org/x/net/html"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -9,9 +11,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/wedojava/gears"
-	"golang.org/x/net/html"
 )
 
 type Fetcher struct {
@@ -21,31 +20,12 @@ type Fetcher struct {
 	LinksOld []string
 }
 
-type ThePost struct {
-	Domain string
-	URL    string
-	DOC    *html.Node
-	Raw    []byte
-	Title  string
-	Body   string
-	Date   string
-}
-
-type Paragraph struct {
-	Type    string
-	Content string
-}
-
 var originalHost string
 
 // TODO: Can't use resp.Body twice, so Raw and DOC can't fetch at the sametime.
 // GetRaw can get html raw bytes by rawurl.
-func GetRaw(rawurl string, retryTimeout time.Duration) ([]byte, error) {
+func GetRaw(url *url.URL, retryTimeout time.Duration) ([]byte, error) {
 	// To judge if there is a syntex error on url
-	url, err := url.Parse(rawurl)
-	if err != nil {
-		return nil, fmt.Errorf("bad url: %s", err)
-	}
 	if originalHost == "" {
 		originalHost = url.Host
 	}
@@ -55,7 +35,7 @@ func GetRaw(rawurl string, retryTimeout time.Duration) ([]byte, error) {
 	// Get response form url
 	deadline := time.Now().Add(retryTimeout)
 	for tries := 0; time.Now().Before(deadline); tries++ {
-		resp, err := http.Get(rawurl)
+		resp, err := http.Get(url.String())
 		if err == nil { // success
 			defer resp.Body.Close()
 			raw, err := ioutil.ReadAll(resp.Body)
@@ -72,12 +52,8 @@ func GetRaw(rawurl string, retryTimeout time.Duration) ([]byte, error) {
 	return nil, nil
 }
 
-func GetDOC(rawurl string, retryTimeout time.Duration) (*html.Node, error) {
+func GetDOC(url *url.URL, retryTimeout time.Duration) (*html.Node, error) {
 	// To judge if there is a syntex error on url
-	url, err := url.Parse(rawurl)
-	if err != nil {
-		return nil, fmt.Errorf("bad url: %s", err)
-	}
 	if originalHost == "" {
 		originalHost = url.Host
 	}
@@ -87,7 +63,7 @@ func GetDOC(rawurl string, retryTimeout time.Duration) (*html.Node, error) {
 	// Get response form url
 	deadline := time.Now().Add(retryTimeout)
 	for tries := 0; time.Now().Before(deadline); tries++ {
-		resp, err := http.Get(rawurl)
+		resp, err := http.Get(url.String())
 		if err == nil { // success
 			defer resp.Body.Close()
 			doc, err := html.Parse(resp.Body)
@@ -154,12 +130,6 @@ func FetcherFactory(site string) *Fetcher {
 	}
 }
 
-func ThePostFactory(url string) *ThePost {
-	return &ThePost{
-		URL: url,
-	}
-}
-
 // breadthFirst calls f for each item in the worklist.
 // Any items returned by f are added to the worklist.
 // f is called at most once  for each item.
@@ -191,6 +161,9 @@ func crawl(url string) error {
 	// Set LinksNew
 	f.LinksNew = gears.StrSliceDiff(f.Links, f.LinksOld)
 	// GetNews then compare via md5 and Save or Rewrite news exist
+	for _, link := range f.LinksNew {
+		post := PostFactory(link)
+	}
 	// Set LinksOld
 	f.LinksOld = f.Links
 	return nil

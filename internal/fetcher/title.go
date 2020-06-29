@@ -2,7 +2,9 @@ package fetcher
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
 )
 
@@ -37,12 +39,20 @@ func soleTitle(doc *html.Node) (title string, err error) {
 	return title, nil
 }
 
-func (p *ThePost) GetTitle() error {
+func (p *Post) SetTitle() error {
 	title, err := soleTitle(p.DOC)
 	if err != nil {
 		return err
 	}
 	ReplaceIllegalChar(&title)
-	p.Title = title
+	title = strings.TrimSpace(title)
+	switch p.Domain {
+	case "www.boxun.com":
+		p.Title = gears.ConvertToUtf8(title, "gbk", "utf8")
+	case "www.dwnews.com":
+		p.Title = title[:strings.Index(title, "｜")]
+	default:
+		p.Title = title
+	}
 	return nil
 }

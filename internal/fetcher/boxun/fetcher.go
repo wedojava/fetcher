@@ -14,12 +14,12 @@ import (
 )
 
 type PostBoxun struct {
-	fetcher.ThePost
+	fetcher.Post
 }
 
 func BoxunPostFactory(url string) *PostBoxun {
 	return &PostBoxun{
-		fetcher.ThePost{
+		fetcher.Post{
 			URL: url,
 		},
 	}
