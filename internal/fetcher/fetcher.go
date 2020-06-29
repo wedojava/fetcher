@@ -6,13 +6,19 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 	"time"
 
+	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
 )
 
-// Posts is the fetcher can return many results.
-type Posts map[string]*ThePost
+type Fetcher struct {
+	Entrance string
+	Links    []string
+	Posts    []ThePost
+}
 
 type ThePost struct {
 	Entrance string
@@ -98,6 +104,35 @@ func GetDOC(rawurl string, retryTimeout time.Duration) (*html.Node, error) {
 	return nil, nil
 }
 
+func (f *Fetcher) SetLinks() error {
+	url, err := url.Parse(f.Entrance)
+	if err != nil {
+		return err
+	}
+	links, err := ExtractLinks(url.String())
+	if err != nil {
+		return err
+	}
+	links = gears.StrSliceDeDupl(links)
+	hostname := url.Hostname()
+	switch hostname {
+	case "www.boxun.com":
+		f.Links = boxunLinksFilter(links)
+		// for _, l := range f.Links {
+		//         fmt.Println(l)
+		// }
+	}
+	return nil
+}
+
+func boxunLinksFilter(links []string) []string {
+	flinks := []string{}
+	re := regexp.MustCompile(`.*?/news/.*/\d*.shtml`)
+	s := strings.Join(links, "\n")
+	flinks = re.FindAllString(s, -1)
+	return flinks
+}
+
 // WaitForServer attempts to contact the server of a URL.
 // It tries for one minute using exponential back-off.
 // It reports an error if all attemps fail.
@@ -137,7 +172,7 @@ func breadthFirst(f func(item string) []string, worklist []string) {
 
 func crawl(url string) []string {
 	fmt.Println(url)
-	list, err := Extract(url)
+	list, err := ExtractLinks(url)
 	if err != nil {
 		log.Printf(`can't extract links from "%s": %s`, url, err)
 	}
