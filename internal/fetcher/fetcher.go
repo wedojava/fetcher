@@ -98,15 +98,12 @@ func (f *Fetcher) SetLinks() error {
 		f.Links = LinksFilter(links, `.*?/news/.*/\d*.shtml`)
 	case "www.dwnews.com":
 		f.Links = LinksFilter(links, `.*?/.*?/\d{8}/`)
+		pickOutTheseLinks(&f.Links, "/zone/")
 	case "www.voachinese.com":
 		f.Links = LinksFilter(links, `.*?/a/.*-.*.html`)
 	case "www.rfa.org":
-		links = LinksFilter(links, `.*?/.*?-\d*.html`)
-		for _, link := range links {
-			if !strings.Contains(link, "/about/") {
-				f.Links = append(f.Links, link)
-			}
-		}
+		f.Links = LinksFilter(links, `.*?/.*?-\d*.html`)
+		pickOutTheseLinks(&f.Links, "/about/")
 	}
 	for i, l := range f.Links {
 		fmt.Printf("%2d: %s\n", i+1, l)
@@ -114,6 +111,18 @@ func (f *Fetcher) SetLinks() error {
 	return nil
 }
 
+func pickOutTheseLinks(links *[]string, key string) {
+	tmp := []string{}
+	for _, link := range *links {
+		if !strings.Contains(link, key) {
+			tmp = append(tmp, link)
+		}
+	}
+	*links = tmp
+}
+
+// TODO: use point to impletement LinksFilter
+// LinksFilter is support for SetLinks method
 func LinksFilter(links []string, regex string) []string {
 	flinks := []string{}
 	re := regexp.MustCompile(regex)
@@ -125,9 +134,6 @@ func LinksFilter(links []string, regex string) []string {
 func FetcherFactory(site string) *Fetcher {
 	return &Fetcher{
 		Entrance: site,
-		Links:    nil,
-		LinksNew: nil,
-		LinksOld: nil,
 	}
 }
 
@@ -141,19 +147,6 @@ func breadthFirst(f func(item string) error, worklist []string) {
 			log.Println(err)
 		}
 	}
-	// seen := make(map[string]bool)
-	// for len(worklist) > 0 {
-	//         items := worklist
-	//         worklist = nil
-	//         for _, item := range items {
-	//                 if !seen[item] {
-	//                         seen[item] = true
-	//                         f(item)
-	//                         worklist = items
-	//                         // worklist = append(worklist, f(item)...)
-	//                 }
-	//         }
-	// }
 }
 
 func crawl(url string) error {
