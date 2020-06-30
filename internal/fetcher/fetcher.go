@@ -6,8 +6,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/wedojava/gears"
@@ -79,60 +77,6 @@ func GetDOC(url *url.URL, retryTimeout time.Duration) (*html.Node, error) {
 		time.Sleep(time.Second << uint(tries)) // exponential back-off
 	}
 	return nil, nil
-}
-
-func (f *Fetcher) SetLinks() error {
-	_url, err := url.Parse(f.Entrance)
-	if err != nil {
-		return err
-	}
-	links, err := ExtractLinks(_url.String())
-	if err != nil {
-		log.Printf(`can't extract links from "%s": %s`, _url, err)
-		return err
-	}
-	links = gears.StrSliceDeDupl(links)
-	hostname := _url.Hostname()
-	switch hostname {
-	case "www.boxun.com":
-		f.Links = LinksFilter(links, `.*?/news/.*/\d*.shtml`)
-	case "www.dwnews.com":
-		f.Links = LinksFilter(links, `.*?/.*?/\d{8}/`)
-		kickOutLinksMatchPath(&f.Links, "zone")
-		kickOutLinksMatchPath(&f.Links, "视觉")
-	case "www.voachinese.com":
-		f.Links = LinksFilter(links, `.*?/a/.*-.*.html`)
-	case "www.rfa.org":
-		f.Links = LinksFilter(links, `.*?/.*?-\d*.html`)
-		kickOutLinksMatchPath(&f.Links, "about")
-	}
-	for i, l := range f.Links {
-		fmt.Printf("%2d: %s\n", i+1, l)
-	}
-	return nil
-}
-
-// kickOutLinksMatchPath will kick out the links match the path,
-// if path=="zone" it will kick out the links that contains "/zone/"
-func kickOutLinksMatchPath(links *[]string, path string) {
-	tmp := []string{}
-	path = "/" + url.QueryEscape(path) + "/"
-	for _, link := range *links {
-		if !strings.Contains(link, path) {
-			tmp = append(tmp, link)
-		}
-	}
-	*links = tmp
-}
-
-// TODO: use point to impletement LinksFilter
-// LinksFilter is support for SetLinks method
-func LinksFilter(links []string, regex string) []string {
-	flinks := []string{}
-	re := regexp.MustCompile(regex)
-	s := strings.Join(links, "\n")
-	flinks = re.FindAllString(s, -1)
-	return flinks
 }
 
 func FetcherFactory(site string) *Fetcher {
