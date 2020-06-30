@@ -1,6 +1,7 @@
 package fetcher
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -21,15 +22,14 @@ type Fetcher struct {
 
 var originalHost string
 
-// TODO: Can't use resp.Body twice, so Raw and DOC can't fetch at the sametime.
-// GetRaw can get html raw bytes by rawurl.
-func GetRaw(url *url.URL, retryTimeout time.Duration) ([]byte, error) {
+// GetRawAndDoc can get html raw bytes and html.Node by rawurl.
+func GetRawAndDoc(url *url.URL, retryTimeout time.Duration) ([]byte, *html.Node, error) {
 	// To judge if there is a syntex error on url
 	if originalHost == "" {
 		originalHost = url.Host
 	}
 	if originalHost != url.Host {
-		return nil, fmt.Errorf("bad host of url: %s, expected: %s", url.Host, originalHost)
+		return nil, nil, fmt.Errorf("bad host of url: %s, expected: %s", url.Host, originalHost)
 	}
 	// Get response form url
 	deadline := time.Now().Add(retryTimeout)
@@ -39,45 +39,47 @@ func GetRaw(url *url.URL, retryTimeout time.Duration) ([]byte, error) {
 			defer resp.Body.Close()
 			raw, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
-			return raw, nil
+			reader := bytes.NewBuffer(raw)
+			doc, err := html.Parse(reader)
+			return raw, doc, nil
 		}
 		log.SetPrefix("[wait]")
 		log.SetFlags(0)
 		log.Printf("server not responding (%s); retrying...", err)
 		time.Sleep(time.Second << uint(tries)) // exponential back-off
 	}
-	return nil, nil
+	return nil, nil, nil
 }
 
-func GetDOC(url *url.URL, retryTimeout time.Duration) (*html.Node, error) {
-	// To judge if there is a syntex error on url
-	if originalHost == "" {
-		originalHost = url.Host
-	}
-	if originalHost != url.Host {
-		return nil, fmt.Errorf("bad host of url: %s, expected: %s", url.Host, originalHost)
-	}
-	// Get response form url
-	deadline := time.Now().Add(retryTimeout)
-	for tries := 0; time.Now().Before(deadline); tries++ {
-		resp, err := http.Get(url.String())
-		if err == nil { // success
-			defer resp.Body.Close()
-			doc, err := html.Parse(resp.Body)
-			if err != nil {
-				return nil, err
-			}
-			return doc, nil
-		}
-		log.SetPrefix("[wait]")
-		log.SetFlags(0)
-		log.Printf("server not responding (%s); retrying...", err)
-		time.Sleep(time.Second << uint(tries)) // exponential back-off
-	}
-	return nil, nil
-}
+// func GetDOC(url *url.URL, retryTimeout time.Duration) (*html.Node, error) {
+//         // To judge if there is a syntex error on url
+//         if originalHost == "" {
+//                 originalHost = url.Host
+//         }
+//         if originalHost != url.Host {
+//                 return nil, fmt.Errorf("bad host of url: %s, expected: %s", url.Host, originalHost)
+//         }
+//         // Get response form url
+//         deadline := time.Now().Add(retryTimeout)
+//         for tries := 0; time.Now().Before(deadline); tries++ {
+//                 resp, err := http.Get(url.String())
+//                 if err == nil { // success
+//                         defer resp.Body.Close()
+//                         doc, err := html.Parse(resp.Body)
+//                         if err != nil {
+//                                 return nil, err
+//                         }
+//                         return doc, nil
+//                 }
+//                 log.SetPrefix("[wait]")
+//                 log.SetFlags(0)
+//                 log.Printf("server not responding (%s); retrying...", err)
+//                 time.Sleep(time.Second << uint(tries)) // exponential back-off
+//         }
+//         return nil, nil
+// }
 
 func FetcherFactory(site string) *Fetcher {
 	return &Fetcher{

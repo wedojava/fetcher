@@ -36,16 +36,12 @@ func PostFactory(rawurl string) *Post {
 
 func (p *Post) SetPost() error {
 	// set contents
-	doc, err := GetDOC(p.URL, 1*time.Minute)
-	if err != nil {
-		return err
-	}
-	p.DOC = doc
-	raw, err := GetRaw(p.URL, 1*time.Minute)
+	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		return err
 	}
 	p.Raw = raw
+	p.DOC = doc
 	// set Date
 	if err := p.SetDate(); err != nil {
 		return err
