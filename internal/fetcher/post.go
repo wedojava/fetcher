@@ -26,7 +26,7 @@ type Paragraph struct {
 func PostFactory(rawurl string) *Post {
 	url, err := url.Parse(rawurl)
 	if err != nil {
-		log.Println("url parse err: %s", err)
+		log.Printf("url parse err: %s", err)
 	}
 	return &Post{
 		Domain: url.Hostname(),

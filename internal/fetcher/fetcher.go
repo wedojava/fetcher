@@ -2,8 +2,6 @@ package fetcher
 
 import (
 	"fmt"
-	"github.com/wedojava/gears"
-	"golang.org/x/net/html"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,6 +9,9 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/wedojava/gears"
+	"golang.org/x/net/html"
 )
 
 type Fetcher struct {
@@ -96,7 +97,7 @@ func (f *Fetcher) SetLinks() error {
 	case "www.boxun.com":
 		f.Links = LinksFilter(links, `.*?/news/.*/\d*.shtml`)
 	case "www.dwnews.com":
-		f.Links = LinksFilter(links, `.*?/.{2}/\d{8}/.+?`)
+		f.Links = LinksFilter(links, `.*?/.*?/\d{8}/`)
 	case "www.voachinese.com":
 		f.Links = LinksFilter(links, `.*?/a/.*-.*.html`)
 	case "www.rfa.org":
@@ -107,9 +108,9 @@ func (f *Fetcher) SetLinks() error {
 			}
 		}
 	}
-	// for i, l := range f.Links {
-	//         fmt.Printf("%2d: %s\n", i+1, l)
-	// }
+	for i, l := range f.Links {
+		fmt.Printf("%2d: %s\n", i+1, l)
+	}
 	return nil
 }
 
@@ -135,19 +136,24 @@ func FetcherFactory(site string) *Fetcher {
 // f is called at most once  for each item.
 // breadthFirst(crawl, os.Args[1:])
 func breadthFirst(f func(item string) error, worklist []string) {
-	seen := make(map[string]bool)
-	for len(worklist) > 0 {
-		items := worklist
-		worklist = nil
-		for _, item := range items {
-			if !seen[item] {
-				seen[item] = true
-				f(item)
-				worklist = items
-				// worklist = append(worklist, f(item)...)
-			}
+	for _, item := range worklist {
+		if err := f(item); err != nil {
+			log.Println(err)
 		}
 	}
+	// seen := make(map[string]bool)
+	// for len(worklist) > 0 {
+	//         items := worklist
+	//         worklist = nil
+	//         for _, item := range items {
+	//                 if !seen[item] {
+	//                         seen[item] = true
+	//                         f(item)
+	//                         worklist = items
+	//                         // worklist = append(worklist, f(item)...)
+	//                 }
+	//         }
+	// }
 }
 
 func crawl(url string) error {
@@ -161,8 +167,12 @@ func crawl(url string) error {
 	// Set LinksNew
 	f.LinksNew = gears.StrSliceDiff(f.Links, f.LinksOld)
 	// GetNews then compare via md5 and Save or Rewrite news exist
+	log.Println("[*] Get news ...")
 	for _, link := range f.LinksNew {
 		post := PostFactory(link)
+		if err := post.SetPost(); err != nil {
+			return err
+		}
 	}
 	// Set LinksOld
 	f.LinksOld = f.Links

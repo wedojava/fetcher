@@ -3,11 +3,22 @@ package fetcher
 import (
 	"fmt"
 	"path/filepath"
+	"regexp"
 
 	"golang.org/x/net/html"
 )
 
-func soleDate(doc *html.Node, metaName string) (date string, err error) {
+type dateItem struct {
+	tagName             string
+	positioningAttrName string
+	positioningAttrVal  string
+	dateAttrName        string
+	dateAttrVal         string
+	firstChildData      string
+}
+
+// TODO: return value and set same value to object at one function is redundancy
+func soleDate(doc *html.Node, d *dateItem) (date string, err error) {
 	type bailout struct{}
 	defer func() {
 		switch p := recover(); p {
@@ -22,14 +33,24 @@ func soleDate(doc *html.Node, metaName string) (date string, err error) {
 	}()
 	// Bail out of recursion if we find more than one non-empty date.
 	forEachNode(doc, func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "meta" {
+		if n.Type == html.ElementNode && n.Data == d.tagName {
 			yes := false
 			for _, a := range n.Attr {
-				if a.Key == "name" && a.Val == metaName {
+				// TODO: compare items implement via map and deepcompare
+				// yeap, positionAttr is blank means:
+				// no need attr to help it to positioning where is date value
+				// just tag name is enough to positioning the date value
+				if d.positioningAttrName == "" && d.positioningAttrVal == "" {
+					yes = true
+				} else if a.Key == d.positioningAttrName && a.Val == d.positioningAttrVal {
 					yes = true
 				}
-				if yes && a.Key == "content" {
+				if yes && d.dateAttrName != "" && a.Key == d.dateAttrName {
 					date = a.Val
+					d.dateAttrVal = a.Val
+				} else if yes && d.dateAttrName == "" { // dateAttrName == "" means datevalue at firstChild
+					date = n.FirstChild.Data
+					d.dateAttrVal = date
 				}
 			}
 		}
@@ -41,11 +62,46 @@ func soleDate(doc *html.Node, metaName string) (date string, err error) {
 }
 
 func (p *Post) DwnewsDateInMeta() error {
-	date, err := soleDate(p.DOC, "parsely-pub-date")
+	d := &dateItem{
+		tagName:             "meta",
+		positioningAttrName: "name",
+		positioningAttrVal:  "parsely-pub-date",
+		dateAttrName:        "content",
+	}
+	date, err := soleDate(p.DOC, d)
 	if err != nil {
 		return err
 	}
 	p.Date = date
+	return nil
+}
+
+func (p *Post) VoaDateInNode() error {
+	d := &dateItem{
+		tagName:      "time",
+		dateAttrName: "datetime",
+	}
+	date, err := soleDate(p.DOC, d)
+	if err != nil {
+		return err
+	}
+	p.Date = date
+	return nil
+}
+
+func (p *Post) RfaDateInScript() error {
+	d := &dateItem{
+		tagName:             "script",
+		positioningAttrName: "type",
+		positioningAttrVal:  "application/ld+json",
+	}
+	date, err := soleDate(p.DOC, d)
+	if err != nil {
+		return err
+	}
+	re := regexp.MustCompile(`"date\w*?":\s*?"(.*?)"`)
+	rs := re.FindAllStringSubmatch(date, -1)
+	p.Date = rs[0][1] // dateModified -> rs[0][1], datePublished -> rs[1][1]
 	return nil
 }
 
@@ -58,6 +114,15 @@ func (p *Post) SetDate() error {
 		if err := p.DwnewsDateInMeta(); err != nil {
 			return err
 		}
+	case "www.voachinese.com":
+		if err := p.VoaDateInNode(); err != nil {
+			return err
+		}
+	case "www.rfa.org":
+		if err := p.RfaDateInScript(); err != nil {
+			return err
+		}
 	}
+	fmt.Println(p.Date) // print for test
 	return nil
 }
