@@ -82,28 +82,29 @@ func GetDOC(url *url.URL, retryTimeout time.Duration) (*html.Node, error) {
 }
 
 func (f *Fetcher) SetLinks() error {
-	url, err := url.Parse(f.Entrance)
+	_url, err := url.Parse(f.Entrance)
 	if err != nil {
 		return err
 	}
-	links, err := ExtractLinks(url.String())
+	links, err := ExtractLinks(_url.String())
 	if err != nil {
-		log.Printf(`can't extract links from "%s": %s`, url, err)
+		log.Printf(`can't extract links from "%s": %s`, _url, err)
 		return err
 	}
 	links = gears.StrSliceDeDupl(links)
-	hostname := url.Hostname()
+	hostname := _url.Hostname()
 	switch hostname {
 	case "www.boxun.com":
 		f.Links = LinksFilter(links, `.*?/news/.*/\d*.shtml`)
 	case "www.dwnews.com":
 		f.Links = LinksFilter(links, `.*?/.*?/\d{8}/`)
-		pickOutTheseLinks(&f.Links, "/zone/")
+		kickOutLinksMatchPath(&f.Links, "zone")
+		kickOutLinksMatchPath(&f.Links, "视觉")
 	case "www.voachinese.com":
 		f.Links = LinksFilter(links, `.*?/a/.*-.*.html`)
 	case "www.rfa.org":
 		f.Links = LinksFilter(links, `.*?/.*?-\d*.html`)
-		pickOutTheseLinks(&f.Links, "/about/")
+		kickOutLinksMatchPath(&f.Links, "about")
 	}
 	for i, l := range f.Links {
 		fmt.Printf("%2d: %s\n", i+1, l)
@@ -111,10 +112,13 @@ func (f *Fetcher) SetLinks() error {
 	return nil
 }
 
-func pickOutTheseLinks(links *[]string, key string) {
+// kickOutLinksMatchPath will kick out the links match the path,
+// if path=="zone" it will kick out the links that contains "/zone/"
+func kickOutLinksMatchPath(links *[]string, path string) {
 	tmp := []string{}
+	path = "/" + url.QueryEscape(path) + "/"
 	for _, link := range *links {
-		if !strings.Contains(link, key) {
+		if !strings.Contains(link, path) {
 			tmp = append(tmp, link)
 		}
 	}
