@@ -50,10 +50,9 @@ func (p *Post) SetPost() error {
 	if err := p.SetTitle(); err != nil {
 		return err
 	}
-	// fmt Body
-	// err = p.FmtBodyBoxun()
-	// if err != nil {
-	//         return err
-	// }
+	// set Body (get and format body)
+	if err := p.SetBody(); err != nil {
+		return err
+	}
 	return nil
 }
