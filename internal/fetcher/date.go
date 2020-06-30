@@ -123,6 +123,6 @@ func (p *Post) SetDate() error {
 			return err
 		}
 	}
-	fmt.Println(p.Date) // print for test
+	// fmt.Println(p.Date) // print for test
 	return nil
 }
