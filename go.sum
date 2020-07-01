@@ -8,8 +8,8 @@ github.com/gogs/chardet v0.0.0-20191104214054-4b6791f73a28 h1:gBeyun7mySAKWg7Fb0
 github.com/gogs/chardet v0.0.0-20191104214054-4b6791f73a28/go.mod h1:Pcatq5tYkCW2Q6yrR2VRHlbHpZ/R4/7qyL1TCF7vl14=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
-github.com/wedojava/gears v0.0.0-20200518174338-ab09eb69a28e h1:jP6y6tQeCrc7OOqt/wrkIYKZF6cG97oC6wR0FbhENss=
-github.com/wedojava/gears v0.0.0-20200518174338-ab09eb69a28e/go.mod h1:AmYZMYP4t6NF/Bb0QB7xLwkoE6PF9i0UjOEGpcyM/kI=
+github.com/wedojava/gears v0.0.0-20200701120226-35018b5feef6 h1:xfY4l1Omqm9EfzZN7df3U7Cn/XlR4+7vpjpzb6sVCGA=
+github.com/wedojava/gears v0.0.0-20200701120226-35018b5feef6/go.mod h1:AmYZMYP4t6NF/Bb0QB7xLwkoE6PF9i0UjOEGpcyM/kI=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/net v0.0.0-20200602114024-627f9648deb9 h1:pNX+40auqi2JqRfOP1akLGtYcn15TUbkhwuCO3foqqM=
 golang.org/x/net v0.0.0-20200602114024-627f9648deb9/go.mod h1:qpuaurCH72eLCgpAm/N6yyVIVM9cpaDIP3A8BGJEC5A=
