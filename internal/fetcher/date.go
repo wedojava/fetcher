@@ -18,6 +18,29 @@ type dateItem struct {
 	firstChildData      string
 }
 
+func (p *Post) SetDate() error {
+	switch p.Domain {
+	case "www.boxun.com":
+		if err := p.BoxunDateInUrl(); err != nil {
+			return err
+		}
+	case "www.dwnews.com":
+		if err := p.DwnewsDateInMeta(); err != nil {
+			return err
+		}
+	case "www.voachinese.com":
+		if err := p.VoaDateInNode(); err != nil {
+			return err
+		}
+	case "www.rfa.org":
+		if err := p.RfaDateInScript(); err != nil {
+			return err
+		}
+	}
+	// fmt.Println(p.Date) // print for test
+	return nil
+}
+
 // TODO: return value and set same value to object at one function is redundancy
 func soleDate(doc *html.Node, d *dateItem) (date string, err error) {
 	type bailout struct{}
@@ -155,27 +178,5 @@ func (p *Post) BoxunDateInUrl() error {
 		// fmt.Println(mm, "is not a integer of Minute, set it to 59")
 	}
 	p.Date = fmt.Sprintf("%02d-%02d-%02dT%02d:%02d:%02dZ", Y, M, D, hh, mm, 0)
-	return nil
-}
-
-func (p *Post) SetDate() error {
-	switch p.Domain {
-	case "www.boxun.com":
-		a := filepath.Base(p.URL.Path)
-		p.Date = fmt.Sprintf("%s-%s-%sT%s:%s:%sZ", a[:4], a[4:6], a[6:8], a[8:10], a[10:12], "00")
-	case "www.dwnews.com":
-		if err := p.DwnewsDateInMeta(); err != nil {
-			return err
-		}
-	case "www.voachinese.com":
-		if err := p.VoaDateInNode(); err != nil {
-			return err
-		}
-	case "www.rfa.org":
-		if err := p.RfaDateInScript(); err != nil {
-			return err
-		}
-	}
-	// fmt.Println(p.Date) // print for test
 	return nil
 }
