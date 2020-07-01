@@ -33,13 +33,13 @@ func (p *Post) FmtBody(f func(body []byte) (string, error)) error {
 func Boxun(body []byte) (string, error) {
 	var ps []string
 	var _body string
-	var re = regexp.MustCompile(`(?m)<!--bodystart-->([^\^]*)<!--bodyend-->`)
-	// TODO: replace implement from string dealing to []byte dealing
-	for _, v := range re.FindAllStringSubmatch(string(body), -1) {
-		ps = append(ps, v[1])
+	var re = regexp.MustCompile(`(?m)&nbsp;&nbsp;&nbsp;&nbsp;(.*?)<BR>`)
+	vs := re.FindAllSubmatch(body, -1)
+	for _, v := range vs {
+		ps = append(ps, string(v[1]))
 	}
 	if len(ps) == 0 {
-		return "", errors.New("[-] Boxun() regex error: want match body but matched nothing.")
+		return "", errors.New("[-] Boxun() match nothing from body.")
 	} else {
 		for _, p := range ps {
 			_body += p + "  \n"
@@ -56,6 +56,8 @@ func Boxun(body []byte) (string, error) {
 		re = regexp.MustCompile(`<div(.*?)</div>`)
 		v = re.ReplaceAllString(v, "")
 		re = regexp.MustCompile(`<img(.*?)>`)
+		v = re.ReplaceAllString(v, "")
+		re = regexp.MustCompile(`<P>`)
 		v = re.ReplaceAllString(v, "")
 		if strings.TrimSpace(v) == "" {
 			continue
