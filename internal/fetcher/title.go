@@ -45,14 +45,14 @@ func (p *Post) SetTitle() error {
 		return err
 	}
 	ReplaceIllegalChar(&title)
-	title = strings.TrimSpace(title)
+	p.Title = strings.TrimSpace(title)
 	switch p.Domain {
 	case "www.boxun.com":
-		p.Title = gears.ConvertToUtf8(title, "gbk", "utf8")
+		if err = gears.ConvertToUtf8(&p.Title, "gbk", "utf8"); err != nil {
+			return err
+		}
 	case "www.dwnews.com":
 		p.Title = title[:strings.Index(title, "｜")]
-	default:
-		p.Title = title
 	}
 	return nil
 }
