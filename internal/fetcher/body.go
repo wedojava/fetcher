@@ -6,6 +6,16 @@ import (
 	"strings"
 )
 
+func (p *Post) SetBody() error {
+	switch p.Domain {
+	case "www.boxun.com":
+		if err := p.FmtBody(Boxun); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (p *Post) FmtBody(f func(body []byte) (string, error)) error {
 	if p.DOC == nil {
 		return errors.New("[-] there is no DOC object to get and format.")
@@ -15,16 +25,6 @@ func (p *Post) FmtBody(f func(body []byte) (string, error)) error {
 		return err
 	}
 	p.Body = b
-	return nil
-}
-
-func (p *Post) SetBody() error {
-	switch p.Domain {
-	case "www.boxun.com":
-		if err := p.FmtBody(Boxun); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
