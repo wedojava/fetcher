@@ -26,7 +26,7 @@ func (p *Post) FmtBody(f func(body []byte) (string, error)) error {
 	if err != nil {
 		return err
 	}
-	p.Body = b
+	p.Body = "#" + p.Filename[:strings.LastIndex(p.Filename, ".")] + "\n\n" + b
 	return nil
 }
 
