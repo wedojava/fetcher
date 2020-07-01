@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/wedojava/gears"
@@ -72,9 +73,9 @@ func breadthFirst(f func(item string), worklist []string) {
 	}
 }
 
-func crawl(url string) {
-	f := FetcherFactory(url)
-	log.Printf("[*] Deal with: [%s]\n", url)
+func crawl(_url string) {
+	f := FetcherFactory(_url)
+	log.Printf("[*] Deal with: [%s]\n", _url)
 	log.Println("[*] Fetch links ...")
 	if err := f.SetLinks(); err != nil {
 		log.Println(err)
@@ -105,6 +106,32 @@ func crawl(url string) {
 	}
 	// Set LinksOld, if only success above, then set LinksOld = Links
 	f.LinksOld = f.Links
+	// Remove files 3 days ago
+	u, err := url.Parse(f.Entrance)
+	if err != nil {
+		log.Println(err)
+		ErrLog(err.Error())
+	}
+	DelRoutine(filepath.Join("wwwroot", u.Hostname()), 3)
+}
+
+// DelRoutine remove files in folder days ago
+func DelRoutine(folder string, n int) error {
+	if !gears.Exists(folder) {
+		fmt.Printf("\n[-] DelRoutine() err: Folder(%s) does not exist.\n", folder)
+		return nil
+	}
+	for i := 0; i < 3; i++ { // deal with file n+i days ago
+		a := time.Now().AddDate(0, 0, -(n + i))
+		b := fmt.Sprintf("[%02d.%02d]", a.Month(), a.Day())
+		c, _ := gears.GetPrefixedFiles(folder, b)
+		for _, f := range c {
+			// fmt.Println("DelRoutine will delete: ", f)
+			os.Remove(f)
+		}
+
+	}
+	return nil
 }
 
 func ErrLog(msg string) error {
