@@ -93,9 +93,9 @@ func (f *Fetcher) SetLinks() error {
 		f.Links = LinksFilter(links, `.*?/.*?-\d*.html`)
 		KickOutLinksMatchPath(&f.Links, "about")
 	}
-	for i, l := range f.Links {
-		fmt.Printf("%2d: %s\n", i+1, l)
-	}
+	// for i, l := range f.Links {
+	//         fmt.Printf("%2d: %s\n", i+1, l)
+	// }
 	return nil
 }
 
