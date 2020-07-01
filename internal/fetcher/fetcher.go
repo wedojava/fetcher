@@ -73,6 +73,7 @@ func breadthFirst(f func(item string), worklist []string) {
 	}
 }
 
+// TODO: crawl need endless loop every invoke, so Links can be managed by each object fetcher.
 func crawl(_url string) {
 	f := FetcherFactory(_url)
 	log.Printf("[*] Deal with: [%s]\n", _url)
@@ -129,7 +130,6 @@ func DelRoutine(folder string, n int) error {
 			// fmt.Println("DelRoutine will delete: ", f)
 			os.Remove(f)
 		}
-
 	}
 	return nil
 }
