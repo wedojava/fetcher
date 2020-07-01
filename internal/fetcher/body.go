@@ -3,6 +3,7 @@ package fetcher
 import (
 	"errors"
 	"regexp"
+	"strings"
 )
 
 func (p *Post) FmtBody(f func(body []byte) (string, error)) error {
@@ -43,14 +44,20 @@ func Boxun(body []byte) (string, error) {
 		}
 	}
 	a := regexp.MustCompile(`<BR>`)
-	bodySlice := a.Split(string(body), -1)
+	bodySlice := a.Split(string(_body), -1)
+	_body = ""
 	for _, v := range bodySlice {
+		re = regexp.MustCompile(`<table([^\^]*)</table>`)
+		v = re.ReplaceAllString(v, "")
 		re = regexp.MustCompile(`&nbsp;`)
 		v = re.ReplaceAllString(v, "")
 		re = regexp.MustCompile(`<div(.*?)</div>`)
 		v = re.ReplaceAllString(v, "")
 		re = regexp.MustCompile(`<img(.*?)>`)
 		v = re.ReplaceAllString(v, "")
+		if strings.TrimSpace(v) == "" {
+			continue
+		}
 		_body += v + "  \n"
 	}
 	return _body, nil

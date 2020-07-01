@@ -8,7 +8,7 @@ import (
 
 func TestVoaDateInNode(t *testing.T) {
 	p := PostFactory("https://www.dwnews.com/%E9%A6%99%E6%B8%AF/60201980/")
-	doc, err := GetDOC(p.URL, 1*time.Minute)
+	_, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetDOC error: %v", err)
 	}
@@ -26,7 +26,7 @@ func TestSetDate(t *testing.T) {
 	}
 	for _, link := range f.Links {
 		p := PostFactory(link)
-		doc, err := GetDOC(p.URL, 1*time.Minute)
+		_, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
 		if err != nil {
 			t.Errorf("GetDOC error: %v", err)
 		}
