@@ -1,12 +1,14 @@
 package fetcher
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/wedojava/gears"
@@ -18,6 +20,7 @@ type Fetcher struct {
 	Links    []string
 	LinksNew []string
 	LinksOld []string
+	LinksErr []string
 }
 
 var originalHost string
@@ -63,33 +66,56 @@ func FetcherFactory(site string) *Fetcher {
 // Any items returned by f are added to the worklist.
 // f is called at most once  for each item.
 // breadthFirst(crawl, os.Args[1:])
-func breadthFirst(f func(item string) error, worklist []string) {
+func breadthFirst(f func(item string), worklist []string) {
 	for _, item := range worklist {
-		if err := f(item); err != nil {
-			log.Println(err)
-		}
+		f(item)
 	}
 }
 
-func crawl(url string) error {
+func crawl(url string) {
 	f := FetcherFactory(url)
 	log.Printf("[*] Deal with: [%s]\n", url)
 	log.Println("[*] Fetch links ...")
 	if err := f.SetLinks(); err != nil {
 		log.Println(err)
-		return err
 	}
 	// Set LinksNew
 	f.LinksNew = gears.StrSliceDiff(f.Links, f.LinksOld)
+	if len(f.LinksNew) == 0 { // there's no news need to be saved.
+		return
+	}
 	// GetNews then compare via md5 and Save or Rewrite news exist
 	log.Println("[*] Get news ...")
 	for _, link := range f.LinksNew {
 		post := PostFactory(link)
 		if err := post.SetPost(); err != nil {
-			return err
+			f.LinksErr = append(f.LinksErr, link)
+			errMsg := "[-] SetPost error occur from: " + link
+			log.Printf(errMsg)
+			log.Println(err)
+			ErrLog(errMsg + " " + err.Error())
+		}
+		if err := post.SavePost(); err != nil {
+			f.LinksErr = append(f.LinksErr, link)
+			errMsg := "[-] SavePost error occur from: " + link
+			log.Printf(errMsg)
+			log.Println(err)
+			ErrLog(errMsg + " " + err.Error())
 		}
 	}
-	// Set LinksOld
+	// Set LinksOld, if only success above, then set LinksOld = Links
 	f.LinksOld = f.Links
+}
+
+func ErrLog(msg string) error {
+	filePath := "./errLog.txt"
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	write := bufio.NewWriter(file)
+	write.WriteString(msg)
+	write.Flush()
 	return nil
 }
