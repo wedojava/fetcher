@@ -38,3 +38,15 @@ func TestSetDate(t *testing.T) {
 
 	}
 }
+
+func TestBoxunDateInUrl(t *testing.T) {
+	p := PostFactory("https://www.boxun.com/news/gb/intl/2020/06/202006302339.shtml")
+	if err := p.BoxunDateInUrl(); err != nil {
+		t.Errorf("BoxunDateInUrl() invoked error: %v", err)
+	}
+	want := "2020-06-30T23:39:00Z"
+	if p.Date != want {
+		t.Errorf("want: %v, got: %v", want, p.Date)
+	}
+	fmt.Println(p.Date)
+}
