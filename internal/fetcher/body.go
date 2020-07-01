@@ -4,6 +4,8 @@ import (
 	"errors"
 	"regexp"
 	"strings"
+
+	"github.com/wedojava/gears"
 )
 
 func (p *Post) SetBody() error {
@@ -59,6 +61,9 @@ func Boxun(body []byte) (string, error) {
 			continue
 		}
 		_body += v + "  \n"
+	}
+	if err := gears.ConvertToUtf8(&_body, "gbk", "utf-8"); err != nil {
+		return "", err
 	}
 	return _body, nil
 }
