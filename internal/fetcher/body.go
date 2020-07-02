@@ -19,6 +19,10 @@ func (p *Post) SetBody() error {
 		if err := p.FmtBody(Dwnews); err != nil {
 			return err
 		}
+	case "www.voachinese.com":
+		if err := p.FmtBody(Voa); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -85,15 +89,26 @@ func Dwnews(p *Post) (string, error) {
 	articleDoc := ElementsByTagName(doc, "article")[0].FirstChild
 	plist := ElementsByTagName(articleDoc, "p")
 	if articleDoc.FirstChild.Data == "div" {
-		body += fmt.Sprintf("\n > %s \n", plist[0].FirstChild.Data)
+		body += fmt.Sprintf("\n > %s  \n", plist[0].FirstChild.Data)
 	}
 	for _, v := range plist[:len(plist)-1] { // the last item is `推荐阅读：`
 		if v.FirstChild.Data == "strong" {
 			body += fmt.Sprintf("** %s **", v.FirstChild.FirstChild.Data)
 		}
-		body += v.FirstChild.Data
+		body += v.FirstChild.Data + "  \n"
 	}
 	body = strings.ReplaceAll(body, "strong", "")
 	body = strings.ReplaceAll(body, "推荐阅读：", "")
+	return body, nil
+}
+
+func Voa(p *Post) (string, error) {
+	doc := p.DOC
+	body := ""
+	articleDoc := ElementsByTagAndClass(doc, "div", "wsw")
+	plist := ElementsByTagName(articleDoc[0], "p")
+	for _, v := range plist {
+		body += v.FirstChild.Data + "  \n"
+	}
 	return body, nil
 }
