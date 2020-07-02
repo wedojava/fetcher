@@ -70,12 +70,16 @@ func (p *Post) SavePost() error {
 	folderPath := filepath.Join("wwwroot", p.Domain)
 	gears.MakeDirAll(folderPath)
 	filepath := filepath.Join(folderPath, p.Filename)
-	if !gears.Exists(filepath) {
-		err := ioutil.WriteFile(filepath, []byte(p.Body), 0644)
-		if err != nil {
-			return err
-		}
+	err := ioutil.WriteFile(filepath, []byte(p.Body), 0644)
+	if err != nil {
+		return err
 	}
+	// if !gears.Exists(filepath) {
+	//         err := ioutil.WriteFile(filepath, []byte(p.Body), 0644)
+	//         if err != nil {
+	//                 return err
+	//         }
+	// }
 	return nil
 }
 

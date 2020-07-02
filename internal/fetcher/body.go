@@ -86,13 +86,14 @@ func Boxun(p *Post) (string, error) {
 func Dwnews(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
+	// Fetch content nodes
 	nodes := ElementsByTagName(doc, "article")
 	if len(nodes) == 0 {
 		return "", errors.New("[-] There is no tag named `<article>` from: " + p.URL.String())
 	}
 	articleDoc := nodes[0].FirstChild
 	plist := ElementsByTagName(articleDoc, "p")
-	if articleDoc.FirstChild.Data == "div" {
+	if articleDoc.FirstChild.Data == "div" { // to fetch the summary block
 		body += fmt.Sprintf("\n > %s  \n", plist[0].FirstChild.Data)
 	}
 	for _, v := range plist { // the last item is `推荐阅读：`
@@ -113,10 +114,17 @@ func Dwnews(p *Post) (string, error) {
 func Voa(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
+	// Fetch content nodes
 	articleDoc := ElementsByTagAndClass(doc, "div", "wsw")
+	if len(articleDoc) == 0 {
+		return "", errors.New(`[-] There is no element match '<div class="wsw">'`)
+	}
 	plist := ElementsByTagName(articleDoc[0], "p")
 	for _, v := range plist {
 		body += v.FirstChild.Data + "  \n"
 	}
+	body = strings.ReplaceAll(body, "strong  \n", "")
+	body = strings.ReplaceAll(body, "span  \n", "")
+	body = strings.ReplaceAll(body, "br  \n", "")
 	return body, nil
 }

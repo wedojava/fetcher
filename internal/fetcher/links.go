@@ -72,6 +72,7 @@ func (f *Fetcher) SetLinks() error {
 		KickOutLinksMatchPath(&f.Links, "/"+url.QueryEscape("视觉")+"/")
 	case "www.voachinese.com":
 		f.Links = LinksFilter(links, `.*?/a/.*-.*.html`)
+		KickOutLinksMatchPath(&f.Links, "voaweishi")
 	case "www.rfa.org":
 		f.Links = LinksFilter(links, `.*?/.*?-\d*.html`)
 		KickOutLinksMatchPath(&f.Links, "about")
@@ -80,7 +81,6 @@ func (f *Fetcher) SetLinks() error {
 }
 
 // kickOutLinksMatchPath will kick out the links match the path,
-// if path=="zone" it will kick out the links that contains "/zone/"
 func KickOutLinksMatchPath(links *[]string, path string) {
 	tmp := []string{}
 	// path = "/" + url.QueryEscape(path) + "/"
