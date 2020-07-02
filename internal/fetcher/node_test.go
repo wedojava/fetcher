@@ -14,8 +14,8 @@ func TestElementsByTagAndClass(t *testing.T) {
 	}
 	p.DOC = doc
 	p.Raw = raw
-	ts := ElementsByTagAndClass(doc, "div", "wsw")
-	plist := ElementsByTagName(ts[0], "p")
+	tc := ElementsByTagAndClass(doc, "div", "wsw")
+	plist := ElementsByTagName(tc[0], "p")
 	for _, v := range plist {
 		fmt.Println(v.FirstChild.Data)
 	}

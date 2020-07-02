@@ -10,7 +10,7 @@ import (
 
 // soleTitle returns the text of the first non-empty title element
 // in doc, and an error if there was not exactly one.
-func soleTitle(doc *html.Node) (title string, err error) {
+func soleTitleMutex(doc *html.Node) (title string, err error) {
 	type bailout struct{}
 	defer func() {
 		switch p := recover(); p {
@@ -39,8 +39,8 @@ func soleTitle(doc *html.Node) (title string, err error) {
 	return title, nil
 }
 
-func (p *Post) SetTitle() error {
-	title, err := soleTitle(p.DOC)
+func (p *Post) SetTitleMutex() error {
+	title, err := soleTitleMutex(p.DOC)
 	if err != nil {
 		return err
 	}
@@ -49,6 +49,22 @@ func (p *Post) SetTitle() error {
 	switch p.Domain {
 	case "www.boxun.com":
 		if err = gears.ConvertToUtf8(&p.Title, "gbk", "utf8"); err != nil {
+			return err
+		}
+	case "www.dwnews.com":
+		p.Title = title[:strings.Index(title, "｜")]
+	}
+	return nil
+}
+
+func (p *Post) SetTitle() error {
+	n := ElementsByTagName(p.DOC, "title")
+	title := n[0].FirstChild.Data
+	ReplaceIllegalChar(&title)
+	p.Title = strings.TrimSpace(title)
+	switch p.Domain {
+	case "www.boxun.com":
+		if err := gears.ConvertToUtf8(&p.Title, "gbk", "utf8"); err != nil {
 			return err
 		}
 	case "www.dwnews.com":
