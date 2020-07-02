@@ -17,7 +17,7 @@ import (
 )
 
 type Fetcher struct {
-	Entrance string
+	Entrance *url.URL
 	Links    []string
 	LinksNew []string
 	LinksOld []string
@@ -58,8 +58,12 @@ func GetRawAndDoc(url *url.URL, retryTimeout time.Duration) ([]byte, *html.Node,
 }
 
 func FetcherFactory(site string) *Fetcher {
+	u, err := url.Parse(site)
+	if err != nil {
+		log.Printf("url parse err: %s", err)
+	}
 	return &Fetcher{
-		Entrance: site,
+		Entrance: u,
 	}
 }
 
@@ -108,12 +112,7 @@ func crawl(_url string) {
 	// Set LinksOld, if only success above, then set LinksOld = Links
 	f.LinksOld = f.Links
 	// Remove files 3 days ago
-	u, err := url.Parse(f.Entrance)
-	if err != nil {
-		log.Println(err)
-		ErrLog(err.Error())
-	}
-	DelRoutine(filepath.Join("wwwroot", u.Hostname()), 3)
+	DelRoutine(filepath.Join("wwwroot", f.Entrance.Hostname()), 3)
 }
 
 // DelRoutine remove files in folder days ago
