@@ -1,18 +1,20 @@
 package fetcher
 
 import (
+	"net/url"
 	"testing"
 )
 
 func TestSetLinks(t *testing.T) {
+	u, err := url.Parse("https://www.rfa.org/mandarin/")
+	if err != nil {
+		t.Errorf("Url Parse fail!\n%s", err)
+	}
 	var f = &Fetcher{
-		Entrance: "https://www.rfa.org/mandarin/",
+		Entrance: u,
 		// Entrance: "https://www.voachinese.com",
 	}
-	err := f.SetLinks()
-	if err != nil {
-		t.Errorf("SetLinks fail!\n%s", err)
-	}
+	f.SetLinks()
 }
 
 func TestCrawl(t *testing.T) {

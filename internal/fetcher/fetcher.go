@@ -19,9 +19,6 @@ import (
 type Fetcher struct {
 	Entrance *url.URL
 	Links    []string
-	LinksNew []string
-	LinksOld []string
-	LinksErr []string
 }
 
 var originalHost string
@@ -73,46 +70,47 @@ func FetcherFactory(site string) *Fetcher {
 // breadthFirst(crawl, os.Args[1:])
 func breadthFirst(f func(item string), worklist []string) {
 	for _, item := range worklist {
+		// TODO: run in goroutine
 		f(item)
 	}
 }
 
-// TODO: crawl need endless loop every invoke, so Links can be managed by each object fetcher.
+// TODO: Links can be managed by each object fetcher.
 func crawl(_url string) {
 	f := FetcherFactory(_url)
-	log.Printf("[*] Deal with: [%s]\n", _url)
-	log.Println("[*] Fetch links ...")
-	if err := f.SetLinks(); err != nil {
-		log.Println(err)
-	}
-	// Set LinksNew
-	f.LinksNew = gears.StrSliceDiff(f.Links, f.LinksOld)
-	if len(f.LinksNew) == 0 { // there's no news need to be saved.
-		return
-	}
-	// GetNews then compare via md5 and Save or Rewrite news exist
-	log.Println("[*] Get news ...")
-	for _, link := range f.LinksNew {
-		post := PostFactory(link)
-		if err := post.SetPost(); err != nil {
-			f.LinksErr = append(f.LinksErr, link)
-			errMsg := "[-] SetPost error occur from: " + link
-			log.Printf(errMsg)
+	for {
+		log.Printf("[*] Deal with: [%s]\n", _url)
+		log.Println("[*] Fetch links ...")
+		if err := f.SetLinks(); err != nil { // f.Links update to the _url website is.
 			log.Println(err)
-			ErrLog(errMsg + " " + err.Error())
+			// if links cannot fetch sleep 1 minute then continue
+			time.Sleep(1 * time.Minute)
+			continue
 		}
-		if err := post.SavePost(); err != nil {
-			f.LinksErr = append(f.LinksErr, link)
-			errMsg := "[-] SavePost error occur from: " + link
-			log.Printf(errMsg)
-			log.Println(err)
-			ErrLog(errMsg + " " + err.Error())
+
+		// GetNews then compare via md5 and Save or Rewrite news exist
+		log.Println("[*] Get news ...")
+		for _, link := range f.Links {
+			post := PostFactory(link)
+			if err := post.SetPost(); err != nil {
+				errMsg := "[-] SetPost error occur from: " + link
+				log.Printf(errMsg)
+				log.Println(err)
+				ErrLog(errMsg + " " + err.Error())
+			}
+			if err := post.SavePost(); err != nil {
+				errMsg := "[-] SavePost error occur from: " + link
+				log.Printf(errMsg)
+				log.Println(err)
+				ErrLog(errMsg + " " + err.Error())
+			}
 		}
+		// Remove files 3 days ago
+		DelRoutine(filepath.Join("wwwroot", f.Entrance.Hostname()), 3)
+		// hold on 5 minutes
+		log.Println("Sleep a sec ...")
+		time.Sleep(5 * time.Minute)
 	}
-	// Set LinksOld, if only success above, then set LinksOld = Links
-	f.LinksOld = f.Links
-	// Remove files 3 days ago
-	DelRoutine(filepath.Join("wwwroot", f.Entrance.Hostname()), 3)
 }
 
 // DelRoutine remove files in folder days ago

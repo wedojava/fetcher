@@ -69,17 +69,13 @@ func forEachNode(n *html.Node, pre, post func(n *html.Node)) {
 }
 
 func (f *Fetcher) SetLinks() error {
-	_url, err := url.Parse(f.Entrance)
+	links, err := ExtractLinks(f.Entrance.String())
 	if err != nil {
-		return err
-	}
-	links, err := ExtractLinks(_url.String())
-	if err != nil {
-		log.Printf(`can't extract links from "%s": %s`, _url, err)
+		log.Printf(`can't extract links from "%s": %s`, f.Entrance.String(), err)
 		return err
 	}
 	links = gears.StrSliceDeDupl(links)
-	hostname := _url.Hostname()
+	hostname := f.Entrance.Hostname()
 	switch hostname {
 	case "www.boxun.com":
 		f.Links = LinksFilter(links, `.*?/news/.*/\d*.shtml`)

@@ -14,15 +14,17 @@ func (p *Post) SetBody() error {
 		if err := p.FmtBody(Boxun); err != nil {
 			return err
 		}
+	case "www.dwnews.com":
+
 	}
 	return nil
 }
 
-func (p *Post) FmtBody(f func(body []byte) (string, error)) error {
+func (p *Post) FmtBody(f func(post *Post) (string, error)) error {
 	if p.DOC == nil {
 		return errors.New("[-] there is no DOC object to get and format.")
 	}
-	b, err := f(p.Raw)
+	b, err := f(p)
 	if err != nil {
 		return err
 	}
@@ -30,11 +32,11 @@ func (p *Post) FmtBody(f func(body []byte) (string, error)) error {
 	return nil
 }
 
-func Boxun(body []byte) (string, error) {
+func Boxun(p *Post) (string, error) {
 	var ps []string
 	var _body string
 	var re = regexp.MustCompile(`(?m)&nbsp;&nbsp;&nbsp;&nbsp;(.*?)<BR>`)
-	vs := re.FindAllSubmatch(body, -1)
+	vs := re.FindAllSubmatch(p.Raw, -1)
 	for _, v := range vs {
 		ps = append(ps, string(v[1]))
 	}
@@ -69,3 +71,7 @@ func Boxun(body []byte) (string, error) {
 	}
 	return _body, nil
 }
+
+// func Dwnews(body []byte) (string, error) {
+//
+// }
