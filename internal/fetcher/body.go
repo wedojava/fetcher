@@ -2,6 +2,7 @@ package fetcher
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -76,6 +77,13 @@ func Boxun(p *Post) (string, error) {
 	return _body, nil
 }
 
-// func Dwnews(body []byte) (string, error) {
-//
-// }
+func ExtractDwnews(p *Post) ([]string, error) {
+	doc := p.DOC
+	body := []string{}
+	articleDoc := ElementsByTagName(doc, "article")[0].FirstChild
+	tmp := ElementsByTagName(articleDoc, "p")
+	for _, v := range tmp {
+		fmt.Println(v)
+	}
+	return body, nil
+}
