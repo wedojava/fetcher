@@ -56,7 +56,7 @@ func soleDate(doc *html.Node, d *dateItem) (date string, err error) {
 		}
 	}()
 	// Bail out of recursion if we find more than one non-empty date.
-	forEachNode(doc, func(n *html.Node) {
+	ForEachNode(doc, func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == d.tagName {
 			yes := false
 			for _, a := range n.Attr {
