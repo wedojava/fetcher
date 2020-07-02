@@ -86,14 +86,22 @@ func Boxun(p *Post) (string, error) {
 func Dwnews(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
-	articleDoc := ElementsByTagName(doc, "article")[0].FirstChild
+	nodes := ElementsByTagName(doc, "article")
+	if len(nodes) == 0 {
+		return "", errors.New("[-] Got nothing from: " + p.URL.String())
+	}
+	articleDoc := nodes[0].FirstChild
 	plist := ElementsByTagName(articleDoc, "p")
 	if articleDoc.FirstChild.Data == "div" {
 		body += fmt.Sprintf("\n > %s  \n", plist[0].FirstChild.Data)
 	}
-	for _, v := range plist[:len(plist)-1] { // the last item is `推荐阅读：`
-		if v.FirstChild.Data == "strong" {
-			body += fmt.Sprintf("** %s **", v.FirstChild.FirstChild.Data)
+	for _, v := range plist { // the last item is `推荐阅读：`
+		if v.FirstChild == nil {
+			continue
+		} else if v.FirstChild.FirstChild != nil && v.FirstChild.Data == "strong" {
+			body += fmt.Sprintf("** %s **  \n", v.FirstChild.FirstChild.Data)
+		} else {
+			body += v.FirstChild.Data + "  \n"
 		}
 		body += v.FirstChild.Data + "  \n"
 	}

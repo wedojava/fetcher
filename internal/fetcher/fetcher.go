@@ -94,13 +94,13 @@ func crawl(_url string) {
 			post := PostFactory(link)
 			if err := post.SetPost(); err != nil {
 				errMsg := "[-] SetPost error occur from: " + link
-				log.Printf(errMsg)
+				log.Println(errMsg)
 				log.Println(err)
 				ErrLog(errMsg + " " + err.Error())
 			}
 			if err := post.SavePost(); err != nil {
 				errMsg := "[-] SavePost error occur from: " + link
-				log.Printf(errMsg)
+				log.Println(errMsg)
 				log.Println(err)
 				ErrLog(errMsg + " " + err.Error())
 			}
