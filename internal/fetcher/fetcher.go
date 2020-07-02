@@ -139,7 +139,8 @@ func ErrLog(msg string) error {
 	}
 	defer file.Close()
 	write := bufio.NewWriter(file)
-	write.WriteString(msg)
+	write.WriteString("[" + time.Now().Format(time.RFC3339) + "]--------------------------------------\n")
+	write.WriteString(msg + "\n")
 	write.Flush()
 	return nil
 }
