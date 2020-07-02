@@ -35,8 +35,12 @@ func (p *Post) FmtBody(f func(post *Post) (string, error)) error {
 func Boxun(p *Post) (string, error) {
 	var ps []string
 	var _body string
-	var re = regexp.MustCompile(`(?m)&nbsp;&nbsp;&nbsp;&nbsp;(.*?)<BR>`)
+	var re = regexp.MustCompile(`(?m)<!--bodystart-->([^\^]*)<!--bodyend-->`)
 	vs := re.FindAllSubmatch(p.Raw, -1)
+	if vs == nil {
+		var re = regexp.MustCompile(`(?m)&nbsp;&nbsp;&nbsp;&nbsp;(.*?)<BR>`)
+		vs = re.FindAllSubmatch(p.Raw, -1)
+	}
 	for _, v := range vs {
 		ps = append(ps, string(v[1]))
 	}
