@@ -88,7 +88,7 @@ func Dwnews(p *Post) (string, error) {
 	body := ""
 	nodes := ElementsByTagName(doc, "article")
 	if len(nodes) == 0 {
-		return "", errors.New("[-] Got nothing from: " + p.URL.String())
+		return "", errors.New("[-] There is no tag named `<article>` from: " + p.URL.String())
 	}
 	articleDoc := nodes[0].FirstChild
 	plist := ElementsByTagName(articleDoc, "p")
