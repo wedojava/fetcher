@@ -20,3 +20,24 @@ func TestElementsByTagAndClass(t *testing.T) {
 		fmt.Println(v.FirstChild.Data)
 	}
 }
+
+func TestElementsByTagAndId(t *testing.T) {
+	p := PostFactory("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
+	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetDOC error: %v", err)
+	}
+	p.DOC = doc
+	p.Raw = raw
+	tc := ElementsByTagAndId(doc, "div", "storytext")
+	plist := ElementsByTagName(tc[0], "p")
+	for _, v := range plist {
+		if v.FirstChild != nil {
+			if v.FirstChild.Data == "b" {
+				fmt.Println("**" + v.FirstChild.FirstChild.Data + "**")
+			} else {
+				fmt.Println(v.FirstChild.Data)
+			}
+		}
+	}
+}

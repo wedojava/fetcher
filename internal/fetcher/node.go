@@ -40,6 +40,26 @@ func ElementsByTagAndClass(doc *html.Node, tag, class string) []*html.Node {
 	return nodes
 }
 
+func ElementsByTagAndId(doc *html.Node, tag, id string) []*html.Node {
+	var nodes []*html.Node
+	if tag == "" || id == "" {
+		return nil
+	}
+	if doc.Type == html.ElementNode {
+		if tag == doc.Data {
+			for _, a := range doc.Attr {
+				if a.Key == "id" && a.Val == id {
+					nodes = append(nodes, doc)
+				}
+			}
+		}
+	}
+	for c := doc.FirstChild; c != nil; c = c.NextSibling {
+		nodes = append(nodes, ElementsByTagAndId(c, tag, id)...)
+	}
+	return nodes
+}
+
 func ForEachNode(n *html.Node, pre, post func(n *html.Node)) {
 	if pre != nil {
 		pre(n)

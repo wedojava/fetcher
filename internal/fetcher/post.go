@@ -45,8 +45,7 @@ func (p *Post) SetPost() error {
 	if err != nil {
 		return err
 	}
-	p.Raw = raw
-	p.DOC = doc
+	p.Raw, p.DOC = raw, doc
 	// set Date
 	if err := p.SetDate(); err != nil {
 		return err

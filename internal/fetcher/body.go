@@ -23,6 +23,10 @@ func (p *Post) SetBody() error {
 		if err := p.FmtBody(Voa); err != nil {
 			return err
 		}
+	case "www.rfa.org":
+		if err := p.FmtBody(Voa); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -127,4 +131,23 @@ func Voa(p *Post) (string, error) {
 	body = strings.ReplaceAll(body, "span  \n", "")
 	body = strings.ReplaceAll(body, "br  \n", "")
 	return body, nil
+}
+
+func Rfa(p *Post) (string, error) {
+	doc := p.DOC
+	body := ""
+	// Fetch content nodes
+	articleDoc := ElementsByTagAndClass(doc, "div", "wsw")
+	if len(articleDoc) == 0 {
+		return "", errors.New(`[-] There is no element match '<div class="wsw">'`)
+	}
+	plist := ElementsByTagName(articleDoc[0], "p")
+	for _, v := range plist {
+		body += v.FirstChild.Data + "  \n"
+	}
+	body = strings.ReplaceAll(body, "strong  \n", "")
+	body = strings.ReplaceAll(body, "span  \n", "")
+	body = strings.ReplaceAll(body, "br  \n", "")
+	return body, nil
+
 }
