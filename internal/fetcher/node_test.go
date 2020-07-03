@@ -34,7 +34,13 @@ func TestElementsByTagAndId(t *testing.T) {
 	for _, v := range plist {
 		if v.FirstChild != nil {
 			if v.FirstChild.Data == "b" {
-				fmt.Println("**" + v.FirstChild.FirstChild.Data + "**")
+				blist := ElementsByTagName(v, "b")
+				fmt.Print("**")
+				for _, b := range blist {
+					fmt.Print(b.FirstChild.Data)
+				}
+				fmt.Print("**\n")
+				// fmt.Println("**" + v.FirstChild.FirstChild.Data + "**")
 			} else {
 				fmt.Println(v.FirstChild.Data)
 			}

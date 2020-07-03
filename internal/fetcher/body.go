@@ -119,11 +119,11 @@ func Voa(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes
-	articleDoc := ElementsByTagAndClass(doc, "div", "wsw")
-	if len(articleDoc) == 0 {
+	nodes := ElementsByTagAndClass(doc, "div", "wsw")
+	if len(nodes) == 0 {
 		return "", errors.New(`[-] There is no element match '<div class="wsw">'`)
 	}
-	plist := ElementsByTagName(articleDoc[0], "p")
+	plist := ElementsByTagName(nodes[0], "p")
 	for _, v := range plist {
 		body += v.FirstChild.Data + "  \n"
 	}
@@ -137,17 +137,21 @@ func Rfa(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes
-	articleDoc := ElementsByTagAndClass(doc, "div", "wsw")
-	if len(articleDoc) == 0 {
-		return "", errors.New(`[-] There is no element match '<div class="wsw">'`)
+	nodes := ElementsByTagAndId(doc, "div", "storytext")
+	if len(nodes) == 0 {
+		return "", errors.New(`[-] There is no element match '<div id="storytext">'`)
 	}
-	plist := ElementsByTagName(articleDoc[0], "p")
+	plist := ElementsByTagName(nodes[0], "p")
 	for _, v := range plist {
-		body += v.FirstChild.Data + "  \n"
+		if v.FirstChild == nil {
+			continue
+		} else if v.FirstChild.Data == "b" {
+			body += fmt.Sprintf("** %s **  \n", v.FirstChild.FirstChild.Data)
+		} else {
+			body += v.FirstChild.Data + "  \n"
+		}
 	}
-	body = strings.ReplaceAll(body, "strong  \n", "")
-	body = strings.ReplaceAll(body, "span  \n", "")
-	body = strings.ReplaceAll(body, "br  \n", "")
+	body = strings.ReplaceAll(body, "** **", "")
 	return body, nil
 
 }
