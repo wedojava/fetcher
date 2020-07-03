@@ -146,12 +146,17 @@ func Rfa(p *Post) (string, error) {
 		if v.FirstChild == nil {
 			continue
 		} else if v.FirstChild.Data == "b" {
-			body += fmt.Sprintf("** %s **  \n", v.FirstChild.FirstChild.Data)
+			body += "** "
+			blist := ElementsByTagName(v, "b")
+			for _, b := range blist {
+				body += b.FirstChild.Data
+			}
+			body += " **  \n"
 		} else {
 			body += v.FirstChild.Data + "  \n"
 		}
 	}
-	body = strings.ReplaceAll(body, "** **", "")
+	body = strings.ReplaceAll(body, "**   **", "")
 	return body, nil
 
 }

@@ -40,6 +40,20 @@ func TestDwnews(t *testing.T) {
 	fmt.Println(body)
 }
 
+func TestRfa(t *testing.T) {
+	p := PostFactory("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
+	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoC error: %v", err)
+	}
+	p.Raw, p.DOC = raw, doc
+	body, err := Rfa(p)
+	if err != nil {
+		t.Errorf("Voa error: %v", err)
+	}
+	fmt.Println(body)
+}
+
 func TestVoa(t *testing.T) {
 	p := PostFactory("https://www.voachinese.com/a/controversial-national-security-law-enforced-in-hong-kong-despite-strong-opposition-from-us-and-hk-20200701/5484605.html")
 	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
