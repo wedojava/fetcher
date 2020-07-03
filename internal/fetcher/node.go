@@ -60,6 +60,22 @@ func ElementsByTagAndId(doc *html.Node, tag, id string) []*html.Node {
 	return nodes
 }
 
+func ElementsNextByTag(doc *html.Node, tag string) []*html.Node {
+	var nodes []*html.Node
+	if doc == nil || tag == "" {
+		return nil
+	}
+	if doc.Type == html.ElementNode {
+		if tag == doc.Data && doc.NextSibling != nil {
+			nodes = append(nodes, doc.NextSibling)
+		}
+	}
+	for c := doc.FirstChild; c != nil; c = c.NextSibling {
+		nodes = append(nodes, ElementsNextByTag(c, tag)...)
+	}
+	return nodes
+}
+
 func ForEachNode(n *html.Node, pre, post func(n *html.Node)) {
 	if pre != nil {
 		pre(n)

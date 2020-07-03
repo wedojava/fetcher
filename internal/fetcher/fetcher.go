@@ -78,39 +78,40 @@ func breadthFirst(f func(item string), worklist []string) {
 // TODO: Links can be managed by each object fetcher.
 func crawl(_url string) {
 	f := FetcherFactory(_url)
-	for {
-		log.Printf("[*] Deal with: [%s]\n", _url)
-		log.Println("[*] Fetch links ...")
-		if err := f.SetLinks(); err != nil { // f.Links update to the _url website is.
-			log.Println(err)
-			// if links cannot fetch sleep 1 minute then continue
-			time.Sleep(1 * time.Minute)
-			continue
-		}
-
-		// GetNews then compare via md5 and Save or Rewrite news exist
-		log.Println("[*] Get news ...")
-		for _, link := range f.Links {
-			post := PostFactory(link)
-			if err := post.SetPost(); err != nil {
-				errMsg := "[-] SetPost error occur from: " + link
-				log.Println(errMsg)
-				log.Println(err)
-				ErrLog(errMsg + " " + err.Error())
-			}
-			if err := post.SavePost(); err != nil {
-				errMsg := "[-] SavePost error occur from: " + link
-				log.Println(errMsg)
-				log.Println(err)
-				ErrLog(errMsg + " " + err.Error())
-			}
-		}
-		// Remove files 3 days ago
-		DelRoutine(filepath.Join("wwwroot", f.Entrance.Hostname()), 3)
-		// hold on 5 minutes
-		log.Println("Sleep a sec ...")
-		time.Sleep(5 * time.Minute)
+	// for { // only useful by goroutine
+	log.Printf("[*] Deal with: [%s]\n", _url)
+	log.Println("[*] Fetch links ...")
+	if err := f.SetLinks(); err != nil { // f.Links update to the _url website is.
+		log.Println(err)
+		// if links cannot fetch sleep 1 minute then continue
+		time.Sleep(1 * time.Minute)
+		// continue // only useful by goroutine
+		return
 	}
+
+	// GetNews then compare via md5 and Save or Rewrite news exist
+	log.Println("[*] Get news ...")
+	for _, link := range f.Links {
+		post := PostFactory(link)
+		if err := post.SetPost(); err != nil {
+			errMsg := "[-] SetPost error occur from: " + link
+			log.Println(errMsg)
+			log.Println(err)
+			ErrLog(errMsg + " " + err.Error())
+		}
+		if err := post.SavePost(); err != nil {
+			errMsg := "[-] SavePost error occur from: " + link
+			log.Println(errMsg)
+			log.Println(err)
+			ErrLog(errMsg + " " + err.Error())
+		}
+	}
+	// Remove files 3 days ago
+	DelRoutine(filepath.Join("wwwroot", f.Entrance.Hostname()), 3)
+	// hold on 5 minutes
+	// log.Println("Sleep a sec ...")
+	// time.Sleep(5 * time.Minute) // only useful by goroutine
+	// } // only useful by goroutine
 }
 
 // DelRoutine remove files in folder days ago

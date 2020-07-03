@@ -68,3 +68,17 @@ func TestVoa(t *testing.T) {
 	}
 	fmt.Println(body)
 }
+
+func TestBoxun(t *testing.T) {
+	p := PostFactory("https://www.boxun.com/news/gb/china/2020/07/202007021503.shtml")
+	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoC error: %v", err)
+	}
+	p.Raw, p.DOC = raw, doc
+	body, err := Boxun2(p)
+	if err != nil {
+		t.Errorf("Voa error: %v", err)
+	}
+	fmt.Println(body)
+}

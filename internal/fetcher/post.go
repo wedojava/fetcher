@@ -1,6 +1,7 @@
 package fetcher
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -68,6 +69,9 @@ func (p *Post) SetPost() error {
 func (p *Post) SavePost() error {
 	folderPath := filepath.Join("wwwroot", p.Domain)
 	gears.MakeDirAll(folderPath)
+	if p.Filename == "" {
+		return errors.New("SavePost need a filename, but got none.")
+	}
 	filepath := filepath.Join(folderPath, p.Filename)
 	err := ioutil.WriteFile(filepath, []byte(p.Body), 0644)
 	if err != nil {

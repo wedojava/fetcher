@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/wedojava/gears"
+	"golang.org/x/net/html"
 )
 
 func (p *Post) SetBody() error {
@@ -87,6 +88,27 @@ func Boxun(p *Post) (string, error) {
 	return _body, nil
 }
 
+func Boxun2(p *Post) (string, error) {
+	doc := p.DOC
+	body := ""
+	// Fetch content nodes
+	nodes := ElementsByTagAndClass(doc, "td", "F11")
+	if len(nodes) == 0 {
+		return "", errors.New("[-] There is no tag named `<td class=F11>` from: " + p.URL.String())
+	}
+	articleDoc := nodes[0].FirstChild
+	blist := ElementsNextByTag(articleDoc, "br")
+	for _, b := range blist {
+		if b.NextSibling == nil || b.NextSibling.Type != html.TextNode || b.NextSibling.Data == "" {
+			continue
+		} else {
+			body += b.NextSibling.Data
+		}
+	}
+
+	return body, nil
+}
+
 func Dwnews(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
@@ -149,14 +171,17 @@ func Rfa(p *Post) (string, error) {
 			body += "** "
 			blist := ElementsByTagName(v, "b")
 			for _, b := range blist {
-				body += b.FirstChild.Data
+				_b := b.FirstChild
+				if _b != nil && _b.Data != "" {
+					body += b.FirstChild.Data
+				}
 			}
 			body += " **  \n"
 		} else {
 			body += v.FirstChild.Data + "  \n"
 		}
 	}
-	body = strings.ReplaceAll(body, "**   **", "")
+	body = strings.ReplaceAll(body, "**   **  \n", "")
+	body = strings.ReplaceAll(body, "br  \n", "")
 	return body, nil
-
 }
