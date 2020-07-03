@@ -24,7 +24,7 @@ func (p *Post) SetBody() error {
 			return err
 		}
 	case "www.rfa.org":
-		if err := p.FmtBody(Voa); err != nil {
+		if err := p.FmtBody(Rfa); err != nil {
 			return err
 		}
 	}
