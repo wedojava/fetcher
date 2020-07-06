@@ -21,7 +21,7 @@ func TestSetLinks(t *testing.T) {
 
 func TestCrawl(t *testing.T) {
 	for {
-		breadthFirst(crawl, []string{
+		BreadthFirst(Crawl, []string{
 			"https://www.boxun.com/rolling.shtml",
 			"https://www.dwnews.com",
 			"https://www.voachinese.com",

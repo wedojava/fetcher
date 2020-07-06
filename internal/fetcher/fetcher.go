@@ -59,13 +59,13 @@ func FetcherFactory(site string) *Fetcher {
 // Any items returned by f are added to the worklist.
 // f is called at most once  for each item.
 // breadthFirst(crawl, os.Args[1:])
-func breadthFirst(f func(item string), worklist []string) {
+func BreadthFirst(f func(item string), worklist []string) {
 	for _, item := range worklist {
 		f(item)
 	}
 }
 
-func crawl(_url string) {
+func Crawl(_url string) {
 	f := FetcherFactory(_url)
 	log.Printf("[*] Deal with: [%s]\n", _url)
 	log.Println("[*] Fetch links ...")
