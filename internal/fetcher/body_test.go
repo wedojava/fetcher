@@ -76,7 +76,7 @@ func TestBoxun(t *testing.T) {
 		t.Errorf("GetRawAndDoC error: %v", err)
 	}
 	p.Raw, p.DOC = raw, doc
-	body, err := Boxun2(p)
+	body, err := Boxun(p)
 	if err != nil {
 		t.Errorf("Voa error: %v", err)
 	}

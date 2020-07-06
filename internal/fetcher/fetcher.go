@@ -21,17 +21,8 @@ type Fetcher struct {
 	Links    []string
 }
 
-var originalHost string
-
 // GetRawAndDoc can get html raw bytes and html.Node by rawurl.
 func GetRawAndDoc(url *url.URL, retryTimeout time.Duration) ([]byte, *html.Node, error) {
-	// To judge if there is a syntex error on url
-	if originalHost == "" {
-		originalHost = url.Host
-	}
-	if originalHost != url.Host {
-		return nil, nil, fmt.Errorf("bad host of url: %s, expected: %s", url.Host, originalHost)
-	}
 	// Get response form url
 	deadline := time.Now().Add(retryTimeout)
 	for tries := 0; time.Now().Before(deadline); tries++ {
@@ -70,15 +61,12 @@ func FetcherFactory(site string) *Fetcher {
 // breadthFirst(crawl, os.Args[1:])
 func breadthFirst(f func(item string), worklist []string) {
 	for _, item := range worklist {
-		// TODO: run in goroutine
 		f(item)
 	}
 }
 
-// TODO: Links can be managed by each object fetcher.
 func crawl(_url string) {
 	f := FetcherFactory(_url)
-	// for { // only useful by goroutine
 	log.Printf("[*] Deal with: [%s]\n", _url)
 	log.Println("[*] Fetch links ...")
 	if err := f.SetLinks(); err != nil { // f.Links update to the _url website is.
@@ -108,10 +96,6 @@ func crawl(_url string) {
 	}
 	// Remove files 3 days ago
 	DelRoutine(filepath.Join("wwwroot", f.Entrance.Hostname()), 3)
-	// hold on 5 minutes
-	// log.Println("Sleep a sec ...")
-	// time.Sleep(5 * time.Minute) // only useful by goroutine
-	// } // only useful by goroutine
 }
 
 // DelRoutine remove files in folder days ago

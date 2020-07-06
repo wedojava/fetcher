@@ -44,7 +44,7 @@ func (p *Post) FmtBody(f func(post *Post) (string, error)) error {
 	return nil
 }
 
-func Boxun(p *Post) (string, error) {
+func BoxunRegex(p *Post) (string, error) {
 	var ps []string
 	var _body string
 	var re = regexp.MustCompile(`(?m)<!--bodystart-->([^\^]*)<!--bodyend-->`)
@@ -88,7 +88,7 @@ func Boxun(p *Post) (string, error) {
 	return _body, nil
 }
 
-func Boxun2(p *Post) (string, error) {
+func Boxun(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes
