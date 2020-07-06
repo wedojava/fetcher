@@ -96,16 +96,15 @@ func Boxun(p *Post) (string, error) {
 	if len(nodes) == 0 {
 		return "", errors.New("[-] There is no tag named `<td class=F11>` from: " + p.URL.String())
 	}
-	articleDoc := nodes[0].FirstChild
-	blist := ElementsNextByTag(articleDoc, "br")
+	blist := ElementsNextByTag(nodes[0], "br")
 	for _, b := range blist {
-		if b.NextSibling == nil || b.NextSibling.Type != html.TextNode || b.NextSibling.Data == "" {
+		if b.Type != html.TextNode || b.Data == "" {
 			continue
 		} else {
-			body += b.NextSibling.Data
+			body += strings.ReplaceAll(b.Data, "\u00a0", "")
 		}
 	}
-
+	gears.ConvertToUtf8(&body, "gbk", "utf8")
 	return body, nil
 }
 
