@@ -44,31 +44,31 @@ func (p *Post) SetTitleMutex() error {
 	if err != nil {
 		return err
 	}
-	ReplaceIllegalChar(&title)
-	p.Title = strings.TrimSpace(title)
 	switch p.Domain {
 	case "www.boxun.com":
-		if err = gears.ConvertToUtf8(&p.Title, "gbk", "utf8"); err != nil {
+		if err = gears.ConvertToUtf8(&title, "gbk", "utf8"); err != nil {
 			return err
 		}
 	case "www.dwnews.com":
 		p.Title = title[:strings.Index(title, "｜")]
 	}
+	ReplaceIllegalChar(&title)
+	p.Title = strings.TrimSpace(title)
 	return nil
 }
 
 func (p *Post) SetTitle() error {
 	n := ElementsByTagName(p.DOC, "title")
 	title := n[0].FirstChild.Data
-	ReplaceIllegalChar(&title)
-	p.Title = strings.TrimSpace(title)
 	switch p.Domain {
 	case "www.boxun.com":
-		if err := gears.ConvertToUtf8(&p.Title, "gbk", "utf8"); err != nil {
+		if err := gears.ConvertToUtf8(&title, "gbk", "utf8"); err != nil {
 			return err
 		}
 	case "www.dwnews.com":
 		p.Title = title[:strings.Index(title, "｜")]
 	}
+	ReplaceIllegalChar(&title)
+	p.Title = strings.TrimSpace(title)
 	return nil
 }
