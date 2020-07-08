@@ -8,6 +8,7 @@ import (
 	"golang.org/x/net/html"
 )
 
+// TODO: rm while stable
 // soleTitle returns the text of the first non-empty title element
 // in doc, and an error if there was not exactly one.
 func soleTitleMutex(doc *html.Node) (title string, err error) {
@@ -39,6 +40,7 @@ func soleTitleMutex(doc *html.Node) (title string, err error) {
 	return title, nil
 }
 
+// TODO: rm while stable
 func (p *Post) SetTitleMutex() error {
 	title, err := soleTitleMutex(p.DOC)
 	if err != nil {
@@ -57,6 +59,7 @@ func (p *Post) SetTitleMutex() error {
 	return nil
 }
 
+// TODO: rm while TreatTitle pass test
 func (p *Post) SetTitle() error {
 	n := ElementsByTagName(p.DOC, "title")
 	title := n[0].FirstChild.Data
@@ -69,6 +72,17 @@ func (p *Post) SetTitle() error {
 		}
 	case "www.dwnews.com":
 		p.Title = title[:strings.Index(title, "｜")]
+	}
+	return nil
+}
+
+func (p *Post) TreatTitle(f func(*string) error) error {
+	n := ElementsByTagName(p.DOC, "title")
+	title := n[0].FirstChild.Data
+	title = strings.TrimSpace(title)
+	ReplaceIllegalChar(&title)
+	if err := f(&p.Title); err != nil {
+		return err
 	}
 	return nil
 }

@@ -41,6 +41,7 @@ func (p *Post) SetDate() error {
 	return nil
 }
 
+// TODO: rm, use ElementBy... is enough
 // TODO: return value and set same value to object at one function is redundancy
 func soleDate(doc *html.Node, d *dateItem) (date string, err error) {
 	type bailout struct{}

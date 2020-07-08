@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/wedojava/fetcher/internal/fetcher/sites/boxun"
 	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
 )
@@ -41,12 +42,9 @@ func PostFactory(rawurl string) *Post {
 }
 
 func (p *Post) SetPost() error {
-	// set contents
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
-	if err != nil {
+	if err := p.PostInit(); err != nil {
 		return err
 	}
-	p.Raw, p.DOC = raw, doc
 	// set Date
 	if err := p.SetDate(); err != nil {
 		return err
@@ -62,6 +60,34 @@ func (p *Post) SetPost() error {
 	// set Body (get and format body)
 	if err := p.SetBody(); err != nil {
 		return err
+	}
+	return nil
+}
+
+// TODO: use func init
+func (p *Post) PostInit() error {
+	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	if err != nil {
+		return err
+	}
+	p.Raw, p.DOC = raw, doc
+	return nil
+}
+
+// TODO: rename as SetPost if it can be rm
+func (p *Post) TreatPost() error {
+	if err := p.PostInit(); err != nil {
+		return err
+	}
+	switch p.Domain {
+	case "www.boxun.com":
+		// Set date
+		post := boxun.Post(*p)
+		p.Date = boxun.SetDate(&post)
+		// Set title
+		if err := p.TreatTitle(boxun.Title); err != nil {
+			return err
+		}
 	}
 	return nil
 }
