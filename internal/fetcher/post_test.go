@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/wedojava/fetcher/internal/htmldoc"
 )
 
 func TestSetAndSavePost(t *testing.T) {
 	// p := PostFactory("https://www.dwnews.com/经济/60203253")
 	p := PostFactory("https://www.dwnews.com/经济/60203034") // The wrong one
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetRawAndDoC error: %v", err)
 	}
@@ -22,4 +24,9 @@ func TestSetAndSavePost(t *testing.T) {
 	}
 	fmt.Println(p.Title)
 	fmt.Println(p.Body)
+}
+
+func TestTreatPost(t *testing.T) {
+	p := PostFactory("https://www.boxun.com/news/gb/taiwan/2020/07/202007091815.shtml")
+	p.TreatPost()
 }

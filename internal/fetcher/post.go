@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/wedojava/fetcher/internal/fetcher/sites/boxun"
+	"github.com/wedojava/fetcher/internal/htmldoc"
 	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
 )
@@ -67,7 +68,7 @@ func (p *Post) SetPost() error {
 
 // TODO: use func init
 func (p *Post) PostInit() error {
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		return err
 	}
@@ -75,20 +76,27 @@ func (p *Post) PostInit() error {
 	return nil
 }
 
-// TODO: rename as SetPost if it can be rm
+// TreatPost get post things and set to `p` then save it.
 func (p *Post) TreatPost() error {
+	// Init post
 	if err := p.PostInit(); err != nil {
 		return err
 	}
+	// Set post
 	switch p.Domain {
 	case "www.boxun.com":
-		// Set date
 		post := boxun.Post(*p)
-		p.Date = boxun.SetDate(&post)
-		// Set title
-		if err := p.TreatTitle(boxun.SetTitle); err != nil {
+		if err := boxun.SetPost(&post); err != nil {
 			return err
 		}
+		*p = Post(post)
+	}
+	// Save post to file
+	if err := p.SetFilename(); err != nil {
+		return err
+	}
+	if err := p.SavePost(); err != nil {
+		return err
 	}
 	return nil
 }

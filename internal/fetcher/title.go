@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/wedojava/fetcher/internal/htmldoc"
 	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
 )
@@ -25,7 +26,7 @@ func soleTitleMutex(doc *html.Node) (title string, err error) {
 		}
 	}()
 	// Bail out of recursion if we find more than one non-empty title.
-	ForEachNode(doc, func(n *html.Node) {
+	htmldoc.ForEachNode(doc, func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == "title" &&
 			n.FirstChild != nil {
 			if title != "" {
@@ -54,14 +55,14 @@ func (p *Post) SetTitleMutex() error {
 	case "www.dwnews.com":
 		p.Title = title[:strings.Index(title, "｜")]
 	}
-	ReplaceIllegalChar(&title)
+	gears.ReplaceIllegalChar(&title)
 	p.Title = strings.TrimSpace(title)
 	return nil
 }
 
 // TODO: rm while TreatTitle pass test
 func (p *Post) SetTitle() error {
-	n := ElementsByTagName(p.DOC, "title")
+	n := htmldoc.ElementsByTagName(p.DOC, "title")
 	title := n[0].FirstChild.Data
 	switch p.Domain {
 	case "www.boxun.com":
@@ -71,16 +72,16 @@ func (p *Post) SetTitle() error {
 	case "www.dwnews.com":
 		p.Title = title[:strings.Index(title, "｜")]
 	}
-	ReplaceIllegalChar(&title)
+	gears.ReplaceIllegalChar(&title)
 	p.Title = strings.TrimSpace(title)
 	return nil
 }
 
 func (p *Post) TreatTitle(f func(*string) error) error {
-	n := ElementsByTagName(p.DOC, "title")
+	n := htmldoc.ElementsByTagName(p.DOC, "title")
 	title := n[0].FirstChild.Data
 	title = strings.TrimSpace(title)
-	ReplaceIllegalChar(&title)
+	gears.ReplaceIllegalChar(&title)
 	if err := f(&p.Title); err != nil {
 		return err
 	}

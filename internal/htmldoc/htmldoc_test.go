@@ -1,14 +1,16 @@
-package fetcher
+package htmldoc
 
 import (
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/wedojava/fetcher/internal/fetcher"
 )
 
 func TestElementsByTagAndClass(t *testing.T) {
-	p := PostFactory("https://www.voachinese.com/a/pandemic-drives-digital-innovations-in-u-s-presidential-race-20200701/5484814.html")
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	p := fetcher.PostFactory("https://www.voachinese.com/a/pandemic-drives-digital-innovations-in-u-s-presidential-race-20200701/5484814.html")
+	raw, doc, err := fetcher.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetDOC error: %v", err)
 	}
@@ -22,8 +24,8 @@ func TestElementsByTagAndClass(t *testing.T) {
 }
 
 func TestElementsByTagAndId(t *testing.T) {
-	p := PostFactory("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	p := fetcher.PostFactory("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
+	raw, doc, err := fetcher.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetDOC error: %v", err)
 	}

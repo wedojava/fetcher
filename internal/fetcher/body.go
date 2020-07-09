@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/wedojava/fetcher/internal/htmldoc"
 	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
 )
@@ -47,11 +48,11 @@ func Boxun(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes
-	nodes := ElementsByTagAndClass(doc, "td", "F11")
+	nodes := htmldoc.ElementsByTagAndClass(doc, "td", "F11")
 	if len(nodes) == 0 {
 		return "", errors.New("[-] There is no tag named `<td class=F11>` from: " + p.URL.String())
 	}
-	blist := ElementsNextByTag(nodes[0], "br")
+	blist := htmldoc.ElementsNextByTag(nodes[0], "br")
 	for _, b := range blist {
 		if b.Type != html.TextNode || b.Data == "" {
 			continue
@@ -67,12 +68,12 @@ func Dwnews(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes
-	nodes := ElementsByTagName(doc, "article")
+	nodes := htmldoc.ElementsByTagName(doc, "article")
 	if len(nodes) == 0 {
 		return "", errors.New("[-] There is no tag named `<article>` from: " + p.URL.String())
 	}
 	articleDoc := nodes[0].FirstChild
-	plist := ElementsByTagName(articleDoc, "p")
+	plist := htmldoc.ElementsByTagName(articleDoc, "p")
 	if articleDoc.FirstChild.Data == "div" { // to fetch the summary block
 		// body += fmt.Sprintf("\n > %s  \n", plist[0].FirstChild.Data) // redundant summary
 		body += fmt.Sprintf("\n > ")
@@ -111,11 +112,11 @@ func Voa(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes
-	nodes := ElementsByTagAndClass(doc, "div", "wsw")
+	nodes := htmldoc.ElementsByTagAndClass(doc, "div", "wsw")
 	if len(nodes) == 0 {
 		return "", errors.New(`[-] There is no element match '<div class="wsw">'`)
 	}
-	plist := ElementsByTagName(nodes[0], "p")
+	plist := htmldoc.ElementsByTagName(nodes[0], "p")
 	for _, v := range plist {
 		body += v.FirstChild.Data + "  \n"
 	}
@@ -129,17 +130,17 @@ func Rfa(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes
-	nodes := ElementsByTagAndId(doc, "div", "storytext")
+	nodes := htmldoc.ElementsByTagAndId(doc, "div", "storytext")
 	if len(nodes) == 0 {
 		return "", errors.New(`[-] There is no element match '<div id="storytext">'`)
 	}
-	plist := ElementsByTagName(nodes[0], "p")
+	plist := htmldoc.ElementsByTagName(nodes[0], "p")
 	for _, v := range plist {
 		if v.FirstChild == nil {
 			continue
 		} else if v.FirstChild.Data == "b" {
 			body += "** "
-			blist := ElementsByTagName(v, "b")
+			blist := htmldoc.ElementsByTagName(v, "b")
 			for _, b := range blist {
 				_b := b.FirstChild
 				if _b != nil && _b.Data != "" {

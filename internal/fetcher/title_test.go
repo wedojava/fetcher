@@ -3,15 +3,17 @@ package fetcher
 import (
 	"testing"
 	"time"
+
+	"github.com/wedojava/fetcher/internal/htmldoc"
 )
 
 func TestSetTitle(t *testing.T) {
 	// p := PostFactory("https://www.dwnews.com/%E4%B8%AD%E5%9B%BD/60202347")
 	// p := PostFactory("https://www.boxun.com/news/gb/intl/2020/07/202007041307.shtml")
 	p := PostFactory("https://www.dwnews.com/全球/60203234")
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
-		t.Errorf("GetRawAndDoc error: %v", err)
+		t.Errorf("htmldoc.GetRawAndDoc error: %v", err)
 	}
 	p.DOC, p.Raw = doc, raw
 	if err = p.SetTitle(); err != nil {

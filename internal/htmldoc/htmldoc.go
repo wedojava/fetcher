@@ -1,6 +1,39 @@
-package fetcher
+package htmldoc
 
-import "golang.org/x/net/html"
+import (
+	"bytes"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"time"
+
+	"golang.org/x/net/html"
+)
+
+// GetRawAndDoc can get html raw bytes and html.Node by rawurl.
+func GetRawAndDoc(url *url.URL, retryTimeout time.Duration) ([]byte, *html.Node, error) {
+	// Get response form url
+	deadline := time.Now().Add(retryTimeout)
+	for tries := 0; time.Now().Before(deadline); tries++ {
+		resp, err := http.Get(url.String())
+		if err == nil { // success
+			defer resp.Body.Close()
+			raw, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, nil, err
+			}
+			reader := bytes.NewBuffer(raw)
+			doc, err := html.Parse(reader)
+			return raw, doc, nil
+		}
+		log.SetPrefix("[wait]")
+		log.SetFlags(0)
+		log.Printf("server not responding (%s); retrying...", err)
+		time.Sleep(time.Second << uint(tries)) // exponential back-off
+	}
+	return nil, nil, nil
+}
 
 func ElementsByTagName(doc *html.Node, name ...string) []*html.Node {
 	var nodes []*html.Node

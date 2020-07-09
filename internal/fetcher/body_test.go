@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/wedojava/fetcher/internal/htmldoc"
 )
 
 func TestSetBody(t *testing.T) {
@@ -12,7 +14,7 @@ func TestSetBody(t *testing.T) {
 	// p := PostFactory("https://www.dwnews.com/%E5%8F%B0%E6%B9%BE/60202352") // The wrong one
 	// p := PostFactory("https://www.rfa.org/mandarin/yataibaodao/shehui/hj-07022020095655.html")
 	p := PostFactory("https://www.dwnews.com/经济/60203253") // The wrong one
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 
 	if err != nil {
 		t.Errorf("GetDOC error: %v", err)
@@ -31,9 +33,9 @@ func TestDwnews(t *testing.T) {
 	// p := PostFactory("https://www.dwnews.com/%E5%8F%B0%E6%B9%BE/60202352") // The wrong one
 	p := PostFactory("https://www.dwnews.com/全球/60203234")
 	// p := PostFactory("https://www.dwnews.com/经济/60203253")
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
-		t.Errorf("GetRawAndDoC error: %v", err)
+		t.Errorf("htmldoc.GetRawAndDoC error: %v", err)
 	}
 	p.DOC = doc
 	p.Raw = raw
@@ -46,9 +48,9 @@ func TestDwnews(t *testing.T) {
 
 func TestRfa(t *testing.T) {
 	p := PostFactory("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
-		t.Errorf("GetRawAndDoC error: %v", err)
+		t.Errorf("htmldoc.GetRawAndDoC error: %v", err)
 	}
 	p.Raw, p.DOC = raw, doc
 	body, err := Rfa(p)
@@ -60,9 +62,9 @@ func TestRfa(t *testing.T) {
 
 func TestVoa(t *testing.T) {
 	p := PostFactory("https://www.voachinese.com/a/controversial-national-security-law-enforced-in-hong-kong-despite-strong-opposition-from-us-and-hk-20200701/5484605.html")
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
-		t.Errorf("GetRawAndDoC error: %v", err)
+		t.Errorf("htmldoc.GetRawAndDoC error: %v", err)
 	}
 	p.Raw, p.DOC = raw, doc
 	body, err := Voa(p)
@@ -74,9 +76,9 @@ func TestVoa(t *testing.T) {
 
 func TestBoxun(t *testing.T) {
 	p := PostFactory("https://www.boxun.com/news/gb/china/2020/07/202007021503.shtml")
-	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
+	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
-		t.Errorf("GetRawAndDoC error: %v", err)
+		t.Errorf("htmldoc.GetRawAndDoC error: %v", err)
 	}
 	p.Raw, p.DOC = raw, doc
 	body, err := Boxun(p)

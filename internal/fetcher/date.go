@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/wedojava/fetcher/internal/htmldoc"
 	"golang.org/x/net/html"
 )
 
@@ -57,7 +58,7 @@ func soleDate(doc *html.Node, d *dateItem) (date string, err error) {
 		}
 	}()
 	// Bail out of recursion if we find more than one non-empty date.
-	ForEachNode(doc, func(n *html.Node) {
+	htmldoc.ForEachNode(doc, func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == d.tagName {
 			yes := false
 			for _, a := range n.Attr {
@@ -179,5 +180,12 @@ func (p *Post) BoxunDateInUrl() error {
 		// fmt.Println(mm, "is not a integer of Minute, set it to 59")
 	}
 	p.Date = fmt.Sprintf("%02d-%02d-%02dT%02d:%02d:%02dZ", Y, M, D, hh, mm, 0)
+	return nil
+}
+
+func (p *Post) TreatDate(f func(*Post) error) error {
+	if err := f(p); err != nil {
+		return err
+	}
 	return nil
 }

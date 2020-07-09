@@ -1,11 +1,15 @@
 package boxun
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"path/filepath"
 	"strconv"
+	"strings"
+	"time"
 
+	"github.com/wedojava/fetcher/internal/htmldoc"
 	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
 )
@@ -21,7 +25,20 @@ type Post struct {
 	Filename string
 }
 
-func SetDate(p *Post) string {
+func SetPost(p *Post) error {
+	if err := SetDate(p); err != nil {
+		return err
+	}
+	if err := SetTitle(p); err != nil {
+		return err
+	}
+	if err := SetBody(p); err != nil {
+		return err
+	}
+	return nil
+}
+
+func SetDate(p *Post) error {
 	rawdate := filepath.Base(p.URL.String())
 	var Y, M, D, hh, mm int
 	var err error
@@ -69,12 +86,55 @@ func SetDate(p *Post) string {
 		// fmt.Println("err date fetch from url: ", url)
 		// fmt.Println(mm, "is not a integer of Minute, set it to 59")
 	}
-	return fmt.Sprintf("%02d-%02d-%02dT%02d:%02d:%02dZ", Y, M, D, hh, mm, 0)
+	p.Date = fmt.Sprintf("%02d-%02d-%02dT%02d:%02d:%02dZ", Y, M, D, hh, mm, 0)
+	return nil
 }
 
-func SetTitle(title *string) error {
-	if err := gears.ConvertToUtf8(title, "gbk", "utf8"); err != nil {
+func SetTitle(p *Post) error {
+	n := htmldoc.ElementsByTagName(p.DOC, "title")
+	title := n[0].FirstChild.Data
+	title = strings.TrimSpace(title)
+	gears.ReplaceIllegalChar(&title)
+	if err := gears.ConvertToUtf8(&title, "gbk", "utf8"); err != nil {
 		return err
 	}
+	p.Title = title
 	return nil
+}
+
+func SetBody(p *Post) error {
+	if p.DOC == nil {
+		return errors.New("[-] there is no DOC object to get and format.")
+	}
+	b, err := Boxun(p)
+	if err != nil {
+		return err
+	}
+	t, err := time.Parse(time.RFC3339, p.Date)
+	if err != nil {
+		return err
+	}
+	h1 := fmt.Sprintf("# [%02d.%02d][%02d%02dH] %s", t.Month(), t.Day(), t.Hour(), t.Minute(), p.Title)
+	p.Body = fmt.Sprintf("%s\n\n%s", h1, b)
+	return nil
+}
+
+func Boxun(p *Post) (string, error) {
+	doc := p.DOC
+	body := ""
+	// Fetch content nodes
+	nodes := htmldoc.ElementsByTagAndClass(doc, "td", "F11")
+	if len(nodes) == 0 {
+		return "", errors.New("[-] There is no tag named `<td class=F11>` from: " + p.URL.String())
+	}
+	blist := htmldoc.ElementsNextByTag(nodes[0], "br")
+	for _, b := range blist {
+		if b.Type != html.TextNode || b.Data == "" {
+			continue
+		} else {
+			body += strings.ReplaceAll(b.Data, "\u00a0", "")
+		}
+	}
+	gears.ConvertToUtf8(&body, "gbk", "utf8")
+	return body, nil
 }

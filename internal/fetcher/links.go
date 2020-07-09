@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/wedojava/fetcher/internal/htmldoc"
 	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
 )
@@ -51,7 +52,7 @@ func ExtractLinks(str string) ([]string, error) {
 			}
 		}
 	}
-	ForEachNode(doc, visitNode, nil)
+	htmldoc.ForEachNode(doc, visitNode, nil)
 	return links, nil
 }
 
