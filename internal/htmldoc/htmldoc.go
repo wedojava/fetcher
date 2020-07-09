@@ -2,10 +2,12 @@ package htmldoc
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"golang.org/x/net/html"
@@ -33,6 +35,48 @@ func GetRawAndDoc(url *url.URL, retryTimeout time.Duration) ([]byte, *html.Node,
 		time.Sleep(time.Second << uint(tries)) // exponential back-off
 	}
 	return nil, nil, nil
+}
+
+// ExtractLinks makes an HTTP GET request to the specified URL, parses
+// the response as HTML, and returns the links in the HTML document.
+func ExtractLinks(weburl string) ([]string, error) {
+	resp, err := http.Get(weburl)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		resp.Body.Close()
+		return nil, fmt.Errorf("getting %s: %s", weburl, resp.Status)
+	}
+	doc, err := html.Parse(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		return nil, fmt.Errorf("parsing %s as HTML: %v", weburl, err)
+	}
+	var links []string
+	visitNode := func(n *html.Node) {
+		// TODO: compress layers
+		if n.Type == html.ElementNode && n.Data == "a" {
+			for _, a := range n.Attr {
+				if a.Key != "href" {
+					continue
+				}
+				link, err := resp.Request.URL.Parse(a.Val)
+				if err != nil {
+					continue // ignore bad URLs
+				}
+				// append only the target website
+				if strings.HasPrefix(a.Val, "http") && strings.Contains(a.Val, link.Hostname()) {
+					links = append(links, link.String())
+				} else if strings.HasPrefix(a.Val, "/") {
+					links = append(links, link.String())
+				}
+
+			}
+		}
+	}
+	ForEachNode(doc, visitNode, nil)
+	return links, nil
 }
 
 func ElementsByTagName(doc *html.Node, name ...string) []*html.Node {
