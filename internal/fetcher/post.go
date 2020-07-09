@@ -11,6 +11,7 @@ import (
 
 	"github.com/wedojava/fetcher/internal/fetcher/sites/boxun"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/dwnews"
+	"github.com/wedojava/fetcher/internal/fetcher/sites/rfa"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/voachinese"
 	"github.com/wedojava/fetcher/internal/htmldoc"
 	"github.com/wedojava/gears"
@@ -101,6 +102,12 @@ func (p *Post) TreatPost() error {
 	case "www.voachinese.com":
 		post := voachinese.Post(*p)
 		if err := voachinese.SetPost(&post); err != nil {
+			return err
+		}
+		*p = Post(post)
+	case "www.rfa.org":
+		post := rfa.Post(*p)
+		if err := rfa.SetPost(&post); err != nil {
 			return err
 		}
 		*p = Post(post)

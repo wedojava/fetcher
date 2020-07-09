@@ -137,6 +137,26 @@ func ElementsByTagAndId(doc *html.Node, tag, id string) []*html.Node {
 	return nodes
 }
 
+func ElementsByTagAndType(doc *html.Node, tag, attrType string) []*html.Node {
+	var nodes []*html.Node
+	if tag == "" || attrType == "" {
+		return nil
+	}
+	if doc.Type == html.ElementNode {
+		if tag == doc.Data {
+			for _, a := range doc.Attr {
+				if a.Key == "type" && a.Val == attrType {
+					nodes = append(nodes, doc)
+				}
+			}
+		}
+	}
+	for c := doc.FirstChild; c != nil; c = c.NextSibling {
+		nodes = append(nodes, ElementsByTagAndType(c, tag, attrType)...)
+	}
+	return nodes
+}
+
 func ElementsNextByTag(doc *html.Node, tag string) []*html.Node {
 	var nodes []*html.Node
 	if doc == nil || tag == "" {

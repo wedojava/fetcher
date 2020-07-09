@@ -32,6 +32,7 @@ func TestTreatPost(t *testing.T) {
 		"https://www.dwnews.com/经济/60203253",
 		"https://www.dwnews.com/全球/60203234",
 		"https://www.voachinese.com/a/S-Korea-Says-US-Sees-Importance-Of-N-Korea-Talks-Despite-Tension-20200709/5496028.html",
+		"https://www.rfa.org/mandarin/yataibaodao/shaoshuminzu/gf1-07092020074142.html",
 	}
 	for _, tc := range tcs {
 		p := PostFactory(tc)
