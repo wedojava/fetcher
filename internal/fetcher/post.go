@@ -11,6 +11,7 @@ import (
 
 	"github.com/wedojava/fetcher/internal/fetcher/sites/boxun"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/dwnews"
+	"github.com/wedojava/fetcher/internal/fetcher/sites/voachinese"
 	"github.com/wedojava/fetcher/internal/htmldoc"
 	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
@@ -94,6 +95,12 @@ func (p *Post) TreatPost() error {
 	case "www.dwnews.com":
 		post := dwnews.Post(*p)
 		if err := dwnews.SetPost(&post); err != nil {
+			return err
+		}
+		*p = Post(post)
+	case "www.voachinese.com":
+		post := voachinese.Post(*p)
+		if err := voachinese.SetPost(&post); err != nil {
 			return err
 		}
 		*p = Post(post)
