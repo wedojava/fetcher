@@ -86,7 +86,7 @@ func (p *Post) TreatPost() error {
 		post := boxun.Post(*p)
 		p.Date = boxun.SetDate(&post)
 		// Set title
-		if err := p.TreatTitle(boxun.Title); err != nil {
+		if err := p.TreatTitle(boxun.SetTitle); err != nil {
 			return err
 		}
 	}

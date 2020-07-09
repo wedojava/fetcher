@@ -72,7 +72,7 @@ func SetDate(p *Post) string {
 	return fmt.Sprintf("%02d-%02d-%02dT%02d:%02d:%02dZ", Y, M, D, hh, mm, 0)
 }
 
-func Title(title *string) error {
+func SetTitle(title *string) error {
 	if err := gears.ConvertToUtf8(title, "gbk", "utf8"); err != nil {
 		return err
 	}
