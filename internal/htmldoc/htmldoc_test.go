@@ -2,20 +2,20 @@ package htmldoc
 
 import (
 	"fmt"
+	"net/url"
 	"testing"
 	"time"
-
-	"github.com/wedojava/fetcher/internal/fetcher"
 )
 
 func TestElementsByTagAndClass(t *testing.T) {
-	p := fetcher.PostFactory("https://www.voachinese.com/a/pandemic-drives-digital-innovations-in-u-s-presidential-race-20200701/5484814.html")
-	raw, doc, err := fetcher.GetRawAndDoc(p.URL, 1*time.Minute)
+	u, err := url.Parse("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
 	if err != nil {
-		t.Errorf("GetDOC error: %v", err)
+		t.Errorf("url Parse err: %v", err)
 	}
-	p.DOC = doc
-	p.Raw = raw
+	_, doc, err := GetRawAndDoc(u, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoc err: %v", err)
+	}
 	tc := ElementsByTagAndClass(doc, "div", "wsw")
 	plist := ElementsByTagName(tc[0], "p")
 	for _, v := range plist {
@@ -24,13 +24,14 @@ func TestElementsByTagAndClass(t *testing.T) {
 }
 
 func TestElementsByTagAndId(t *testing.T) {
-	p := fetcher.PostFactory("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
-	raw, doc, err := fetcher.GetRawAndDoc(p.URL, 1*time.Minute)
+	u, err := url.Parse("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
 	if err != nil {
-		t.Errorf("GetDOC error: %v", err)
+		t.Errorf("url Parse err: %v", err)
 	}
-	p.DOC = doc
-	p.Raw = raw
+	_, doc, err := GetRawAndDoc(u, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoc err: %v", err)
+	}
 	tc := ElementsByTagAndId(doc, "div", "storytext")
 	plist := ElementsByTagName(tc[0], "p")
 	for _, v := range plist {
@@ -48,4 +49,29 @@ func TestElementsByTagAndId(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestMetaByName(t *testing.T) {
+	u, err := url.Parse("https://www.dwnews.com/全球/60203304")
+	if err != nil {
+		t.Errorf("url Parse err: %v", err)
+	}
+	_, doc, err := GetRawAndDoc(u, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoc err: %v", err)
+	}
+	tc := MetasByName(doc, "parsely-pub-date")
+	rt := []string{}
+	for _, n := range tc {
+		for _, a := range n.Attr {
+			if a.Key == "content" {
+				rt = append(rt, a.Val)
+			}
+		}
+	}
+	want := "2020-07-09T18:04:00+08:00"
+	if want != rt[0] {
+		t.Errorf("want: %v, got: %v", want, rt[0])
+	}
+	fmt.Println(rt[0])
 }
