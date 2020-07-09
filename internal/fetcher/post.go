@@ -40,6 +40,7 @@ func PostFactory(rawurl string) *Post {
 	}
 }
 
+// TODO: interupte while any err occur, the better way is write it done but don't interupt
 func (p *Post) SetPost() error {
 	// set contents
 	raw, doc, err := GetRawAndDoc(p.URL, 1*time.Minute)
@@ -73,6 +74,9 @@ func (p *Post) SavePost() error {
 		return errors.New("SavePost need a filename, but got none.")
 	}
 	filepath := filepath.Join(folderPath, p.Filename)
+	if p.Body == "" {
+		p.Body = "[-] Fetch error on visit: " + p.URL.String()
+	}
 	err := ioutil.WriteFile(filepath, []byte(p.Body), 0644)
 	if err != nil {
 		return err
