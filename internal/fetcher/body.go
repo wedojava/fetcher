@@ -84,10 +84,17 @@ func Dwnews(p *Post) (string, error) {
 			body += fmt.Sprintf("\n** %s **  \n", v.FirstChild.FirstChild.Data)
 		} else {
 			ok := true
-			// if it is a info for picture, don't append to body
+
 			for _, a := range v.Parent.Attr {
-				if a.Key == "class" && a.Val == "sc-bdVaJa iHZvIS" {
-					ok = false
+				if a.Key == "class" {
+					switch a.Val {
+					// if it is a info for picture, igonre!
+					case "sc-bdVaJa iHZvIS":
+						ok = false
+					// if it is a twitter content, ignore!
+					case "twitter-tweet":
+						ok = false
+					}
 				}
 			}
 			if ok {
