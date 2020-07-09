@@ -27,6 +27,13 @@ func TestSetAndSavePost(t *testing.T) {
 }
 
 func TestTreatPost(t *testing.T) {
-	p := PostFactory("https://www.boxun.com/news/gb/taiwan/2020/07/202007091815.shtml")
-	p.TreatPost()
+	tcs := []string{
+		"https://www.boxun.com/news/gb/taiwan/2020/07/202007091815.shtml",
+		"https://www.dwnews.com/经济/60203253",
+		"https://www.dwnews.com/全球/60203234",
+	}
+	for _, tc := range tcs {
+		p := PostFactory(tc)
+		p.TreatPost()
+	}
 }
