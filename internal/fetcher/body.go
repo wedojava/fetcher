@@ -74,7 +74,8 @@ func Dwnews(p *Post) (string, error) {
 	articleDoc := nodes[0].FirstChild
 	plist := ElementsByTagName(articleDoc, "p")
 	if articleDoc.FirstChild.Data == "div" { // to fetch the summary block
-		body += fmt.Sprintf("\n > %s  \n", plist[0].FirstChild.Data)
+		// body += fmt.Sprintf("\n > %s  \n", plist[0].FirstChild.Data) // redundant summary
+		body += fmt.Sprintf("\n > ")
 	}
 	for _, v := range plist { // the last item is `推荐阅读：`
 		if v.FirstChild == nil {
@@ -82,7 +83,23 @@ func Dwnews(p *Post) (string, error) {
 		} else if v.FirstChild.FirstChild != nil && v.FirstChild.Data == "strong" {
 			body += fmt.Sprintf("\n** %s **  \n", v.FirstChild.FirstChild.Data)
 		} else {
-			body += v.FirstChild.Data + "  \n"
+			ok := true
+
+			for _, a := range v.Parent.Attr {
+				if a.Key == "class" {
+					switch a.Val {
+					// if it is a info for picture, igonre!
+					case "sc-bdVaJa iHZvIS":
+						ok = false
+					// if it is a twitter content, ignore!
+					case "twitter-tweet":
+						ok = false
+					}
+				}
+			}
+			if ok {
+				body += v.FirstChild.Data + "  \n"
+			}
 		}
 	}
 	body = strings.ReplaceAll(body, "strong", "")
