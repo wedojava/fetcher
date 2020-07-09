@@ -53,14 +53,8 @@ func Crawl(_url string) {
 	log.Println("[*] Get news ...")
 	for _, link := range f.Links {
 		post := PostFactory(link)
-		if err := post.SetPost(); err != nil {
-			errMsg := "[-] SetPost error occur from: " + link
-			log.Println(errMsg)
-			log.Println(err)
-			ErrLog(errMsg + " " + err.Error())
-		}
-		if err := post.SavePost(); err != nil {
-			errMsg := "[-] SavePost error occur from: " + link
+		if err := post.TreatPost(); err != nil {
+			errMsg := "[-] TreatPost error occur on: " + link
 			log.Println(errMsg)
 			log.Println(err)
 			ErrLog(errMsg + " " + err.Error())

@@ -45,30 +45,6 @@ func PostFactory(rawurl string) *Post {
 	}
 }
 
-// TODO: interupte while any err occur, the better way is write it done but don't interupt
-func (p *Post) SetPost() error {
-	if err := p.PostInit(); err != nil {
-		return err
-	}
-	// set Date
-	if err := p.SetDate(); err != nil {
-		return err
-	}
-	// set Title
-	if err := p.SetTitle(); err != nil {
-		return err
-	}
-	// set Filename
-	if err := p.SetFilename(); err != nil {
-		return err
-	}
-	// set Body (get and format body)
-	if err := p.SetBody(); err != nil {
-		return err
-	}
-	return nil
-}
-
 // TODO: use func init
 func (p *Post) PostInit() error {
 	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)

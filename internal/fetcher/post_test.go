@@ -16,10 +16,7 @@ func TestSetAndSavePost(t *testing.T) {
 		t.Errorf("GetRawAndDoC error: %v", err)
 	}
 	p.Raw, p.DOC = raw, doc
-	if err := p.SetPost(); err != nil {
-		t.Errorf("test SetPost err: %v", doc)
-	}
-	if err := p.SavePost(); err != nil {
+	if err := p.TreatPost(); err != nil {
 		t.Errorf("test SetPost err: %v", doc)
 	}
 	fmt.Println(p.Title)
