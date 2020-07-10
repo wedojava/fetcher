@@ -100,7 +100,12 @@ func Dwnews(p *Post) (string, error) {
 		if v.FirstChild == nil {
 			continue
 		} else if v.FirstChild.FirstChild != nil && v.FirstChild.Data == "strong" {
-			body += fmt.Sprintf("\n** %s **  \n", v.FirstChild.FirstChild.Data)
+			if d := v.FirstChild.FirstChild.Data; !strings.Contains(d, "↓↓↓") {
+				body += fmt.Sprintf("\n** %s **  \n", d)
+			}
+			if t := v.FirstChild.NextSibling; t != nil && t.Type == html.TextNode {
+				body += t.Data
+			}
 		} else {
 			ok := true
 
