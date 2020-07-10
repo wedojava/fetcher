@@ -79,6 +79,17 @@ func ExtractLinks(weburl string) ([]string, error) {
 	return links, nil
 }
 
+func ElementsNext(doc *html.Node) []*html.Node {
+	nodes := []*html.Node{}
+	visitNode := func(n *html.Node) {
+		if n.NextSibling != nil {
+			nodes = append(nodes, n)
+		}
+	}
+	ForEachNode(doc, visitNode, nil)
+	return nodes
+}
+
 func ElementsByTagName(doc *html.Node, name ...string) []*html.Node {
 	var nodes []*html.Node
 	if len(name) == 0 {

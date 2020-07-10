@@ -91,7 +91,8 @@ func Rfa(p *Post) (string, error) {
 	for _, v := range plist {
 		if v.FirstChild == nil {
 			continue
-		} else if v.FirstChild.Data == "b" {
+		}
+		if v.FirstChild.Data == "b" {
 			body += "** "
 			blist := htmldoc.ElementsByTagName(v, "b")
 			for _, b := range blist {
@@ -102,7 +103,13 @@ func Rfa(p *Post) (string, error) {
 			}
 			body += " **  \n"
 		} else {
-			body += v.FirstChild.Data + "  \n"
+			// body += v.FirstChild.Data + "  \n"
+			innerNodes := htmldoc.ElementsNext(v)
+			for _, in := range innerNodes {
+				if in.Type == html.TextNode {
+					body += in.Data + "  \n"
+				}
+			}
 		}
 	}
 	body = strings.ReplaceAll(body, "**   **  \n", "")
