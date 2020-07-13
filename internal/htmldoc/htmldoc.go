@@ -40,6 +40,10 @@ func GetRawAndDoc(url *url.URL, retryTimeout time.Duration) ([]byte, *html.Node,
 // ExtractLinks makes an HTTP GET request to the specified URL, parses
 // the response as HTML, and returns the links in the HTML document.
 func ExtractLinks(weburl string) ([]string, error) {
+	u, err := url.Parse(weburl)
+	if err != nil {
+		return nil, err
+	}
 	resp, err := http.Get(weburl)
 	if err != nil {
 		return nil, err
@@ -66,7 +70,7 @@ func ExtractLinks(weburl string) ([]string, error) {
 					continue // ignore bad URLs
 				}
 				// append only the target website
-				if strings.HasPrefix(a.Val, "http") && strings.Contains(a.Val, link.Hostname()) {
+				if strings.HasPrefix(a.Val, "http") && strings.Contains(a.Val, u.Hostname()) {
 					links = append(links, link.String())
 				} else if strings.HasPrefix(a.Val, "/") {
 					links = append(links, link.String())
