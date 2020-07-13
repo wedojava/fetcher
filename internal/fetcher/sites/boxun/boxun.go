@@ -94,10 +94,10 @@ func SetTitle(p *Post) error {
 	n := htmldoc.ElementsByTagName(p.DOC, "title")
 	title := n[0].FirstChild.Data
 	title = strings.TrimSpace(title)
-	gears.ReplaceIllegalChar(&title)
 	if err := gears.ConvertToUtf8(&title, "gbk", "utf8"); err != nil {
 		return err
 	}
+	gears.ReplaceIllegalChar(&title)
 	p.Title = title
 	return nil
 }
