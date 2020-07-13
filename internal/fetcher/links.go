@@ -27,7 +27,9 @@ func (f *Fetcher) SetLinks() error {
 		KickOutLinksMatchPath(&f.Links, "zone")
 		KickOutLinksMatchPath(&f.Links, "/"+url.QueryEscape("视觉")+"/")
 	case "www.voachinese.com":
-		f.Links = LinksFilter(links, `.*?/a/.*-.*.html`)
+		l1 := LinksFilter(links, `.*?/a/\d*?.html`)
+		l2 := LinksFilter(links, `.*?/a/.*-.*.html`)
+		f.Links = append(l1, l2...)
 		KickOutLinksMatchPath(&f.Links, "voaweishi")
 	case "www.rfa.org":
 		f.Links = LinksFilter(links, `.*?/.*?-\d*.html`)
