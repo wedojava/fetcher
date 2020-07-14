@@ -54,7 +54,7 @@ func SetDate(p *Post) error {
 }
 
 func SetTitle(p *Post) error {
-	n := htmldoc.ElementsByTagName(p.DOC, "title")
+	n := htmldoc.ElementsByTag(p.DOC, "title")
 	if n == nil {
 		return fmt.Errorf("[-] there is no element <title>")
 	}
@@ -92,12 +92,12 @@ func Dwnews(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes
-	nodes := htmldoc.ElementsByTagName(doc, "article")
+	nodes := htmldoc.ElementsByTag(doc, "article")
 	if len(nodes) == 0 {
 		return "", errors.New("[-] There is no tag named `<article>` from: " + p.URL.String())
 	}
 	articleDoc := nodes[0].FirstChild
-	plist := htmldoc.ElementsByTagName(articleDoc, "p")
+	plist := htmldoc.ElementsByTag(articleDoc, "p")
 	if articleDoc.FirstChild.Data == "div" { // to fetch the summary block
 		// body += fmt.Sprintf("\n > %s  \n", plist[0].FirstChild.Data) // redundant summary
 		body += fmt.Sprintf("\n > ")

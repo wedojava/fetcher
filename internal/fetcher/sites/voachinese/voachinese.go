@@ -37,7 +37,7 @@ func SetPost(p *Post) error {
 }
 
 func SetDate(p *Post) error {
-	doc := htmldoc.ElementsByTagName(p.DOC, "time")
+	doc := htmldoc.ElementsByTag(p.DOC, "time")
 	// p.Date = doc[0].Attr[0].Val // short but not robust enough
 	d := []string{}
 	if doc == nil {
@@ -53,7 +53,7 @@ func SetDate(p *Post) error {
 }
 
 func SetTitle(p *Post) error {
-	n := htmldoc.ElementsByTagName(p.DOC, "title")
+	n := htmldoc.ElementsByTag(p.DOC, "title")
 	if n == nil {
 		return fmt.Errorf("[-] there is no element <title>")
 	}
@@ -89,7 +89,7 @@ func Voa(p *Post) (string, error) {
 	if nodes == nil {
 		return "", errors.New(`[-] There is no element match '<div class="wsw">'`)
 	}
-	plist := htmldoc.ElementsByTagName(nodes[0], "p")
+	plist := htmldoc.ElementsByTag(nodes[0], "p")
 	for _, v := range plist {
 		body += v.FirstChild.Data + "  \n"
 	}

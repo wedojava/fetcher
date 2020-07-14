@@ -84,12 +84,42 @@ func SetBody(p *Post) error {
 	return nil
 }
 
+func Rfa3(p *Post) (string, error) {
+	if p.Raw == nil {
+		return "", errors.New("\n[-] FmtBodyRfa() parameter is nil!\n")
+	}
+	var ps []string
+	var body string
+	var reContent = regexp.MustCompile(`(?m)<p.*?>(?P<content>.*?)</p>`)
+	for _, v := range reContent.FindAllStringSubmatch(string(p.Raw), -1) {
+		ps = append(ps, v[1])
+	}
+	if len(ps) == 0 {
+		if regexp.MustCompile(`(?m)<video.*?>`).FindAllString(string(p.Raw), -1) != nil {
+			return "", errors.New("\n[-] fetcher.FmtBodyRfa() Error: this is a video page.\n")
+		}
+		return "", errors.New("\n[-] fetcher.FmtBodyRfa() Error: regex matched nothing.\n")
+	} else {
+		for _, p := range ps {
+			body += p + "  \n"
+		}
+	}
+
+	return body, nil
+}
+
 func Rfa2(p *Post) (string, error) {
-	depth := 0
-	z := html.NewTokenizer(bytes.NewReader(p.Raw))
+	r := htmldoc.ElementsByTagAndId2(p.Raw, "div", "storytext")
+	// z := html.NewTokenizerFragment(bytes.NewReader(r), "p")
+	// fmt.Println(string(r))
+	z := html.NewTokenizer(bytes.NewReader(r))
 	var b bytes.Buffer
 	for {
 		tt := z.Next()
+		token := z.Token()
+		if err := z.Err(); err == io.EOF {
+			break
+		}
 		switch tt {
 		case html.ErrorToken:
 			err := z.Err()
@@ -99,22 +129,31 @@ func Rfa2(p *Post) (string, error) {
 				return "", fmt.Errorf("Rf2 err occur: %v", z.Err())
 			}
 		case html.TextToken:
-			if depth > 0 {
-				b.Write(z.Text())
-			}
+			b.Write(z.Text())
 		case html.SelfClosingTagToken:
-			continue
-		case html.StartTagToken, html.EndTagToken:
-			tn, _ := z.TagName()
-			if len(tn) == 1 && bytes.Compare(tn, []byte("br")) == 0 {
-				if tt == html.StartTagToken {
-					depth++
-				} else {
-					depth--
-				}
+			if "br" == token.Data {
+				// z.Next()
+				// z.Next()
+				// z.Next()
+				// b.Write(z.Text())
+				continue
 			}
+		case html.StartTagToken, html.EndTagToken:
+			if "p" == token.Data {
+				// z.Next()
+				// fmt.Println(z.Next().String())
+				// b.Write(z.Buffered())
+			}
+			// if "b" == token.Data {
+			//         z.Next()
+			//         z.Next()
+			//         b.Write([]byte("** "))
+			//         b.Write(z.Text())
+			//         b.Write([]byte(" **  \n"))
+			// }
 		}
 	}
+	return b.String(), nil
 }
 
 func Rfa(p *Post) (string, error) {

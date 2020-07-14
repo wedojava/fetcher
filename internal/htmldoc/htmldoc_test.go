@@ -27,6 +27,18 @@ func TestElementsByTagAndClass(t *testing.T) {
 		fmt.Println(v.FirstChild.Data)
 	}
 }
+func TestElementsByTagAndClass2(t *testing.T) {
+	u, err := url.Parse("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
+	if err != nil {
+		t.Errorf("url Parse err: %v", err)
+	}
+	raw, _, err := GetRawAndDoc(u, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoc err: %v", err)
+	}
+	tc := ElementsByTagAndClass2(raw, "div", "wsw")
+	fmt.Println(tc)
+}
 
 func TestElementsByTagAndId(t *testing.T) {
 	u, err := url.Parse("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")

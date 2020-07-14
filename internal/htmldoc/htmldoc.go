@@ -3,6 +3,7 @@ package htmldoc
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -158,6 +159,29 @@ func ElementsByTagAndClass(doc *html.Node, tag, class string) []*html.Node {
 	return nodes
 }
 
+func ElementsByTagAndClass2(raw []byte, tag, class string) []byte {
+	z := html.NewTokenizer(bytes.NewReader(raw))
+	var b bytes.Buffer
+	for {
+		tt := z.Next()
+		t := z.Token()
+		if err := z.Err(); err == io.EOF {
+			break
+		}
+		switch tt {
+		case html.StartTagToken:
+			if tag == t.Data {
+				for _, a := range t.Attr {
+					if a.Key == "class" && a.Val == class {
+						b.Write(z.Raw())
+					}
+				}
+			}
+		}
+	}
+	return b.Bytes()
+}
+
 func ElementsByTagAndId(doc *html.Node, tag, id string) []*html.Node {
 	var nodes []*html.Node
 	if tag == "" || id == "" {
@@ -178,6 +202,27 @@ func ElementsByTagAndId(doc *html.Node, tag, id string) []*html.Node {
 	return nodes
 }
 
+func ElementsByTagAndId2(raw []byte, tag, id string) []byte {
+	z := html.NewTokenizer(bytes.NewReader(raw))
+	for {
+		tt := z.Next()
+		t := z.Token()
+		if err := z.Err(); err != nil && err == io.EOF {
+			break
+		}
+		switch tt {
+		case html.StartTagToken:
+			if tag == t.Data {
+				for _, a := range t.Attr {
+					if a.Key == "id" && a.Val == id {
+						return z.Buffered()
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
 func ElementsByTagAndType(doc *html.Node, tag, attrType string) []*html.Node {
 	var nodes []*html.Node
 	if tag == "" || attrType == "" {

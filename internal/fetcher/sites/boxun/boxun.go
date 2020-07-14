@@ -91,7 +91,7 @@ func SetDate(p *Post) error {
 }
 
 func SetTitle(p *Post) error {
-	n := htmldoc.ElementsByTagName(p.DOC, "title")
+	n := htmldoc.ElementsByTag(p.DOC, "title")
 	if n == nil {
 		return fmt.Errorf("[-] there is no element <title>")
 	}
