@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -33,11 +34,15 @@ func main() {
 	fmt.Println("#========================================================#")
 	fmt.Printf("\n-> [?] 请输入选项序号: ")
 	op := gears.GetInput()
+	year := strconv.Itoa(time.Now().Year())
 	sites := []string{
 		"https://www.boxun.com/rolling.shtml",
 		"https://www.dwnews.com",
 		"https://www.voachinese.com",
+		"https://www.voachinese.com/z/1739",
 		"https://www.rfa.org/mandarin/",
+		"https://www.rfa.org/mandarin/Xinwen/story_archive?year=" + year,
+		"https://www.rfa.org/mandarin/yataibaodao/story_archive?year=" + year,
 	}
 	if strings.Compare("1", op) == 0 {
 		for {
