@@ -46,12 +46,18 @@ func SetDate(p *Post) error {
 			}
 		}
 	}
+	if len(cs) <= 0 {
+		return fmt.Errorf("dwnews SetData got nothing.")
+	}
 	p.Date = cs[0]
 	return nil
 }
 
 func SetTitle(p *Post) error {
 	n := htmldoc.ElementsByTagName(p.DOC, "title")
+	if n == nil {
+		return fmt.Errorf("[-] there is no element <title>")
+	}
 	title := n[0].FirstChild.Data
 	title = strings.TrimSpace(title)
 	if strings.Contains(title, "｜") {

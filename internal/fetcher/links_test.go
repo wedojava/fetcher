@@ -27,7 +27,8 @@ func TestSetLinks(t *testing.T) {
 		// Entrance: "https://www.voachinese.com",
 	}
 	f.SetLinks()
-	assertLink := "https://www.voachinese.com/a/5500263.html"
+	// assertLink := "https://www.voachinese.com/a/who-remains-tight-lipped-experts-sent-investigate-coronavirus-china-20200713/5500866.html"
+	assertLink := "https://www.voachinese.com/a/fire-still-raging-aboard-navy-ship-docked-in-california-20200713/5500960.html"
 	shot := 0
 	for _, link := range f.Links {
 		fmt.Println(link)

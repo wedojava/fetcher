@@ -92,6 +92,9 @@ func SetDate(p *Post) error {
 
 func SetTitle(p *Post) error {
 	n := htmldoc.ElementsByTagName(p.DOC, "title")
+	if n == nil {
+		return fmt.Errorf("[-] there is no element <title>")
+	}
 	title := n[0].FirstChild.Data
 	title = strings.TrimSpace(title)
 	if err := gears.ConvertToUtf8(&title, "gbk", "utf8"); err != nil {
