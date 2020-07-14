@@ -1,8 +1,10 @@
 package rfa
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
 	"regexp"
 	"strings"
@@ -82,6 +84,39 @@ func SetBody(p *Post) error {
 	return nil
 }
 
+func Rfa2(p *Post) (string, error) {
+	depth := 0
+	z := html.NewTokenizer(bytes.NewReader(p.Raw))
+	var b bytes.Buffer
+	for {
+		tt := z.Next()
+		switch tt {
+		case html.ErrorToken:
+			err := z.Err()
+			if err == io.EOF {
+				break
+			} else {
+				return "", fmt.Errorf("Rf2 err occur: %v", z.Err())
+			}
+		case html.TextToken:
+			if depth > 0 {
+				b.Write(z.Text())
+			}
+		case html.SelfClosingTagToken:
+			continue
+		case html.StartTagToken, html.EndTagToken:
+			tn, _ := z.TagName()
+			if len(tn) == 1 && bytes.Compare(tn, []byte("br")) == 0 {
+				if tt == html.StartTagToken {
+					depth++
+				} else {
+					depth--
+				}
+			}
+		}
+	}
+}
+
 func Rfa(p *Post) (string, error) {
 	doc := p.DOC
 	body := ""
@@ -103,19 +138,23 @@ func Rfa(p *Post) (string, error) {
 			if v.FirstChild == nil {
 				continue
 			}
-			v = htmldoc.ElementsRmByTag(v, "br")
-			if v.FirstChild.Data == "b" {
+			htmldoc.ElementsRmByTag(v, "br")
+			fd := v.FirstChild.Data
+			if fd == "iframe" || fd == "i" {
+				continue
+			}
+			if fd == "b" {
 				body += "** "
 				blist := htmldoc.ElementsByTag(v, "b")
 				for _, b := range blist {
 					_b := b.FirstChild
 					if _b != nil && _b.Data != "" {
-						body += b.FirstChild.Data
+						body += _b.Data
 					}
 				}
 				body += " **  \n"
 			} else {
-				body += v.FirstChild.Data + "  \n"
+				body += fd + "  \n"
 			}
 		}
 	}

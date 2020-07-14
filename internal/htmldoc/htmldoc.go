@@ -98,20 +98,26 @@ func ElementsRmByTag(doc *html.Node, name ...string) {
 	if len(name) == 0 {
 		return
 	}
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode {
+	visitNode := func(n *html.Node) {
+		if n.NextSibling != nil && n.NextSibling.Type == html.ElementNode {
 			for _, tag := range name {
-				if tag == n.Data {
-					n.Parent.RemoveChild(n)
+				if tag == n.NextSibling.Data {
+					n.Parent.RemoveChild(n.NextSibling)
 				}
 			}
 		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
+	}
+	ForEachNode(doc, visitNode, nil)
+	rmFirstTag := func(n *html.Node) {
+		if n.FirstChild != nil && n.FirstChild.Type == html.ElementNode {
+			for _, tag := range name {
+				if tag == n.FirstChild.Data {
+					n.RemoveChild(n.FirstChild)
+				}
+			}
 		}
 	}
-	f(doc)
+	ForEachNode(doc, rmFirstTag, nil)
 }
 
 func ElementsByTag(doc *html.Node, name ...string) []*html.Node {
