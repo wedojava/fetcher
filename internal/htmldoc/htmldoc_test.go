@@ -1,10 +1,15 @@
 package htmldoc
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/url"
 	"testing"
 	"time"
+
+	"golang.org/x/net/html"
 )
 
 func TestElementsByTagAndClass(t *testing.T) {
@@ -17,7 +22,7 @@ func TestElementsByTagAndClass(t *testing.T) {
 		t.Errorf("GetRawAndDoc err: %v", err)
 	}
 	tc := ElementsByTagAndClass(doc, "div", "wsw")
-	plist := ElementsByTagName(tc[0], "p")
+	plist := ElementsByTag(tc[0], "p")
 	for _, v := range plist {
 		fmt.Println(v.FirstChild.Data)
 	}
@@ -33,11 +38,11 @@ func TestElementsByTagAndId(t *testing.T) {
 		t.Errorf("GetRawAndDoc err: %v", err)
 	}
 	tc := ElementsByTagAndId(doc, "div", "storytext")
-	plist := ElementsByTagName(tc[0], "p")
+	plist := ElementsByTag(tc[0], "p")
 	for _, v := range plist {
 		if v.FirstChild != nil {
 			if v.FirstChild.Data == "b" {
-				blist := ElementsByTagName(v, "b")
+				blist := ElementsByTag(v, "b")
 				fmt.Print("**")
 				for _, b := range blist {
 					fmt.Print(b.FirstChild.Data)
@@ -74,4 +79,21 @@ func TestMetaByName(t *testing.T) {
 		t.Errorf("want: %v, got: %v", want, rt[0])
 	}
 	fmt.Println(rt[0])
+}
+
+func TestElementsRmByTag(t *testing.T) {
+	s, err := ioutil.ReadFile("./test.html")
+	if err != nil {
+		t.Errorf("read file err: %v", err)
+	}
+	doc, err := html.Parse(bytes.NewReader(s))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ElementsRmByTag(doc, "br")
+	n := ElementsByTag(doc, "br")
+	if len(n) > 0 {
+		t.Errorf("want 0, got: %v", len(n))
+		fmt.Println(doc)
+	}
 }

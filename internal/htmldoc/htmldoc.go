@@ -94,7 +94,27 @@ func ElementsNext(doc *html.Node) []*html.Node {
 	return nodes
 }
 
-func ElementsByTagName(doc *html.Node, name ...string) []*html.Node {
+func ElementsRmByTag(doc *html.Node, name ...string) {
+	if len(name) == 0 {
+		return
+	}
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode {
+			for _, tag := range name {
+				if tag == n.Data {
+					n.Parent.RemoveChild(n)
+				}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+	f(doc)
+}
+
+func ElementsByTag(doc *html.Node, name ...string) []*html.Node {
 	var nodes []*html.Node
 	if len(name) == 0 {
 		return nil
@@ -107,7 +127,7 @@ func ElementsByTagName(doc *html.Node, name ...string) []*html.Node {
 		}
 	}
 	for c := doc.FirstChild; c != nil; c = c.NextSibling {
-		nodes = append(nodes, ElementsByTagName(c, name...)...)
+		nodes = append(nodes, ElementsByTag(c, name...)...)
 	}
 	return nodes
 }

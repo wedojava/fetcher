@@ -54,7 +54,7 @@ func SetDate(p *Post) error {
 }
 
 func SetTitle(p *Post) error {
-	n := htmldoc.ElementsByTagName(p.DOC, "title")
+	n := htmldoc.ElementsByTag(p.DOC, "title")
 	if n == nil {
 		return fmt.Errorf("[-] there is no element <title>")
 	}
@@ -90,31 +90,36 @@ func Rfa(p *Post) (string, error) {
 	if len(nodes) == 0 {
 		return "", errors.New(`[-] There is no element match '<div id="storytext">'`)
 	}
-	plist := htmldoc.ElementsByTagName(nodes[0], "p")
-	for _, v := range plist {
-		if v.FirstChild == nil {
-			continue
-		}
-		if v.FirstChild.Data == "b" {
-			body += "** "
-			blist := htmldoc.ElementsByTagName(v, "b")
-			for _, b := range blist {
-				_b := b.FirstChild
-				if _b != nil && _b.Data != "" {
-					body += b.FirstChild.Data
-				}
+	plist := htmldoc.ElementsByTag(nodes[0], "p")
+	if len(plist) == 1 {
+		innerNodes := htmldoc.ElementsNext(plist[0])
+		for _, in := range innerNodes {
+			if in.Type == html.TextNode {
+				body += in.Data + "  \n"
 			}
-			body += " **  \n"
-		} else {
-			// body += v.FirstChild.Data + "  \n"
-			innerNodes := htmldoc.ElementsNext(v)
-			for _, in := range innerNodes {
-				if in.Type == html.TextNode {
-					body += in.Data + "  \n"
+		}
+	} else {
+		for _, v := range plist {
+			if v.FirstChild == nil {
+				continue
+			}
+			v = htmldoc.ElementsRmByTag(v, "br")
+			if v.FirstChild.Data == "b" {
+				body += "** "
+				blist := htmldoc.ElementsByTag(v, "b")
+				for _, b := range blist {
+					_b := b.FirstChild
+					if _b != nil && _b.Data != "" {
+						body += b.FirstChild.Data
+					}
 				}
+				body += " **  \n"
+			} else {
+				body += v.FirstChild.Data + "  \n"
 			}
 		}
 	}
+
 	body = strings.ReplaceAll(body, "**   **  \n", "")
 	body = strings.ReplaceAll(body, "br  \n", "")
 	return body, nil
