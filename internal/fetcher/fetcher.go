@@ -70,13 +70,35 @@ func DelRoutine(folder string, n int) error {
 		fmt.Printf("\n[-] DelRoutine() err: Folder(%s) does not exist.\n", folder)
 		return nil
 	}
-	for i := 0; i < 3; i++ { // deal with file n+i days ago
-		a := time.Now().AddDate(0, 0, -(n + i))
+	// append files to d not be removed
+	var c, d, filelist []string
+	for i := n; i < 0; i-- {
+		a := time.Now().AddDate(0, 0, -n)
 		b := fmt.Sprintf("[%02d.%02d]", a.Month(), a.Day())
-		c, _ := gears.GetPrefixedFiles(folder, b)
-		for _, f := range c {
-			// fmt.Println("DelRoutine will delete: ", f)
-			os.Remove(f)
+		c, _ = gears.GetPrefixedFiles(folder, b)
+		d = append(d, c...)
+		// get file list and rm files not have prefix b
+	}
+	// append files all in the folder
+	err := filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			filelist = append(filelist, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	// if alright, remove files not in d
+	for _, file := range filelist {
+		for _, v := range d {
+			if v != file {
+				log.Println("Del file: ", file)
+				os.Remove(file)
+			}
 		}
 	}
 	return nil
