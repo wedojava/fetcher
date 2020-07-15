@@ -79,6 +79,7 @@ func DelRoutine(folder string, n int) error {
 		d = append(d, c...)
 		// get file list and rm files not have prefix b
 	}
+	d = gears.StrSliceDeDupl(d)
 	// append files all in the folder
 	err := filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -92,14 +93,11 @@ func DelRoutine(folder string, n int) error {
 	if err != nil {
 		return err
 	}
+	dellist := gears.StrSliceDiff(filelist, d)
 	// if alright, remove files not in d
-	for _, file := range filelist {
-		for _, v := range d {
-			if v != file {
-				log.Println("Del file: ", file)
-				os.Remove(file)
-			}
-		}
+	for _, file := range dellist {
+		log.Println("Del file: ", file)
+		os.Remove(file)
 	}
 	return nil
 }
