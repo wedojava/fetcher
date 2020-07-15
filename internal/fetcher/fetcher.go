@@ -72,8 +72,8 @@ func DelRoutine(folder string, n int) error {
 	}
 	// append files to d not be removed
 	var c, d, filelist []string
-	for i := n; i < 0; i-- {
-		a := time.Now().AddDate(0, 0, -n)
+	for i := 0; i < n; i++ {
+		a := time.Now().AddDate(0, 0, -i)
 		b := fmt.Sprintf("[%02d.%02d]", a.Month(), a.Day())
 		c, _ = gears.GetPrefixedFiles(folder, b)
 		d = append(d, c...)
