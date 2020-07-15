@@ -84,7 +84,7 @@ func SetBody(p *Post) error {
 		return err
 	}
 	h1 := fmt.Sprintf("# [%02d.%02d][%02d%02dH] %s", t.Month(), t.Day(), t.Hour(), t.Minute(), p.Title)
-	p.Body = fmt.Sprintf("%s\n\n%s", h1, b)
+	p.Body = h1 + "\n\n" + b + "\n\n原地址：" + p.URL.String()
 	return nil
 }
 
