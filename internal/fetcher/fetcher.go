@@ -72,7 +72,7 @@ func DelRoutine(folder string, n int) error {
 	}
 	// append files to d not be removed
 	var c, d, filelist []string
-	for i := 0; i < n; i++ {
+	for i := -1; i < n; i++ { // i := -1, so if local time is later than one day, it still in list d
 		a := time.Now().AddDate(0, 0, -i)
 		b := fmt.Sprintf("[%02d.%02d]", a.Month(), a.Day())
 		c, _ = gears.GetPrefixedFiles(folder, b)
