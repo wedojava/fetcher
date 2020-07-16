@@ -12,6 +12,12 @@ func main() {
 	year := strconv.Itoa(time.Now().Year())
 	sites := []string{
 		"https://www.dwnews.com",
+		"https://www.dwnews.com/issue/10062",
+		"https://www.dwnews.com/zone/10000117",
+		"https://www.dwnews.com/zone/10000118",
+		"https://www.dwnews.com/zone/10000119",
+		"https://www.dwnews.com/zone/10000120",
+		"https://www.dwnews.com/zone/10000123",
 		"https://www.voachinese.com",
 		"https://www.voachinese.com/z/1739",
 		"https://www.rfa.org/mandarin/",
