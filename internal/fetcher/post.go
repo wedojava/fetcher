@@ -112,12 +112,6 @@ func (p *Post) SavePost() error {
 	if err != nil {
 		return err
 	}
-	// if !gears.Exists(filepath) {
-	//         err := ioutil.WriteFile(filepath, []byte(p.Body), 0644)
-	//         if err != nil {
-	//                 return err
-	//         }
-	// }
 	return nil
 }
 
