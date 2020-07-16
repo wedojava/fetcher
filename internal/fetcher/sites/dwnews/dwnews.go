@@ -62,8 +62,8 @@ func SetTitle(p *Post) error {
 	if strings.Contains(title, "[图集]") {
 		return fmt.Errorf("[!] Picture news ignored.")
 	}
+	title = strings.ReplaceAll(title, "｜多维新闻", "")
 	title = strings.TrimSpace(title)
-	strings.ReplaceAll(title, "｜多维新闻", "")
 	gears.ReplaceIllegalChar(&title)
 	p.Title = title
 	return nil
