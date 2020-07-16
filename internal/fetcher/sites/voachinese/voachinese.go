@@ -91,6 +91,9 @@ func Voa(p *Post) (string, error) {
 	}
 	plist := htmldoc.ElementsByTag(nodes[0], "p")
 	for _, v := range plist {
+		if v.FirstChild == nil {
+			continue
+		}
 		body += v.FirstChild.Data + "  \n"
 	}
 	body = strings.ReplaceAll(body, "strong  \n", "")
