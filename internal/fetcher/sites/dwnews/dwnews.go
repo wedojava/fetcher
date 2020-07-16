@@ -104,7 +104,8 @@ func Dwnews(p *Post) (string, error) {
 		if v.FirstChild == nil {
 			continue
 		} else if v.FirstChild.FirstChild != nil && v.FirstChild.Data == "strong" {
-			if d := v.FirstChild.FirstChild.Data; !strings.Contains(d, "↓↓↓") {
+			if d := v.FirstChild.FirstChild.Data; !strings.Contains(d, "↓↓↓") ||
+				!strings.Contains(d, "点击浏览") {
 				body += fmt.Sprintf("\n** %s **  \n", d)
 			}
 			if t := v.FirstChild.NextSibling; t != nil && t.Type == html.TextNode {
