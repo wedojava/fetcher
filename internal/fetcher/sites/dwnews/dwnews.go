@@ -59,13 +59,11 @@ func SetTitle(p *Post) error {
 		return fmt.Errorf("[-] there is no element <title>")
 	}
 	title := n[0].FirstChild.Data
+	if strings.Contains(title, "[图集]") {
+		return fmt.Errorf("[!] Picture news ignored.")
+	}
 	title = strings.TrimSpace(title)
-	if strings.Contains(title, "｜") {
-		p.Title = title[:strings.Index(title, "｜")]
-	}
-	if strings.Contains(title, "|") {
-		p.Title = title[:strings.Index(title, "|")]
-	}
+	strings.ReplaceAll(title, "｜多维新闻", "")
 	gears.ReplaceIllegalChar(&title)
 	p.Title = title
 	return nil
