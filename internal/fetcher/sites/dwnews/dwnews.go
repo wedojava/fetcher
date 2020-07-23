@@ -37,6 +37,9 @@ func SetPost(p *Post) error {
 }
 
 func SetDate(p *Post) error {
+	if p.DOC == nil {
+		return fmt.Errorf("[-] p.DOC is nil")
+	}
 	metas := htmldoc.MetasByName(p.DOC, "parsely-pub-date")
 	cs := []string{}
 	for _, meta := range metas {
@@ -54,6 +57,9 @@ func SetDate(p *Post) error {
 }
 
 func SetTitle(p *Post) error {
+	if p.DOC == nil {
+		return fmt.Errorf("[-] p.DOC is nil")
+	}
 	n := htmldoc.ElementsByTag(p.DOC, "title")
 	if n == nil {
 		return fmt.Errorf("[-] there is no element <title>")
@@ -71,7 +77,7 @@ func SetTitle(p *Post) error {
 
 func SetBody(p *Post) error {
 	if p.DOC == nil {
-		return errors.New("[-] there is no DOC object to get and format.")
+		return fmt.Errorf("[-] p.DOC is nil")
 	}
 	b, err := Dwnews(p)
 	if err != nil {
@@ -87,6 +93,9 @@ func SetBody(p *Post) error {
 }
 
 func Dwnews(p *Post) (string, error) {
+	if p.DOC == nil {
+		return "", fmt.Errorf("[-] p.DOC is nil")
+	}
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes

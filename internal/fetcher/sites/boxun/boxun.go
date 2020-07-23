@@ -39,6 +39,9 @@ func SetPost(p *Post) error {
 }
 
 func SetDate(p *Post) error {
+	if p.URL == nil {
+		return fmt.Errorf("[-] p.URL is nil")
+	}
 	rawdate := filepath.Base(p.URL.String())
 	var Y, M, D, hh, mm int
 	var err error
@@ -91,6 +94,9 @@ func SetDate(p *Post) error {
 }
 
 func SetTitle(p *Post) error {
+	if p.DOC == nil {
+		return fmt.Errorf("[-] p.DOC is nil")
+	}
 	n := htmldoc.ElementsByTag(p.DOC, "title")
 	if n == nil {
 		return fmt.Errorf("[-] there is no element <title>")
@@ -107,7 +113,7 @@ func SetTitle(p *Post) error {
 
 func SetBody(p *Post) error {
 	if p.DOC == nil {
-		return errors.New("[-] there is no DOC object to get and format.")
+		return fmt.Errorf("[-] p.DOC is nil")
 	}
 	b, err := Boxun(p)
 	if err != nil {
@@ -123,6 +129,9 @@ func SetBody(p *Post) error {
 }
 
 func Boxun(p *Post) (string, error) {
+	if p.DOC == nil {
+		return "", fmt.Errorf("[-] p.DOC is nil")
+	}
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes
