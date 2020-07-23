@@ -39,6 +39,9 @@ func SetPost(p *Post) error {
 }
 
 func SetDate(p *Post) error {
+	if p.DOC == nil {
+		return fmt.Errorf("[-] p.DOC is nil")
+	}
 	doc := htmldoc.ElementsByTagAndType(p.DOC, "script", "application/ld+json")
 	if doc == nil {
 		return errors.New("[-] rfa SetDate err, cannot get target nodes.")
@@ -55,6 +58,9 @@ func SetDate(p *Post) error {
 }
 
 func SetTitle(p *Post) error {
+	if p.DOC == nil {
+		return fmt.Errorf("[-] p.DOC is nil")
+	}
 	n := htmldoc.ElementsByTag(p.DOC, "title")
 	if n == nil {
 		return fmt.Errorf("[-] there is no element <title>")
@@ -68,7 +74,7 @@ func SetTitle(p *Post) error {
 
 func SetBody(p *Post) error {
 	if p.DOC == nil {
-		return errors.New("[-] there is no DOC object to get and format.")
+		return fmt.Errorf("[-] p.DOC is nil")
 	}
 	b, err := Rfa(p)
 	if err != nil {
@@ -85,7 +91,7 @@ func SetBody(p *Post) error {
 
 func Rfa(p *Post) (string, error) {
 	if p.Raw == nil {
-		return "", errors.New("\n[-] FmtBodyRfa() parameter is nil!\n")
+		return "", errors.New("\n[-] p.Raw is nil!\n")
 	}
 	var ps [][]byte
 	var b bytes.Buffer

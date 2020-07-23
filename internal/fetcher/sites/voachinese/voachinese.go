@@ -37,6 +37,9 @@ func SetPost(p *Post) error {
 }
 
 func SetDate(p *Post) error {
+	if p.DOC == nil {
+		return fmt.Errorf("[-] p.DOC is nil")
+	}
 	doc := htmldoc.ElementsByTag(p.DOC, "time")
 	// p.Date = doc[0].Attr[0].Val // short but not robust enough
 	d := []string{}
@@ -53,6 +56,9 @@ func SetDate(p *Post) error {
 }
 
 func SetTitle(p *Post) error {
+	if p.DOC == nil {
+		return fmt.Errorf("[-] p.DOC is nil")
+	}
 	n := htmldoc.ElementsByTag(p.DOC, "title")
 	if n == nil {
 		return fmt.Errorf("[-] there is no element <title>")
@@ -66,7 +72,7 @@ func SetTitle(p *Post) error {
 
 func SetBody(p *Post) error {
 	if p.DOC == nil {
-		return errors.New("[-] there is no DOC object to get and format.")
+		return fmt.Errorf("[-] p.DOC is nil")
 	}
 	b, err := Voa(p)
 	if err != nil {
@@ -82,6 +88,10 @@ func SetBody(p *Post) error {
 }
 
 func Voa(p *Post) (string, error) {
+	if p.DOC == nil {
+		return "", fmt.Errorf("[-] p.DOC is nil")
+
+	}
 	doc := p.DOC
 	body := ""
 	// Fetch content nodes

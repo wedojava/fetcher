@@ -86,6 +86,9 @@ func ExtractLinks(weburl string) ([]string, error) {
 
 func ElementsNext(doc *html.Node) []*html.Node {
 	nodes := []*html.Node{}
+	if doc == nil {
+		return nil
+	}
 	visitNode := func(n *html.Node) {
 		if n.NextSibling != nil {
 			nodes = append(nodes, n)
@@ -96,7 +99,7 @@ func ElementsNext(doc *html.Node) []*html.Node {
 }
 
 func ElementsRmByTag(doc *html.Node, name ...string) {
-	if len(name) == 0 {
+	if len(name) == 0 || doc == nil {
 		return
 	}
 	visitNode := func(n *html.Node) {
@@ -123,7 +126,7 @@ func ElementsRmByTag(doc *html.Node, name ...string) {
 
 func ElementsByTag(doc *html.Node, name ...string) []*html.Node {
 	var nodes []*html.Node
-	if len(name) == 0 {
+	if len(name) == 0 || doc == nil {
 		return nil
 	}
 	if doc.Type == html.ElementNode {
@@ -141,7 +144,7 @@ func ElementsByTag(doc *html.Node, name ...string) []*html.Node {
 
 func ElementsByTagAndClass(doc *html.Node, tag, class string) []*html.Node {
 	var nodes []*html.Node
-	if tag == "" || class == "" {
+	if tag == "" || class == "" || doc == nil {
 		return nil
 	}
 	if doc.Type == html.ElementNode {
@@ -160,6 +163,9 @@ func ElementsByTagAndClass(doc *html.Node, tag, class string) []*html.Node {
 }
 
 func ElementsByTagAndClass2(raw []byte, tag, class string) []byte {
+	if raw == nil || tag == "" || class == "" {
+		return nil
+	}
 	z := html.NewTokenizer(bytes.NewReader(raw))
 	var b bytes.Buffer
 	for {
@@ -184,7 +190,7 @@ func ElementsByTagAndClass2(raw []byte, tag, class string) []byte {
 
 func ElementsByTagAndId(doc *html.Node, tag, id string) []*html.Node {
 	var nodes []*html.Node
-	if tag == "" || id == "" {
+	if doc == nil || tag == "" || id == "" {
 		return nil
 	}
 	if doc.Type == html.ElementNode {
@@ -203,6 +209,9 @@ func ElementsByTagAndId(doc *html.Node, tag, id string) []*html.Node {
 }
 
 func ElementsByTagAndId2(raw []byte, tag, id string) []byte {
+	if raw == nil || tag == "" || id == "" {
+		return nil
+	}
 	z := html.NewTokenizer(bytes.NewReader(raw))
 	for {
 		tt := z.Next()
@@ -225,7 +234,7 @@ func ElementsByTagAndId2(raw []byte, tag, id string) []byte {
 }
 func ElementsByTagAndType(doc *html.Node, tag, attrType string) []*html.Node {
 	var nodes []*html.Node
-	if tag == "" || attrType == "" {
+	if tag == "" || attrType == "" || doc == nil {
 		return nil
 	}
 	if doc.Type == html.ElementNode {
@@ -245,6 +254,9 @@ func ElementsByTagAndType(doc *html.Node, tag, attrType string) []*html.Node {
 
 func ElementsNextByTag(doc *html.Node, tag string) []*html.Node {
 	var nodes []*html.Node
+	if tag == "" || doc == nil {
+		return nil
+	}
 	if doc == nil || tag == "" {
 		return nil
 	}
