@@ -10,7 +10,9 @@ func TestCrawl(t *testing.T) {
 	for {
 		BreadthFirst(Crawl, []string{
 			// "https://www.boxun.com/rolling.shtml",
-			"https://www.dwnews.com",
+			// "https://www.dwnews.com",
+			"https://www.zaobao.com/realtime/world",
+			"https://www.zaobao.com/news/world",
 			// "https://www.voachinese.com",
 			// "https://www.rfa.org/mandarin/",
 		})
