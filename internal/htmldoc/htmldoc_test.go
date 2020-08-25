@@ -68,6 +68,31 @@ func TestElementsByTagAndId(t *testing.T) {
 	}
 }
 
+func TestMetaByProperty(t *testing.T) {
+	u, err := url.Parse("https://www.zaobao.com/realtime/world/story20200825-1079575")
+	if err != nil {
+		t.Errorf("url Parse err: %v", err)
+	}
+	_, doc, err := GetRawAndDoc(u, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoc err: %v", err)
+	}
+	tc := MetasByProperty(doc, "article:modified_time")
+	rt := []string{}
+	for _, n := range tc {
+		for _, a := range n.Attr {
+			if a.Key == "content" {
+				rt = append(rt, a.Val)
+			}
+		}
+	}
+	want := "2020-08-25T09:42:32+08:00"
+	if want != rt[0] {
+		t.Errorf("want: %v, got: %v", want, rt[0])
+	}
+	fmt.Println(rt[0])
+}
+
 func TestMetaByName(t *testing.T) {
 	u, err := url.Parse("https://www.dwnews.com/全球/60203304")
 	if err != nil {

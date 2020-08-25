@@ -295,6 +295,30 @@ func MetasByName(doc *html.Node, name ...string) []*html.Node {
 	return nodes
 }
 
+func MetasByProperty(doc *html.Node, name ...string) []*html.Node {
+	var nodes []*html.Node
+	if doc == nil || name == nil {
+		return nil
+	}
+	if doc.Type == html.ElementNode {
+		if doc.Data == "meta" {
+			for _, a := range doc.Attr {
+				if a.Key == "property" {
+					for _, v := range name {
+						if v == a.Val {
+							nodes = append(nodes, doc)
+						}
+					}
+				}
+			}
+		}
+	}
+	for c := doc.FirstChild; c != nil; c = c.NextSibling {
+		nodes = append(nodes, MetasByProperty(c, name...)...)
+	}
+	return nodes
+}
+
 func ForEachNode(n *html.Node, pre, post func(n *html.Node)) {
 	if pre != nil {
 		pre(n)
