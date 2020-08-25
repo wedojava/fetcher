@@ -13,7 +13,7 @@ import (
 )
 
 func TestElementsByTagAndClass(t *testing.T) {
-	u, err := url.Parse("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
+	u, err := url.Parse("https://www.zaobao.com/realtime/world/story20200825-1079575")
 	if err != nil {
 		t.Errorf("url Parse err: %v", err)
 	}
@@ -21,7 +21,7 @@ func TestElementsByTagAndClass(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetRawAndDoc err: %v", err)
 	}
-	tc := ElementsByTagAndClass(doc, "div", "wsw")
+	tc := ElementsByTagAndClass(doc, "div", "article-content-container")
 	plist := ElementsByTag(tc[0], "p")
 	for _, v := range plist {
 		fmt.Println(v.FirstChild.Data)
