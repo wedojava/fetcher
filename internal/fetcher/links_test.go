@@ -18,17 +18,15 @@ func TestKickOutLinksMatchPath(t *testing.T) {
 }
 
 func TestSetLinks(t *testing.T) {
-	u, err := url.Parse("https://www.voachinese.com")
+	u, err := url.Parse("https://www.zaobao.com/realtime/world")
 	if err != nil {
 		t.Errorf("Url Parse fail!\n%s", err)
 	}
 	var f = &Fetcher{
 		Entrance: u,
-		// Entrance: "https://www.voachinese.com",
 	}
 	f.SetLinks()
-	// assertLink := "https://www.voachinese.com/a/who-remains-tight-lipped-experts-sent-investigate-coronavirus-china-20200713/5500866.html"
-	assertLink := "https://www.voachinese.com/a/fire-still-raging-aboard-navy-ship-docked-in-california-20200713/5500960.html"
+	assertLink := "https://www.zaobao.com/realtime/world/story20200825-1079575"
 	shot := 0
 	for _, link := range f.Links {
 		fmt.Println(link)

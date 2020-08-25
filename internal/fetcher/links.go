@@ -34,6 +34,8 @@ func (f *Fetcher) SetLinks() error {
 	case "www.rfa.org":
 		f.Links = LinksFilter(links, `.*?/.*?-\d*.html`)
 		KickOutLinksMatchPath(&f.Links, "about")
+	case "www.zaobao.com":
+		f.Links = LinksFilter(links, `.*?/world/.*`)
 	}
 	return nil
 }
