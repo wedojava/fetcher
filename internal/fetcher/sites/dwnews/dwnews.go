@@ -105,7 +105,8 @@ func Dwnews(p *Post) (string, error) {
 	}
 	articleDoc := nodes[0].FirstChild
 	plist := htmldoc.ElementsByTag(articleDoc, "p")
-	if articleDoc.FirstChild.Data == "div" { // to fetch the summary block
+	if articleDoc.FirstChild != nil &&
+		articleDoc.FirstChild.Data == "div" { // to fetch the summary block
 		// body += fmt.Sprintf("\n > %s  \n", plist[0].FirstChild.Data) // redundant summary
 		body += fmt.Sprintf("\n > ")
 	}
