@@ -35,7 +35,11 @@ func (f *Fetcher) SetLinks() error {
 		f.Links = LinksFilter(links, `.*?/.*?-\d*.html`)
 		KickOutLinksMatchPath(&f.Links, "about")
 	case "www.zaobao.com":
-		f.Links = LinksFilter(links, `.*?/world/.*`)
+		newsWorld := LinksFilter(links, `.*?/news/world/.*`)
+		newsChina := LinksFilter(links, `.*?/news/china/.*`)
+		realtimeWorld := LinksFilter(links, `.*?/realtime/world/.*`)
+		realtimeChina := LinksFilter(links, `.*?/realtime/china/.*`)
+		f.Links = append(append(append(newsWorld, newsChina...), realtimeWorld...), realtimeChina...)
 	}
 	return nil
 }
