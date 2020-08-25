@@ -13,6 +13,8 @@ func main() {
 	sites := []string{
 		"https://www.zaobao.com/realtime/world",
 		"https://www.zaobao.com/news/world",
+		"https://www.zaobao.com/realtime/china",
+		"https://www.zaobao.com/news/china",
 		"https://www.dwnews.com",
 		"https://www.dwnews.com/issue/10062",
 		"https://www.dwnews.com/zone/10000117",
