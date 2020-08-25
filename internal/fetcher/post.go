@@ -13,6 +13,7 @@ import (
 	"github.com/wedojava/fetcher/internal/fetcher/sites/dwnews"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/rfa"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/voachinese"
+	"github.com/wedojava/fetcher/internal/fetcher/sites/zaobao"
 	"github.com/wedojava/fetcher/internal/htmldoc"
 	"github.com/wedojava/gears"
 	"golang.org/x/net/html"
@@ -84,6 +85,12 @@ func (p *Post) TreatPost() error {
 	case "www.rfa.org":
 		post := rfa.Post(*p)
 		if err := rfa.SetPost(&post); err != nil {
+			return err
+		}
+		*p = Post(post)
+	case "www.zaobao.com":
+		post := zaobao.Post(*p)
+		if err := zaobao.SetPost(&post); err != nil {
 			return err
 		}
 		*p = Post(post)

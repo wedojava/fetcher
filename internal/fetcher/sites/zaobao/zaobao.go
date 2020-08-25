@@ -1,4 +1,4 @@
-package dwnews
+package zaobao
 
 import (
 	"errors"
@@ -40,7 +40,7 @@ func SetDate(p *Post) error {
 	if p.DOC == nil {
 		return fmt.Errorf("[-] p.DOC is nil")
 	}
-	metas := htmldoc.MetasByName(p.DOC, "parsely-pub-date")
+	metas := htmldoc.MetasByProperty(p.DOC, "article:modified_time")
 	cs := []string{}
 	for _, meta := range metas {
 		for _, a := range meta.Attr {

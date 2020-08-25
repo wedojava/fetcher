@@ -1,4 +1,4 @@
-package dwnews
+package zaobao
 
 import (
 	"fmt"
@@ -18,6 +18,22 @@ func PostFactory(rawurl string) *Post {
 	return &Post{
 		Domain: url.Hostname(),
 		URL:    url,
+	}
+}
+
+func TestSetDate(t *testing.T) {
+	p := PostFactory("https://www.zaobao.com/realtime/world/story20200825-1079575")
+	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoc err: %v", err)
+	}
+	p.Raw, p.DOC = raw, doc
+	if err := SetDate(p); err != nil {
+		t.Errorf("test SetPost err: %v", doc)
+	}
+	want := "2020-08-25T09:42:32+08:00"
+	if p.Date != want {
+		t.Errorf("\ngot: %v\nwant: %v", p.Date, want)
 	}
 }
 
