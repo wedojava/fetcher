@@ -1,9 +1,10 @@
-package zaobao
+package ltn
 
 import (
-	"errors"
+	"bytes"
 	"fmt"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
@@ -24,23 +25,23 @@ type Post struct {
 }
 
 func SetPost(p *Post) error {
-	if err := SetDate(p); err != nil {
+	if err := setDate(p); err != nil {
 		return err
 	}
-	if err := SetTitle(p); err != nil {
+	if err := setTitle(p); err != nil {
 		return err
 	}
-	if err := SetBody(p); err != nil {
+	if err := setBody(p); err != nil {
 		return err
 	}
 	return nil
 }
 
-func SetDate(p *Post) error {
+func setDate(p *Post) error {
 	if p.DOC == nil {
 		return fmt.Errorf("[-] p.DOC is nil")
 	}
-	metas := htmldoc.MetasByProperty(p.DOC, "article:modified_time")
+	metas := htmldoc.MetasByProperty(p.DOC, "article:published_time")
 	cs := []string{}
 	for _, meta := range metas {
 		for _, a := range meta.Attr {
@@ -50,13 +51,13 @@ func SetDate(p *Post) error {
 		}
 	}
 	if len(cs) <= 0 {
-		return fmt.Errorf("dwnews SetData got nothing.")
+		return fmt.Errorf("SetData got nothing.")
 	}
 	p.Date = cs[0]
 	return nil
 }
 
-func SetTitle(p *Post) error {
+func setTitle(p *Post) error {
 	if p.DOC == nil {
 		return fmt.Errorf("[-] p.DOC is nil")
 	}
@@ -65,19 +66,18 @@ func SetTitle(p *Post) error {
 		return fmt.Errorf("[-] there is no element <title>")
 	}
 	title := n[0].FirstChild.Data
-	title = strings.ReplaceAll(title, " | 联合早报网", "")
-	title = strings.ReplaceAll(title, " | 早报", "")
+	title = strings.ReplaceAll(title, " - 自由時報電子報", "")
 	title = strings.TrimSpace(title)
 	gears.ReplaceIllegalChar(&title)
 	p.Title = title
 	return nil
 }
 
-func SetBody(p *Post) error {
+func setBody(p *Post) error {
 	if p.DOC == nil {
 		return fmt.Errorf("[-] p.DOC is nil")
 	}
-	b, err := Zaobao(p)
+	b, err := ltn(p)
 	if err != nil {
 		return err
 	}
@@ -90,27 +90,28 @@ func SetBody(p *Post) error {
 	return nil
 }
 
-func Zaobao(p *Post) (string, error) {
-	if p.DOC == nil {
-		return "", fmt.Errorf("[-] p.DOC is nil")
+func ltn(p *Post) (string, error) {
+	if p.Raw == nil {
+		return "", fmt.Errorf("[-] p.Raw is nil")
 	}
-	doc := p.DOC
-	body := ""
+	raw := p.Raw
 	// Fetch content nodes
-	nodes := htmldoc.ElementsByTagAndClass(doc, "div", "article-content-container")
-	if len(nodes) == 0 {
-		nodes = htmldoc.ElementsByTagAndClass(doc, "div", "article-content-rawhtml")
+	r := htmldoc.DivWithAttr2(raw, "data-desc", "內容頁")
+	ps := [][]byte{}
+	b := bytes.Buffer{}
+	re := regexp.MustCompile(`<p>(.*?)</p>`)
+	for _, v := range re.FindAllSubmatch(r, -1) {
+		ps = append(ps, v[1])
 	}
-	if len(nodes) == 0 {
-		return "", errors.New("[-] There is no tag named `<article>` from: " + p.URL.String())
+	if len(ps) == 0 {
+		return "", fmt.Errorf("no <p> matched")
 	}
-	plist := htmldoc.ElementsByTag(nodes[0], "p")
-	for _, v := range plist { // the last item is `推荐阅读：`
-		if v.FirstChild == nil {
-			continue
-		} else {
-			body += v.FirstChild.Data + "  \n"
-		}
+	re = regexp.MustCompile(`<iframe.*?</iframe>`)
+	for _, p := range ps {
+		p = re.ReplaceAll(p, []byte(""))
+		b.Write(p)
+		b.Write([]byte("  \n"))
 	}
-	return body, nil
+
+	return b.String(), nil
 }

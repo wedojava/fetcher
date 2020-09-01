@@ -2,6 +2,7 @@ package fetcher
 
 import (
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -32,11 +33,16 @@ func TestTreatPost(t *testing.T) {
 		// "https://www.voachinese.com/a/S-Korea-Says-US-Sees-Importance-Of-N-Korea-Talks-Despite-Tension-20200709/5496028.html",
 		// "https://www.rfa.org/mandarin/yataibaodao/shaoshuminzu/gf1-07092020074142.html",
 		// "https://www.rfa.org/mandarin/Xinwen/6-07082020110802.html",
-		"https://www.zaobao.com/realtime/world/story20200825-1079575",
-		"https://www.zaobao.com/news/world/story20200825-1079477",
+		// "https://www.zaobao.com/realtime/world/story20200825-1079575",
+		// "https://www.zaobao.com/news/world/story20200825-1079477",
+		// "https://www.zaobao.com.sg/realtime/world/story20200901-1081441",
+		"https://ec.ltn.com.tw/article/breakingnews/3277361",
 	}
 	for _, tc := range tcs {
 		p := PostFactory(tc)
-		p.TreatPost()
+		err := p.TreatPost()
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }

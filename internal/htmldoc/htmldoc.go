@@ -84,6 +84,51 @@ func ExtractLinks(weburl string) ([]string, error) {
 	return links, nil
 }
 
+func DivWithAttr(doc *html.Node, attrName, attrValue string) []*html.Node {
+	var nodes []*html.Node
+	if attrName == "" || attrValue == "" || doc == nil {
+		return nil
+	}
+	if doc.Type == html.ElementNode {
+		if "div" == doc.Data {
+			for _, a := range doc.Attr {
+				if a.Key == attrName && a.Val == attrValue {
+					nodes = append(nodes, doc)
+				}
+			}
+		}
+	}
+	for c := doc.FirstChild; c != nil; c = c.NextSibling {
+		nodes = append(nodes, DivWithAttr(c, attrName, attrValue)...)
+	}
+	return nodes
+}
+
+func DivWithAttr2(raw []byte, attrName, attrValue string) []byte {
+	if attrName == "" || attrValue == "" || raw == nil {
+		return nil
+	}
+	z := html.NewTokenizer(bytes.NewReader(raw))
+	for {
+		tt := z.Next()
+		t := z.Token()
+		if err := z.Err(); err != nil && err == io.EOF {
+			break
+		}
+		switch tt {
+		case html.StartTagToken:
+			if "div" == t.Data {
+				for _, a := range t.Attr {
+					if a.Key == attrName && a.Val == attrValue {
+						return z.Buffered()
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func ElementsNext(doc *html.Node) []*html.Node {
 	nodes := []*html.Node{}
 	if doc == nil {
@@ -232,6 +277,7 @@ func ElementsByTagAndId2(raw []byte, tag, id string) []byte {
 	}
 	return nil
 }
+
 func ElementsByTagAndType(doc *html.Node, tag, attrType string) []*html.Node {
 	var nodes []*html.Node
 	if tag == "" || attrType == "" || doc == nil {

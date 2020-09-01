@@ -12,8 +12,35 @@ import (
 	"golang.org/x/net/html"
 )
 
+var u, err = url.Parse("https://news.ltn.com.tw/news/world/breakingnews/3277899")
+
+func TestDivWithAttr(t *testing.T) {
+	if err != nil {
+		t.Errorf("url Parse err: %v", err)
+	}
+	_, doc, err := GetRawAndDoc(u, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoc err: %v", err)
+	}
+	tc := DivWithAttr(doc, "data-desc", "內容頁")
+	plist := ElementsByTag(tc[0], "p")
+	for _, v := range plist {
+		fmt.Println(v.FirstChild.Data)
+	}
+}
+func TestDivWithAttr2(t *testing.T) {
+	if err != nil {
+		t.Errorf("url Parse err: %v", err)
+	}
+	raw, _, err := GetRawAndDoc(u, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoc err: %v", err)
+	}
+	tc := DivWithAttr2(raw, "data-desc", "內容頁")
+	fmt.Println(string(tc))
+}
+
 func TestElementsByTagAndClass(t *testing.T) {
-	u, err := url.Parse("https://www.zaobao.com/realtime/world/story20200825-1079575")
 	if err != nil {
 		t.Errorf("url Parse err: %v", err)
 	}
@@ -28,7 +55,6 @@ func TestElementsByTagAndClass(t *testing.T) {
 	}
 }
 func TestElementsByTagAndClass2(t *testing.T) {
-	u, err := url.Parse("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
 	if err != nil {
 		t.Errorf("url Parse err: %v", err)
 	}
@@ -41,7 +67,6 @@ func TestElementsByTagAndClass2(t *testing.T) {
 }
 
 func TestElementsByTagAndId(t *testing.T) {
-	u, err := url.Parse("https://www.rfa.org/mandarin/yataibaodao/junshiwaijiao/jt-07022020105416.html")
 	if err != nil {
 		t.Errorf("url Parse err: %v", err)
 	}
@@ -69,7 +94,6 @@ func TestElementsByTagAndId(t *testing.T) {
 }
 
 func TestMetaByProperty(t *testing.T) {
-	u, err := url.Parse("https://www.zaobao.com/realtime/world/story20200825-1079575")
 	if err != nil {
 		t.Errorf("url Parse err: %v", err)
 	}
@@ -94,7 +118,6 @@ func TestMetaByProperty(t *testing.T) {
 }
 
 func TestMetaByName(t *testing.T) {
-	u, err := url.Parse("https://www.dwnews.com/全球/60203304")
 	if err != nil {
 		t.Errorf("url Parse err: %v", err)
 	}

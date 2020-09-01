@@ -11,6 +11,7 @@ import (
 func main() {
 	year := strconv.Itoa(time.Now().Year())
 	sites := []string{
+		"https://news.ltn.com.tw/list/breakingnews",
 		"https://www.zaobao.com/realtime/world",
 		"https://www.zaobao.com/news/world",
 		"https://www.zaobao.com/realtime/china",

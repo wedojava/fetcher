@@ -11,6 +11,7 @@ import (
 
 	"github.com/wedojava/fetcher/internal/fetcher/sites/boxun"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/dwnews"
+	"github.com/wedojava/fetcher/internal/fetcher/sites/ltn"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/rfa"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/voachinese"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/zaobao"
@@ -94,18 +95,24 @@ func (p *Post) TreatPost() error {
 			return err
 		}
 		*p = Post(post)
+	case "news.ltn.com.tw":
+		post := ltn.Post(*p)
+		if err := ltn.SetPost(&post); err != nil {
+			return err
+		}
+		*p = Post(post)
 	}
 	// Save post to file
-	if err := p.SetFilename(); err != nil {
+	if err := p.setFilename(); err != nil {
 		return err
 	}
-	if err := p.SavePost(); err != nil {
+	if err := p.savePost(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *Post) SavePost() error {
+func (p *Post) savePost() error {
 	folderPath := filepath.Join("wwwroot", p.Domain)
 	gears.MakeDirAll(folderPath)
 	if p.Filename == "" {
@@ -122,7 +129,7 @@ func (p *Post) SavePost() error {
 	return nil
 }
 
-func (p *Post) SetFilename() error {
+func (p *Post) setFilename() error {
 	t, err := time.Parse(time.RFC3339, p.Date)
 	if err != nil {
 		return err

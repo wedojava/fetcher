@@ -17,7 +17,7 @@ func TestKickOutLinksMatchPath(t *testing.T) {
 }
 
 func TestSetLinks(t *testing.T) {
-	u, err := url.Parse("https://www.zaobao.com/realtime/")
+	u, err := url.Parse("https://news.ltn.com.tw/list/breakingnews")
 	if err != nil {
 		t.Errorf("Url Parse fail!\n%s", err)
 	}
@@ -26,10 +26,10 @@ func TestSetLinks(t *testing.T) {
 	}
 	f.SetLinks()
 	assertLinks := []string{
-		"https://www.zaobao.com/realtime/china/story20200825-1079597",
-		"https://www.zaobao.com/realtime/world/story20200825-1079575",
-		"https://www.zaobao.com/news/china/story20200825-1079462",
-		"https://www.zaobao.com/news/world/story20200825-1079476",
+		"https://news.ltn.com.tw/news/society/breakingnews/3278253",
+		"https://news.ltn.com.tw/news/society/breakingnews/3278250",
+		"https://news.ltn.com.tw/news/politics/breakingnews/3278225",
+		"https://news.ltn.com.tw/news/politics/breakingnews/3278170",
 	}
 	shot := 0
 	for _, link := range f.Links {
