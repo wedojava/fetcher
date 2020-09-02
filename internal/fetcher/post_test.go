@@ -36,7 +36,7 @@ func TestTreatPost(t *testing.T) {
 		// "https://www.zaobao.com/realtime/world/story20200825-1079575",
 		// "https://www.zaobao.com/news/world/story20200825-1079477",
 		// "https://www.zaobao.com.sg/realtime/world/story20200901-1081441",
-		"https://ec.ltn.com.tw/article/breakingnews/3277361",
+		"https://news.ltn.com.tw/news/world/breakingnews/3278726",
 	}
 	for _, tc := range tcs {
 		p := PostFactory(tc)

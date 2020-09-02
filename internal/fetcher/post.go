@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/url"
+	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/wedojava/fetcher/internal/fetcher/sites/boxun"
@@ -120,11 +122,25 @@ func (p *Post) savePost() error {
 	if p.Filename == "" {
 		return errors.New("savePost need a filename, but got none.")
 	}
-	filepath := filepath.Join(folderPath, p.Filename)
+	fpath := filepath.Join(folderPath, p.Filename)
+	// !+ rm files with same title
+	files, err := ioutil.ReadDir(folderPath)
+	if err != nil {
+		return err
+	}
+	for _, f := range files {
+		if !f.IsDir() && strings.Contains(f.Name(), p.Title) {
+			err = os.Remove(filepath.Join(folderPath, f.Name()))
+			if err != nil {
+				return err
+			}
+		}
+	}
+	// !- rm files with same title
 	if p.Body == "" {
 		p.Body = "savePost p.Body = \"\""
 	}
-	err := ioutil.WriteFile(filepath, []byte(p.Body), 0644)
+	err = ioutil.WriteFile(fpath, []byte(p.Body), 0644)
 	if err != nil {
 		return err
 	}
