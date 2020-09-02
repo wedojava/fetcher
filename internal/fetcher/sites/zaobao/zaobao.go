@@ -105,12 +105,20 @@ func Zaobao(p *Post) (string, error) {
 		return "", errors.New("[-] There is no tag named `<article>` from: " + p.URL.String())
 	}
 	plist := htmldoc.ElementsByTag(nodes[0], "p")
-	for _, v := range plist { // the last item is `推荐阅读：`
+	for _, v := range plist {
 		if v.FirstChild == nil {
 			continue
+		} else if v.FirstChild.FirstChild != nil &&
+			v.FirstChild.Data == "strong" {
+			a := htmldoc.ElementsByTag(v, "span")
+			for _, aa := range a {
+				body += aa.FirstChild.Data
+			}
+			body += "  \n"
 		} else {
 			body += v.FirstChild.Data + "  \n"
 		}
 	}
+	body = strings.ReplaceAll(body, "span  \n", "")
 	return body, nil
 }

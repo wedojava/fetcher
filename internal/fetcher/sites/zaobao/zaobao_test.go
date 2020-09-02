@@ -10,6 +10,8 @@ import (
 	"github.com/wedojava/fetcher/internal/htmldoc"
 )
 
+var p = PostFactory("https://www.zaobao.com/news/world/story20200830-1080786")
+
 func PostFactory(rawurl string) *Post {
 	url, err := url.Parse(rawurl)
 	if err != nil {
@@ -22,7 +24,6 @@ func PostFactory(rawurl string) *Post {
 }
 
 func TestSetDate(t *testing.T) {
-	p := PostFactory("https://www.zaobao.com/realtime/world/story20200825-1079575")
 	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetRawAndDoc err: %v", err)
@@ -31,14 +32,13 @@ func TestSetDate(t *testing.T) {
 	if err := SetDate(p); err != nil {
 		t.Errorf("test SetPost err: %v", doc)
 	}
-	want := "2020-08-25T09:42:32+08:00"
+	want := "2020-08-30T07:48:25+08:00"
 	if p.Date != want {
 		t.Errorf("\ngot: %v\nwant: %v", p.Date, want)
 	}
 }
 
 func TestSetTitle(t *testing.T) {
-	p := PostFactory("https://www.zaobao.com/realtime/world/story20200825-1079575")
 	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetRawAndDoc err: %v", err)
@@ -47,14 +47,13 @@ func TestSetTitle(t *testing.T) {
 	if err := SetTitle(p); err != nil {
 		t.Errorf("test SetPost err: %v", doc)
 	}
-	want := "韩首都圈学校全面线上上课两周"
+	want := "国际特稿：美国副总统候选人 哈里斯魅力多元"
 	if p.Title != want {
 		t.Errorf("\ngot: %v\nwant: %v", p.Title, want)
 	}
 }
 
 func TestZaobao(t *testing.T) {
-	p := PostFactory("https://www.zaobao.com/realtime/world/story20200825-1079575")
 	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetRawAndDoc err: %v", err)
@@ -65,7 +64,6 @@ func TestZaobao(t *testing.T) {
 }
 
 func TestSetPost(t *testing.T) {
-	p := PostFactory("https://www.zaobao.com/realtime/world/story20200825-1079575")
 	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetRawAndDoc err: %v", err)
