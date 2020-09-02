@@ -106,12 +106,21 @@ func ltn(p *Post) (string, error) {
 	if len(ps) == 0 {
 		return "", fmt.Errorf("no <p> matched")
 	}
-	re = regexp.MustCompile(`<iframe.*?</iframe>`)
 	for _, p := range ps {
-		p = re.ReplaceAll(p, []byte(""))
 		b.Write(p)
 		b.Write([]byte("  \n"))
 	}
+	body := b.String()
+	re = regexp.MustCompile(`「`)
+	body = re.ReplaceAllString(body, "“")
+	re = regexp.MustCompile(`」`)
+	body = re.ReplaceAllString(body, "”")
+	re = regexp.MustCompile(`<a.*?>`)
+	body = re.ReplaceAllString(body, "")
+	re = regexp.MustCompile(`</a>`)
+	body = re.ReplaceAllString(body, "")
+	re = regexp.MustCompile(`<iframe.*?</iframe>`)
+	body = re.ReplaceAllString(body, "")
 
-	return b.String(), nil
+	return body, nil
 }

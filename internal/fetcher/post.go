@@ -101,6 +101,8 @@ func (p *Post) TreatPost() error {
 			return err
 		}
 		*p = Post(post)
+	default:
+		return fmt.Errorf("switch no case on: %s", p.Domain)
 	}
 	// Save post to file
 	if err := p.setFilename(); err != nil {
@@ -116,11 +118,11 @@ func (p *Post) savePost() error {
 	folderPath := filepath.Join("wwwroot", p.Domain)
 	gears.MakeDirAll(folderPath)
 	if p.Filename == "" {
-		return errors.New("SavePost need a filename, but got none.")
+		return errors.New("savePost need a filename, but got none.")
 	}
 	filepath := filepath.Join(folderPath, p.Filename)
 	if p.Body == "" {
-		p.Body = "[-] Fetch error on visit: " + p.URL.String()
+		p.Body = "savePost p.Body = \"\""
 	}
 	err := ioutil.WriteFile(filepath, []byte(p.Body), 0644)
 	if err != nil {
