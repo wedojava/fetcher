@@ -86,6 +86,8 @@ func setTitle(p *Post) error {
 	}
 	title := n[0].FirstChild.Data
 	if strings.Contains(title, "| 娛樂 |") ||
+		strings.Contains(title, "| 政治 |") ||
+		strings.Contains(title, "| 兩岸 |") ||
 		strings.Contains(title, "| 運動 |") ||
 		strings.Contains(title, "| 文化 |") ||
 		strings.Contains(title, "| 地方 |") ||

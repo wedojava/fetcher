@@ -11,8 +11,9 @@ import (
 func main() {
 	year := strconv.Itoa(time.Now().Year())
 	sites := []string{
-		"https://www.cna.com.tw/list/aall.aspx",
-		"https://news.ltn.com.tw/list/breakingnews/world",
+		// expand fetch range need update cna.go function: setTitle
+		"https://www.cna.com.tw/list/aopl.aspx",           // 国际
+		"https://news.ltn.com.tw/list/breakingnews/world", // 国际
 		"https://www.zaobao.com/realtime/world",
 		"https://www.zaobao.com/news/world",
 		"https://www.zaobao.com/realtime/china",
