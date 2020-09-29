@@ -17,7 +17,20 @@ func TestKickOutLinksMatchPath(t *testing.T) {
 }
 
 func TestSetLinks(t *testing.T) {
-	u, err := url.Parse("https://news.ltn.com.tw/list/breakingnews")
+	// u, err := url.Parse("https://news.ltn.com.tw/list/breakingnews")
+	// assertLinks := []string{
+	//         "https://news.ltn.com.tw/news/society/breakingnews/3278253",
+	//         "https://news.ltn.com.tw/news/society/breakingnews/3278250",
+	//         "https://news.ltn.com.tw/news/politics/breakingnews/3278225",
+	//         "https://news.ltn.com.tw/news/politics/breakingnews/3278170",
+	// }
+	u, err := url.Parse("https://www.cna.com.tw/list/aall.aspx")
+	assertLinks := []string{
+		"https://www.cna.com.tw/news/aopl/202009290075.aspx",
+		"https://www.cna.com.tw/news/firstnews/202009290051.aspx",
+		"https://www.cna.com.tw/news/acn/202009290063.aspx",
+		"https://www.cna.com.tw/news/aipl/202009290055.aspx",
+	}
 	if err != nil {
 		t.Errorf("Url Parse fail!\n%s", err)
 	}
@@ -25,12 +38,6 @@ func TestSetLinks(t *testing.T) {
 		Entrance: u,
 	}
 	f.SetLinks()
-	assertLinks := []string{
-		"https://news.ltn.com.tw/news/society/breakingnews/3278253",
-		"https://news.ltn.com.tw/news/society/breakingnews/3278250",
-		"https://news.ltn.com.tw/news/politics/breakingnews/3278225",
-		"https://news.ltn.com.tw/news/politics/breakingnews/3278170",
-	}
 	shot := 0
 	for _, link := range f.Links {
 		for _, v := range assertLinks {
@@ -39,7 +46,7 @@ func TestSetLinks(t *testing.T) {
 			}
 		}
 	}
-	if shot == 0 {
+	if shot != len(assertLinks) {
 		t.Errorf("want: %v, got: %v", len(assertLinks), shot)
 	}
 }

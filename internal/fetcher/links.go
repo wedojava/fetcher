@@ -42,6 +42,12 @@ func (f *Fetcher) SetLinks() error {
 		f.Links = append(append(append(newsWorld, newsChina...), realtimeWorld...), realtimeChina...)
 	case "news.ltn.com.tw":
 		f.Links = LinksFilter(links, `https://news.*/news/.*`)
+	case "www.cna.com.tw":
+		newsFirst := LinksFilter(links, `.*?/news/firstnews/.*`)
+		newsWorld := LinksFilter(links, `.*?/news/aopl/.*`)
+		newsPolitical := LinksFilter(links, `.*?/news/aipl/.*`)
+		newsTW := LinksFilter(links, `.*?/news/acn/.*`)
+		f.Links = append(append(append(newsFirst, newsWorld...), newsPolitical...), newsTW...)
 	}
 	return nil
 }
