@@ -64,13 +64,14 @@ func TestCna(t *testing.T) {
 }
 
 func TestSetPost(t *testing.T) {
+	var p = PostFactory("https://www.cna.com.tw/news/afe/202009290241.aspx") // should be ignore
 	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetRawAndDoc err: %v", err)
 	}
 	p.Raw, p.DOC = raw, doc
 	if err := SetPost(p); err != nil {
-		t.Errorf("test SetPost err: %v", doc)
+		t.Errorf("test SetPost err: %v", err)
 	}
 	fmt.Println(p.Title)
 	fmt.Println(p.Body)

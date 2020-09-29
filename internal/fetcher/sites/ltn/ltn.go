@@ -2,6 +2,7 @@ package ltn
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -66,6 +67,20 @@ func setTitle(p *Post) error {
 		return fmt.Errorf("[-] there is no element <title>")
 	}
 	title := n[0].FirstChild.Data
+	if strings.Contains(title, "- 娛樂 -") ||
+		strings.Contains(title, "- 食譜 -") ||
+		strings.Contains(title, "- 地產 -") ||
+		strings.Contains(title, "- 體育 -") ||
+		strings.Contains(title, "- 地方 -") ||
+		strings.Contains(title, "- 蒐奇 -") ||
+		strings.Contains(title, "- 社會 -") ||
+		strings.Contains(title, "- 生活 -") ||
+		strings.Contains(title, "- 时尚 -") ||
+		strings.Contains(title, "- 健康 -") ||
+		strings.Contains(title, "- 汽車 -") ||
+		strings.Contains(title, "- 財經 -") {
+		return errors.New("ignore posts: " + p.URL.String())
+	}
 	title = strings.ReplaceAll(title, " - 自由時報電子報", "")
 	title = strings.TrimSpace(title)
 	gears.ReplaceIllegalChar(&title)
