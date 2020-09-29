@@ -10,7 +10,7 @@ import (
 	"github.com/wedojava/fetcher/internal/htmldoc"
 )
 
-var p = PostFactory("https://www.cna.com.tw/news/aopl/202009290075.aspx")
+var p = PostFactory("https://www.cna.com.tw/news/firstnews/202009295001.aspx")
 
 func PostFactory(rawurl string) *Post {
 	url, err := url.Parse(rawurl)
@@ -45,9 +45,9 @@ func TestSetTitle(t *testing.T) {
 	}
 	p.Raw, p.DOC = raw, doc
 	if err := setTitle(p); err != nil {
-		t.Errorf("test SetPost err: %v", doc)
+		t.Errorf("test SetPost err: %v", err)
 	}
-	want := "擋下TikTok封殺令 美法官：川普可能逾越法律 ｜ 國際"
+	want := "早安世界》安心旅遊補助續辦至10月底 中秋雙十連假可用 | 生活 | 重點新聞"
 	if p.Title != want {
 		t.Errorf("\ngot: %v\nwant: %v", p.Title, want)
 	}
