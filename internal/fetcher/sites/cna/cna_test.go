@@ -47,19 +47,19 @@ func TestSetTitle(t *testing.T) {
 	if err := setTitle(p); err != nil {
 		t.Errorf("test SetPost err: %v", doc)
 	}
-	want := "反送中12港青逃台被逮 林鄭月娥暗示應「送中」 - 國際"
+	want := "擋下TikTok封殺令 美法官：川普可能逾越法律 ｜ 國際"
 	if p.Title != want {
 		t.Errorf("\ngot: %v\nwant: %v", p.Title, want)
 	}
 }
 
-func TestLtn(t *testing.T) {
+func TestCna(t *testing.T) {
 	raw, doc, err := htmldoc.GetRawAndDoc(p.URL, 1*time.Minute)
 	if err != nil {
 		t.Errorf("GetRawAndDoc err: %v", err)
 	}
 	p.Raw, p.DOC = raw, doc
-	tc, err := ltn(p)
+	tc, err := cna(p)
 	fmt.Println(tc)
 }
 

@@ -1,7 +1,7 @@
 package cna
 
 import (
-	"bytes"
+	"errors"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -85,7 +85,7 @@ func setTitle(p *Post) error {
 		return fmt.Errorf("[-] there is no element <title>")
 	}
 	title := n[0].FirstChild.Data
-	title = strings.ReplaceAll(title, " - 自由時報電子報", "")
+	title = strings.ReplaceAll(title, " | 中央社 CNA", "")
 	title = strings.TrimSpace(title)
 	gears.ReplaceIllegalChar(&title)
 	p.Title = title
@@ -96,7 +96,7 @@ func setBody(p *Post) error {
 	if p.DOC == nil {
 		return fmt.Errorf("[-] p.DOC is nil")
 	}
-	b, err := ltn(p)
+	b, err := cna(p)
 	if err != nil {
 		return err
 	}
@@ -109,34 +109,29 @@ func setBody(p *Post) error {
 	return nil
 }
 
-func ltn(p *Post) (string, error) {
-	if p.Raw == nil {
-		return "", fmt.Errorf("[-] p.Raw is nil")
+func cna(p *Post) (string, error) {
+	if p.DOC == nil {
+		return "", fmt.Errorf("[-] p.DOC is nil")
 	}
-	raw := p.Raw
+	doc := p.DOC
+	body := ""
 	// Fetch content nodes
-	r := htmldoc.DivWithAttr2(raw, "data-desc", "內容頁")
-	ps := [][]byte{}
-	b := bytes.Buffer{}
-	re := regexp.MustCompile(`<p>(.*?)</p>`)
-	for _, v := range re.FindAllSubmatch(r, -1) {
-		ps = append(ps, v[1])
+	nodes := htmldoc.ElementsByTagAndClass(doc, "div", "paragraph")
+	if len(nodes) == 0 {
+		return "", errors.New("[-] There is no element class is paragraph` from: " + p.URL.String())
 	}
-	if len(ps) == 0 {
-		return "", fmt.Errorf("no <p> matched")
+	n := nodes[0]
+	plist := htmldoc.ElementsByTag(n, "p")
+	for _, v := range plist {
+		if v.FirstChild != nil {
+			body += v.FirstChild.Data + "  \n"
+		}
 	}
-	for _, p := range ps {
-		b.Write(p)
-		b.Write([]byte("  \n"))
-	}
-	body := b.String()
-	re = regexp.MustCompile(`「`)
-	body = re.ReplaceAllString(body, "“")
-	re = regexp.MustCompile(`」`)
-	body = re.ReplaceAllString(body, "”")
-	re = regexp.MustCompile(`<a.*?>`)
-	body = re.ReplaceAllString(body, "")
-	re = regexp.MustCompile(`</a>`)
+
+	body = strings.ReplaceAll(body, "「", "“")
+	body = strings.ReplaceAll(body, "」", "”")
+
+	re := regexp.MustCompile(`<a.*?</a>`)
 	body = re.ReplaceAllString(body, "")
 	re = regexp.MustCompile(`<iframe.*?</iframe>`)
 	body = re.ReplaceAllString(body, "")
