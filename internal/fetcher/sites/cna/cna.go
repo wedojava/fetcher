@@ -94,7 +94,7 @@ func setTitle(p *Post) error {
 		strings.Contains(title, "| 科技 |") ||
 		strings.Contains(title, "| 證券 |") ||
 		strings.Contains(title, "| 產經 |") {
-		return errors.New("ignore posts: " + p.URL.String())
+		return errors.New("ignore post on purpose: " + p.URL.String())
 	}
 	title = strings.ReplaceAll(title, " | 中央社 CNA", "")
 	title = strings.TrimSpace(title)
