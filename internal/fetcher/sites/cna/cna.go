@@ -56,7 +56,7 @@ func setDate(p *Post) error {
 	}
 	tY := cs[0][:4]
 	tM := cs[0][5:7]
-	tD := cs[0][7:9]
+	tD := cs[0][8:10]
 	tH := cs[0][11:13]
 	tm := cs[0][14:16]
 	yy, err := strconv.Atoi(tY)
