@@ -117,6 +117,31 @@ func TestMetaByProperty(t *testing.T) {
 	fmt.Println(rt[0])
 }
 
+func TestMetaByItemprop(t *testing.T) {
+	u, err = url.Parse("https://www.cna.com.tw/news/aopl/202009290075.aspx")
+	if err != nil {
+		t.Errorf("url Parse err: %v", err)
+	}
+	_, doc, err := GetRawAndDoc(u, 1*time.Minute)
+	if err != nil {
+		t.Errorf("GetRawAndDoc err: %v", err)
+	}
+	tc := MetasByItemprop(doc, "dateModified")
+	rt := []string{}
+	for _, n := range tc {
+		for _, a := range n.Attr {
+			if a.Key == "content" {
+				rt = append(rt, a.Val)
+			}
+		}
+	}
+	want := "2020/09/29 11:49"
+	if want != rt[0] {
+		t.Errorf("want: %v, got: %v", want, rt[0])
+	}
+	fmt.Println(rt[0])
+}
+
 func TestMetaByName(t *testing.T) {
 	if err != nil {
 		t.Errorf("url Parse err: %v", err)

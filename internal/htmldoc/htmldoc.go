@@ -317,16 +317,17 @@ func ElementsNextByTag(doc *html.Node, tag string) []*html.Node {
 	return nodes
 }
 
-func MetasByName(doc *html.Node, name ...string) []*html.Node {
+// MetasByName focus on `<meta name="dateModified" content="2020/09/29 11:27" />`
+func MetasByName(doc *html.Node, values ...string) []*html.Node {
 	var nodes []*html.Node
-	if doc == nil || name == nil {
+	if doc == nil || values == nil {
 		return nil
 	}
 	if doc.Type == html.ElementNode {
 		if doc.Data == "meta" {
 			for _, a := range doc.Attr {
 				if a.Key == "name" {
-					for _, v := range name {
+					for _, v := range values {
 						if v == a.Val {
 							nodes = append(nodes, doc)
 						}
@@ -336,21 +337,47 @@ func MetasByName(doc *html.Node, name ...string) []*html.Node {
 		}
 	}
 	for c := doc.FirstChild; c != nil; c = c.NextSibling {
-		nodes = append(nodes, MetasByName(c, name...)...)
+		nodes = append(nodes, MetasByName(c, values...)...)
 	}
 	return nodes
 }
 
-func MetasByProperty(doc *html.Node, name ...string) []*html.Node {
+// MetasByItemprop focus on `<meta itemprop="dateModified" content="2020/09/29 11:27" />`
+func MetasByItemprop(doc *html.Node, values ...string) []*html.Node {
 	var nodes []*html.Node
-	if doc == nil || name == nil {
+	if doc == nil || values == nil {
+		return nil
+	}
+	if doc.Type == html.ElementNode {
+		if doc.Data == "meta" {
+			for _, a := range doc.Attr {
+				if a.Key == "itemprop" {
+					for _, v := range values {
+						if v == a.Val {
+							nodes = append(nodes, doc)
+						}
+					}
+				}
+			}
+		}
+	}
+	for c := doc.FirstChild; c != nil; c = c.NextSibling {
+		nodes = append(nodes, MetasByItemprop(c, values...)...)
+	}
+	return nodes
+}
+
+// MetasByProperty focus on `<meta property="dateModified" content="2020/09/29 11:27" />`
+func MetasByProperty(doc *html.Node, values ...string) []*html.Node {
+	var nodes []*html.Node
+	if doc == nil || values == nil {
 		return nil
 	}
 	if doc.Type == html.ElementNode {
 		if doc.Data == "meta" {
 			for _, a := range doc.Attr {
 				if a.Key == "property" {
-					for _, v := range name {
+					for _, v := range values {
 						if v == a.Val {
 							nodes = append(nodes, doc)
 						}
@@ -360,7 +387,7 @@ func MetasByProperty(doc *html.Node, name ...string) []*html.Node {
 		}
 	}
 	for c := doc.FirstChild; c != nil; c = c.NextSibling {
-		nodes = append(nodes, MetasByProperty(c, name...)...)
+		nodes = append(nodes, MetasByProperty(c, values...)...)
 	}
 	return nodes
 }

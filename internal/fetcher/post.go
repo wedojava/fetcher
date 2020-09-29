@@ -103,6 +103,9 @@ func (p *Post) TreatPost() error {
 			return err
 		}
 		*p = Post(post)
+	case "www.cna.com.tw":
+		// TODO: need to be done.
+
 	default:
 		return fmt.Errorf("switch no case on: %s", p.Domain)
 	}
