@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/wedojava/fetcher/internal/fetcher/sites/boxun"
+	"github.com/wedojava/fetcher/internal/fetcher/sites/cna"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/dwnews"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/ltn"
 	"github.com/wedojava/fetcher/internal/fetcher/sites/rfa"
@@ -104,8 +105,11 @@ func (p *Post) TreatPost() error {
 		}
 		*p = Post(post)
 	case "www.cna.com.tw":
-		// TODO: need to be done.
-
+		post := cna.Post(*p)
+		if err := cna.SetPost(&post); err != nil {
+			return err
+		}
+		*p = Post(post)
 	default:
 		return fmt.Errorf("switch no case on: %s", p.Domain)
 	}
