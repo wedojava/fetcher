@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -53,8 +54,25 @@ func setDate(p *Post) error {
 	if len(cs) <= 0 {
 		return fmt.Errorf("SetData got nothing.")
 	}
-	// TODO: date format's needed.
-	p.Date = cs[0]
+	tY := cs[0][:4]
+	tM := cs[0][5:7]
+	tD := cs[0][7:9]
+	tH := cs[0][11:13]
+	tm := cs[0][14:16]
+	yy, err := strconv.Atoi(tY)
+	mm, err := strconv.Atoi(tM)
+	dd, err := strconv.Atoi(tD)
+	h, err := strconv.Atoi(tH)
+	m, err := strconv.Atoi(tm)
+	if err != nil {
+		return err
+	}
+	// China doesn't have daylight saving. It uses a fixed 8 hour offset from UTC.
+	secondsEastOfUTC := int((8 * time.Hour).Seconds())
+	beijing := time.FixedZone("Beijing Time", secondsEastOfUTC)
+	t := time.Date(yy, time.Month(mm), dd, h, m, 0, 0, beijing)
+	p.Date = t.Format(time.RFC3339)
+
 	return nil
 }
 
