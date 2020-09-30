@@ -41,17 +41,20 @@ func TestDivWithAttr2(t *testing.T) {
 }
 
 func TestElementsByTagAndClass(t *testing.T) {
+	s, err := ioutil.ReadFile("./test.html")
 	if err != nil {
-		t.Errorf("url Parse err: %v", err)
+		t.Errorf("read file err: %v", err)
 	}
-	_, doc, err := GetRawAndDoc(u, 1*time.Minute)
+	doc, err := html.Parse(bytes.NewReader(s))
 	if err != nil {
 		t.Errorf("GetRawAndDoc err: %v", err)
 	}
-	tc := ElementsByTagAndClass(doc, "div", "article-content-container")
-	plist := ElementsByTag(tc[0], "p")
-	for _, v := range plist {
-		fmt.Println(v.FirstChild.Data)
+	tc := ElementsByTagAndClass(doc, "div", "paragraph")
+	a := ElementsByTag(tc[0], "h2", "p")
+	for _, v := range a {
+		if v.FirstChild != nil {
+			fmt.Println(v.FirstChild.Data)
+		}
 	}
 }
 func TestElementsByTagAndClass2(t *testing.T) {
