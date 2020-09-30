@@ -10,7 +10,7 @@ import (
 	"github.com/wedojava/fetcher/internal/htmldoc"
 )
 
-var p = PostFactory("https://www.cna.com.tw/news/firstnews/202009295001.aspx")
+var p = PostFactory("https://www.cna.com.tw/news/aopl/202009300058.aspx")
 
 func PostFactory(rawurl string) *Post {
 	url, err := url.Parse(rawurl)
@@ -32,7 +32,7 @@ func TestSetDate(t *testing.T) {
 	if err := setDate(p); err != nil {
 		t.Errorf("test SetPost err: %v", doc)
 	}
-	want := "2020-09-29T11:49:00+08:00"
+	want := "2020-09-30T10:54:00+08:00"
 	if p.Date != want {
 		t.Errorf("\ngot: %v\nwant: %v", p.Date, want)
 	}
@@ -47,7 +47,7 @@ func TestSetTitle(t *testing.T) {
 	if err := setTitle(p); err != nil {
 		t.Errorf("test SetPost err: %v", err)
 	}
-	want := "早安世界》安心旅遊補助續辦至10月底 中秋雙十連假可用 | 生活 | 重點新聞"
+	want := "被爆10年沒繳稅 川普：避稅計畫展現我的才智 | 國際"
 	if p.Title != want {
 		t.Errorf("\ngot: %v\nwant: %v", p.Title, want)
 	}

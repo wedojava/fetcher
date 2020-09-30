@@ -134,7 +134,7 @@ func cna(p *Post) (string, error) {
 		return "", errors.New("[-] There is no element class is paragraph` from: " + p.URL.String())
 	}
 	n := nodes[0]
-	plist := htmldoc.ElementsByTag(n, "p")
+	plist := htmldoc.ElementsByTag(n, "h2", "p")
 	for _, v := range plist {
 		if v.FirstChild != nil {
 			body += v.FirstChild.Data + "  \n"
@@ -143,8 +143,9 @@ func cna(p *Post) (string, error) {
 
 	body = strings.ReplaceAll(body, "「", "“")
 	body = strings.ReplaceAll(body, "」", "”")
+	body = strings.ReplaceAll(body, "</a>", "")
 
-	re := regexp.MustCompile(`<a.*?</a>`)
+	re := regexp.MustCompile(`<a.*?>`)
 	body = re.ReplaceAllString(body, "")
 	re = regexp.MustCompile(`<iframe.*?</iframe>`)
 	body = re.ReplaceAllString(body, "")
