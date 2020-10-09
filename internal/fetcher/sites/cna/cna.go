@@ -147,6 +147,8 @@ func cna(p *Post) (string, error) {
 
 	re := regexp.MustCompile(`<a.*?>`)
 	body = re.ReplaceAllString(body, "")
+	re = regexp.MustCompile(`<script.*?</script>`)
+	body = re.ReplaceAllString(body, "")
 	re = regexp.MustCompile(`<iframe.*?</iframe>`)
 	body = re.ReplaceAllString(body, "")
 
